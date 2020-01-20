@@ -14,6 +14,9 @@ Muon::Muon() : Lepton() {
   j_MomentumScaleUp = -999.;
   j_MomentumScaleDown = -999.;
   j_TunePPtError = -999.;
+  j_MVA = -999.;
+  j_lowptMVA = -999.;
+  j_softMVA = -999.;
   j_validmuonhits = 999;
   j_matchedstations = 999;
   j_validpixelhits = 999;
@@ -100,6 +103,10 @@ void Muon::SetTuneP4(double pt, double pt_err, double eta, double phi, double q)
   j_TuneP4.SetPtEtaPhiM(pt,eta,phi,M());
   j_TuneP4.SetCharge(q);
   j_TunePPtError = pt_err;
+}
+
+void Muon::SetMVA(double MVA){
+  j_MVA = MVA;
 }
 
 bool Muon::PassID(TString ID) const {
