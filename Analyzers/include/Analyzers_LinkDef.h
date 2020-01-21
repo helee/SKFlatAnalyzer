@@ -13,6 +13,7 @@
 #pragma link C++ class SkimTree_LRSMHighPt+;
 #pragma link C++ class JetTagging+;
 #pragma link C++ class SkimTree_SMP+;
+#pragma link C++ class SkimTree_HNtypeI+;
 #pragma link C++ class FakeRate+;
 #pragma link C++ class HNtypeI_SM_CR+;
 #pragma link C++ class HNtypeI_SR+;

@@ -5,11 +5,15 @@
 *_Dict.cxx
 lib/*.tar.gz
 */obj
-HNtypeI_SR_submit.sh
-HNtypeI_FR_submit.sh
+*_submit.sh
+*_DoubleMuon.txt
+*_DoubleEG.txt
+*_EGamma.txt
+*_MuonEG.txt
 python/UserInfo_helee.py
 data/Run2Legacy_v3/2016/FakeRate/*.root
 data/Run2Legacy_v3/2017/FakeRate/*.root
 data/Run2Legacy_v3/2018/FakeRate/*.root
 data/Run2Legacy_v3/2016/Sample/CommonSampleInfo/MajoranaNeutrinoTo*
 data/Run2Legacy_v3/2016/Sample/ForSNU/MajoranaNeutrinoTo*
+data/Run2Legacy_v4/*
