@@ -39,26 +39,26 @@ void HNtypeI_SR::initializeAnalyzer(){
   // We can use SkimTree_SMP for dimuon and dielectron channel. (See https://github.com/sansan9401/SKFlatAnalyzer/blob/Run2Legacy_hsseo/Analyzers/src/SkimTree_SMP.C)
 
   MuonTriggers.clear();
+  MuonTriggersH.clear();
   ElectronTriggers.clear();
+  EMuTriggers.clear();
+  EMuTriggersH.clear();
 
-  if(DataYear==2016){
-    MuonTriggers.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v");
-    MuonTriggers.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v");
-    MuonTriggers.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v");
-    MuonTriggers.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v");
-    ElectronTriggers.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");
-    EMuTriggers.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v");        // B-G
-    EMuTriggers.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v");       // B-G
-//    EMuTriggers.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v");     // H
-//    EMuTriggers.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");    // H
+  if(DataYear==2016){                                                                   // Lumi values for trigger weight (/pb)
+    MuonTriggers.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v");                       // 27267.591112919 
+    MuonTriggers.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v");                     // 27267.591112919
+    MuonTriggers.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v");                    // 35918.219492947
+    MuonTriggers.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v");                  // 35918.219492947
+    MuonTriggersH.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v");                   // 35918.219492947
+    MuonTriggersH.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v");                 // 35918.219492947
+    ElectronTriggers.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");          // 35918.219492947
+    EMuTriggers.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v");          // 27267.591112919
+    EMuTriggers.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v");         // 27267.591112919
+    EMuTriggersH.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v");      // 8650.628380028
+    EMuTriggersH.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");     // 8650.628380028
     MuonPtCut1 = 20., MuonPtCut2 = 10.;
     ElectronPtCut1 = 25., ElectronPtCut2 = 15.;
     EMuPtCut1 = 25., EMuPtCut2 = 15.;
-/*    MuonTriggers.push_back("HLT_IsoMu24_v");
-    MuonTriggers.push_back("HLT_IsoTkMu24_v");
-    ElectronTriggers.push_back("HLT_Ele27_WPTight_Gsf_v");
-    MuonPtCut = 26.;
-    ElectronPtCut = 29.;*/
   }
   else if(DataYear==2017){
     MuonTriggers.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v");
@@ -68,11 +68,6 @@ void HNtypeI_SR::initializeAnalyzer(){
     MuonPtCut1 = 20., MuonPtCut2 = 10.;
     ElectronPtCut1 = 25., ElectronPtCut2 = 15.;
     EMuPtCut1 = 25., EMuPtCut2 = 15.;
-/*    MuonTriggers.push_back("HLT_IsoMu27_v");
-//    ElectronTriggers.push_back("HLT_Ele27_WPTight_Gsf_L1DoubleEG_v");
-    ElectronTriggers.push_back("HLT_Ele35_WPTight_Gsf_v");
-    MuonPtCut = 29.;
-    ElectronPtCut = 37.;*/
   }
   else if(DataYear==2018){
     MuonTriggers.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v");
@@ -202,7 +197,7 @@ void HNtypeI_SR::executeEvent(){
 
 void HNtypeI_SR::executeEventFromParameter(AnalyzerParameter param){
 
-  vector<TString> channels = {"dimu", "diel"};
+  vector<TString> channels = {"dimu", "diel", "emu"};
   vector<TString> regions = {"fakeCR1", "lowSR1", "lowCR1", "highSR1", "highCR1", "lowSR2", "lowCR2", "highSR2", "highCR2"};
   vector<TString> regionsSM = {"WZ", "ZG", "ZZ"}; // "WG"
   vector<TString> channels3L = {"eee", "eem", "emm", "mmm"};
@@ -214,7 +209,8 @@ void HNtypeI_SR::executeEventFromParameter(AnalyzerParameter param){
   double cutflow_max = 10.;
   int cutflow_bin = 10;
   double weight = 1.;
-
+  double trigger_weight = 1.;
+ 
   Event ev = GetEvent();
 
   //=============
@@ -268,7 +264,12 @@ void HNtypeI_SR::executeEventFromParameter(AnalyzerParameter param){
   //==== Trigger
   //==============
 
-  if(!(ev.PassTrigger(MuonTriggers) || ev.PassTrigger(ElectronTriggers))) return;
+  if(DataYear==2016){
+    if(!(ev.PassTrigger(MuonTriggers) || ev.PassTrigger(ElectronTriggers) || ev.PassTrigger(EMuTriggers) || ev.PassTrigger(EMuTriggersH))) return;
+  }
+  else{
+    if(!(ev.PassTrigger(MuonTriggers) || ev.PassTrigger(ElectronTriggers) || ev.PassTrigger(EMuTriggers))) return; 
+  }
 
   //======================
   //==== Copy AllObjects
@@ -523,15 +524,25 @@ void HNtypeI_SR::executeEventFromParameter(AnalyzerParameter param){
   //==== Event selections..
   //=========================
 
-  // Loop for each channel (mumu, ee)
+  // Loop for each channel (mumu, ee, emu)
   for(unsigned int it_ch=0; it_ch<channels.size(); it_ch++){
-    if(it_ch == 0){ LeptonPtCut1 = MuonPtCut1; LeptonPtCut2 = MuonPtCut2; }
-    if(it_ch == 1){ LeptonPtCut1 = ElectronPtCut1; LeptonPtCut2 = ElectronPtCut2; }
+    if(it_ch==0){ LeptonPtCut1 = MuonPtCut1; LeptonPtCut2 = MuonPtCut2; }
+    if(it_ch==1){ LeptonPtCut1 = ElectronPtCut1; LeptonPtCut2 = ElectronPtCut2; }
+    if(it_ch==2){ LeptonPtCut1 = EMuPtCut1; LeptonPtCut2 = EMuPtCut2; }
     if(it_ch==0 && RunCF) continue;
 
     // Triggers for each channel
     if(it_ch==0 && !ev.PassTrigger(MuonTriggers)) continue;
     if(it_ch==1 && !ev.PassTrigger(ElectronTriggers)) continue;
+    if(it_ch==2 && !ev.PassTrigger(EMuTriggers)) continue;
+
+    // Period-dependent trigger weight (only for 2016 MC)
+/*    double dimu_trig_weight = 0., emu_trig_weight = 0.;
+    if(DataYear==2016){
+      if(it_ch==0){
+
+      }
+    }*/
 
     // Cutflow : dilepton triggers
     for(unsigned int it_rg=0; it_rg<regions.size(); it_rg++){
@@ -544,6 +555,7 @@ void HNtypeI_SR::executeEventFromParameter(AnalyzerParameter param){
     if(leptons.size() == 2){ 
       if(it_ch == 0){ if(!(muons.size()==2 && electrons.size()==0)) continue; }
       if(it_ch == 1){ if(!(muons.size()==0 && electrons.size()==2)) continue; }
+      if(it_ch == 2){ if(!(muons.size()==1 && electrons.size()==1)) continue; }
 
       ZCand = *leptons.at(0) + *leptons.at(1);
 
