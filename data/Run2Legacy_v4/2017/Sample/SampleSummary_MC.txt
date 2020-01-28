@@ -1,0 +1,24 @@
+# alias PD xsec nmc sumw
+DYJets	DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8	6077.22	209747524	142142566
+SingleTop_sch_Lep	ST_s-channel_4f_leptonDecays_TuneCP5_PSweights_13TeV-amcatnlo-pythia8	3.36	9914948	6185062
+SingleTop_tW_antitop_NoFullyHad	ST_tW_antitop_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8	19.2	5635539	5592819
+SingleTop_tW_top_NoFullyHad	ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5_PSweights_13TeV-powheg-pythia8	19.2	5103599	5063921
+SingleTop_tch_antitop_Incl	ST_t-channel_antitop_5f_TuneCP5_PSweights_13TeV-powheg-pythia8	71.74	7765400	7723396
+SingleTop_tch_top_Incl	ST_t-channel_top_5f_TuneCP5_13TeV-powheg-pythia8	119.7	11709100	11641768
+TTLJ_powheg	TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8	365.34	43732445	43379133
+TTLL_powheg	TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8	88.29	69155808	68595608
+WGToLNuG_01J	WGToLNuG_01J_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8	489	25918966	15589532
+WJets_MG	WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8	61530	30008250	29981320
+WWW	WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8	0.2086	232300	203246
+WWZ	WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8	0.1651	250000	219964
+WW_pythia	WW_TuneCP5_13TeV-pythia8	118.7	7765828	7765828
+WZTo3LNu_powheg	WZTo3LNu_13TeV-powheg-pythia8	1.	976400	965938
+WZZ	WZZ_TuneCP5_13TeV-amcatnlo-pythia8	0.05565	250000	219660
+WZ_pythia	WZ_TuneCP5_13TeV-pythia8	47.13	3928630	3928630
+ZGToLLG_01J	ZGToLLG_01J_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8	117.864	30490034	19282022
+ZZTo4L_powheg	ZZTo4L_13TeV_powheg_pythia8	1.256	6964071	6893887
+ZZZ	ZZZ_TuneCP5_13TeV-amcatnlo-pythia8	0.01398	250000	214318
+ZZ_pythia	ZZ_TuneCP5_13TeV-pythia8	16.523	1925931	1925931
+ttWToLNu	TTWJetsToLNu_TuneCP5_PSweights_13TeV-amcatnloFXFX-madspin-pythia8	1.	4908905	2686141
+ttWToQQ	TTWJetsToQQ_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8	1.	811306	441560
+ttZ	ttZJets_TuneCP5_13TeV_madgraphMLM_pythia8	0.5407	8536618	8519074
