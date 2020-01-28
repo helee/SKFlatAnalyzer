@@ -6,10 +6,9 @@
 lib/*.tar.gz
 */obj
 *_submit.sh
-*_DoubleMuon.txt
-*_DoubleEG.txt
-*_EGamma.txt
-*_MuonEG.txt
+2016_*
+2017_*
+2018_*
 python/UserInfo_helee.py
 data/Run2Legacy_v3/2016/FakeRate/*.root
 data/Run2Legacy_v3/2017/FakeRate/*.root
