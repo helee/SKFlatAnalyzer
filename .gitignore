@@ -6,9 +6,9 @@
 lib/*.tar.gz
 */obj
 *_submit.sh
-2016_*
-2017_*
-2018_*
+2016_*.txt
+2017_*.txt
+2018_*.txt
 python/UserInfo_helee.py
 data/Run2Legacy_v3/2016/FakeRate/*.root
 data/Run2Legacy_v3/2017/FakeRate/*.root
