@@ -129,6 +129,10 @@ public:
   bool Pass_ISRLoose(double relisoCut) const;
   bool Pass_ISRTight() const;
 
+  bool Pass_POGHighPtTight() const;
+  bool Pass_POGHighPtLoose() const;
+  bool Pass_POGHighPtVeto() const;
+
   //==== Test ID for checking RelIso
   bool Pass_POGTightRelIso25() const;
   bool Pass_POGTightRelIso20() const;
