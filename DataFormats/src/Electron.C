@@ -521,7 +521,7 @@ bool Electron::Pass_HNMVALoose(double relisoCut, double dxyCut, double dzCut, bo
 }
 
 bool Electron::Pass_HNMVATight(double relisoCut, double dxyCut, double dzCut, bool isPOGIP) const{
-  if(!( passMVAID_noIso_WP90() )) return false;
+  if(!( passMVAID_noIso_WP80() )) return false;
   if(! (RelIso()<relisoCut) ) return false;
   if( fabs(scEta()) <= 1.479 ){
     if(! (fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
