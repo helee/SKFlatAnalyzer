@@ -173,15 +173,15 @@ bool Electron::PassID(TString ID) const{
   if(ID=="HNLoose2016IsoUp") return Pass_HNLoose2016(0.5, 0.2, 0.1, 10.);
   if(ID=="HNTight2016") return Pass_HNTight2016();
 
-  if(ID=="HNVeto") return Pass_HNVeto(0.6, 0.2, 0.5);
-  if(ID=="HNLooseV1") return Pass_HNLoose(0.6, 0.2, 0.2);
-  if(ID=="HNLooseV1IsoUp") return Pass_HNLoose(0.7, 0.2, 0.2);
-  if(ID=="HNLooseV1IsoDown") return Pass_HNLoose(0.5, 0.2, 0.2);
-  if(ID=="HNLooseV2") return Pass_HNLoose(0.6, 0.05, 0.1);
-  if(ID=="HNLooseV2IsoUp") return Pass_HNLoose(0.7, 0.05, 0.1);
-  if(ID=="HNLooseV2IsoDown") return Pass_HNLoose(0.5, 0.05, 0.1);  
-  if(ID=="HNTightV1") return Pass_HNTight(0.08, 0.05, 0.1);
-  if(ID=="HNTightV2") return Pass_HNTight(0.08, 0.01, 0.04);
+  if(ID=="HNVeto") return Pass_HNVeto(0.6, 0.2, 0.5, false);
+  if(ID=="HNLooseV1") return Pass_HNLoose(0.6, 0.05, 0.1, true);
+  if(ID=="HNLooseV1IsoUp") return Pass_HNLoose(0.7, 0.05, 0.1, true);
+  if(ID=="HNLooseV1IsoDown") return Pass_HNLoose(0.5, 0.05, 0.1, true);
+  if(ID=="HNLooseV2") return Pass_HNLoose(0.6, 0.2, 0.2, false);
+  if(ID=="HNLooseV2IsoUp") return Pass_HNLoose(0.7, 0.2, 0.2, false);
+  if(ID=="HNLooseV2IsoDown") return Pass_HNLoose(0.5, 0.2, 0.2, false);
+  if(ID=="HNTightV1") return Pass_HNTight(0.05, 0.1, true);
+  if(ID=="HNTightV2") return Pass_HNTight(0.01, 0.04, false);
 
   if(ID=="ISRVeto") return Pass_ISRVeto(0.6);
   if(ID=="ISRLoose") return Pass_ISRLoose(0.6);
@@ -189,9 +189,9 @@ bool Electron::PassID(TString ID) const{
   if(ID=="ISRLooseIsoDown") return Pass_ISRLoose(0.5);
   if(ID=="ISRTight") return Pass_ISRTight();
 
-  if(ID=="HNMVAVeto") return Pass_HNMVAVeto(0.6, 0.2, 0.5);
-  if(ID=="HNMVALoose") return Pass_HNMVALoose(0.6, 0.05, 0.1);
-  if(ID=="HNMVATight") return Pass_HNMVATight(0.08, 0.05, 0.1);
+  if(ID=="HNMVAVeto") return Pass_HNMVAVeto(0.6, 0.2, 0.5, false);
+  if(ID=="HNMVALoose") return Pass_HNMVALoose(0.6, 0.05, 0.1, true);
+  if(ID=="HNMVATight") return Pass_HNMVATight(0.08, 0.05, 0.1, true);
 
   if(ID=="CutBasedLooseNoIso") return Pass_CutBasedLooseNoIso();
   if(ID=="CutBasedVetoNoIso") return Pass_CutBasedVetoNoIso();
@@ -410,26 +410,56 @@ bool Electron::Pass_HNTight2016() const{
 //==== Run2 ID
 //===============================================
 
-bool Electron::Pass_HNVeto(double relisoCut, double dxyCut, double dzCut) const{
+bool Electron::Pass_HNVeto(double relisoCut, double dxyCut, double dzCut, bool isPOGIP) const{
   if(! (Pass_CutBasedVetoNoIso()) ) return false;
   if(! (RelIso()<relisoCut) ) return false;
-  if(! (fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
+  if( fabs(scEta()) <= 1.479 ){
+    if(! (fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
+  }
+  else{
+    if(isPOGIP){
+      if(! (fabs(dXY())<0.1 && fabs(dZ())<0.2) ) return false;
+    }
+    else{
+      if(! (fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
+    }
+  }
   return true;
 }
 
-bool Electron::Pass_HNLoose(double relisoCut, double dxyCut, double dzCut) const{
+bool Electron::Pass_HNLoose(double relisoCut, double dxyCut, double dzCut, bool isPOGIP) const{
   if(! (Pass_CutBasedLooseNoIso()) ) return false;
   if(! (RelIso()<relisoCut) ) return false; 
-  if(! (fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
+  if( fabs(scEta()) <= 1.479 ){
+    if(! (fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
+  }
+  else{
+    if(isPOGIP){
+      if(! (fabs(dXY())<0.1 && fabs(dZ())<0.2) ) return false;
+    }
+    else{
+      if(! (fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
+    }
+  }
   if(! (IsGsfCtfScPixChargeConsistent()) ) return false;
   if(! (Pass_TriggerEmulation()) ) return false;
   return true;
 }
 
-bool Electron::Pass_HNTight(double relisoCut, double dxyCut, double dzCut) const{
+bool Electron::Pass_HNTight(double dxyCut, double dzCut, bool isPOGIP) const{
   if(! (passTightID()) ) return false;
-  if(! (RelIso()<relisoCut) ) return false;
-  if(! (fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
+  //if(! (RelIso()<relisoCut) ) return false;
+  if( fabs(scEta()) <= 1.479 ){
+    if(! (fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
+  }
+  else{
+    if(isPOGIP){
+      if(! (fabs(dXY())<0.1 && fabs(dZ())<0.2) ) return false;
+    }
+    else{
+      if(! (fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
+    }
+  }
   if(! (IsGsfCtfScPixChargeConsistent()) ) return false;
   if(! (Pass_TriggerEmulation()) ) return false;
   return true;
@@ -454,26 +484,56 @@ bool Electron::Pass_ISRTight() const{
   return true;
 }
 
-bool Electron::Pass_HNMVAVeto(double relisoCut, double dxyCut, double dzCut) const{
+bool Electron::Pass_HNMVAVeto(double relisoCut, double dxyCut, double dzCut, bool isPOGIP) const{
   if(!( passMVAID_noIso_WPLoose() )) return false;
   if(! (RelIso()<relisoCut) ) return false;
-  if(! (fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
+  if( fabs(scEta()) <= 1.479 ){
+    if(! (fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
+  }
+  else{
+    if(isPOGIP){
+      if(! (fabs(dXY())<0.1 && fabs(dZ())<0.2) ) return false;
+    }
+    else{
+      if(! (fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
+    }
+  }
   return true;
 }
 
-bool Electron::Pass_HNMVALoose(double relisoCut, double dxyCut, double dzCut) const{
+bool Electron::Pass_HNMVALoose(double relisoCut, double dxyCut, double dzCut, bool isPOGIP) const{
   if(!( passMVAID_noIso_WP90() )) return false;
   if(! (RelIso()<relisoCut) ) return false;
-  if(! (fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
+  if( fabs(scEta()) <= 1.479 ){
+    if(! (fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
+  }
+  else{
+    if(isPOGIP){
+      if(! (fabs(dXY())<0.1 && fabs(dZ())<0.2) ) return false;
+    }
+    else{
+      if(! (fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
+    }
+  }
   if(! (PassConversionVeto()) ) return false;
   if(! (IsGsfCtfScPixChargeConsistent()) ) return false;
   return true;
 }
 
-bool Electron::Pass_HNMVATight(double relisoCut, double dxyCut, double dzCut) const{
+bool Electron::Pass_HNMVATight(double relisoCut, double dxyCut, double dzCut, bool isPOGIP) const{
   if(!( passMVAID_noIso_WP90() )) return false;
   if(! (RelIso()<relisoCut) ) return false;
-  if(! (fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
+  if( fabs(scEta()) <= 1.479 ){
+    if(! (fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
+  }
+  else{
+    if(isPOGIP){
+      if(! (fabs(dXY())<0.1 && fabs(dZ())<0.2) ) return false;
+    }
+    else{
+      if(! (fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
+    }
+  }
   if(! (PassConversionVeto()) ) return false;
   if(! (IsGsfCtfScPixChargeConsistent()) ) return false;
   return true;

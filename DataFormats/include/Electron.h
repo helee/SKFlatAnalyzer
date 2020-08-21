@@ -135,17 +135,17 @@ public:
   bool Pass_HNLoose2016(double relisoCut, double dxyCut, double dzCut, double sipCut) const;
   bool Pass_HNTight2016() const;
 
-  bool Pass_HNVeto(double relisoCut, double dxyCut, double dzCut) const;
-  bool Pass_HNLoose(double relisoCut, double dxyCut, double dzCut) const;
-  bool Pass_HNTight(double relisoCut, double dxyCut, double dzCut) const;
+  bool Pass_HNVeto(double relisoCut, double dxyCut, double dzCut, bool isPOGIP) const;
+  bool Pass_HNLoose(double relisoCut, double dxyCut, double dzCut, bool isPOGIP) const;
+  bool Pass_HNTight(double dxyCut, double dzCut, bool isPOGIP) const;
 
   bool Pass_ISRVeto(double relisoCut) const;
   bool Pass_ISRLoose(double relisoCut) const;
   bool Pass_ISRTight() const;
 
-  bool Pass_HNMVAVeto(double relisoCut, double dxyCut, double dzCut) const;
-  bool Pass_HNMVALoose(double relisoCut, double dxyCut, double dzCut) const;
-  bool Pass_HNMVATight(double relisoCut, double dxyCut, double dzCut) const;
+  bool Pass_HNMVAVeto(double relisoCut, double dxyCut, double dzCut, bool isPOGIP) const;
+  bool Pass_HNMVALoose(double relisoCut, double dxyCut, double dzCut, bool isPOGIP) const;
+  bool Pass_HNMVATight(double relisoCut, double dxyCut, double dzCut, bool isPOGIP) const;
 
   void SetRelPFIso_Rho(double r);
   double EA();
