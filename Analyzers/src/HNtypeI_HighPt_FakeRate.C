@@ -9,6 +9,8 @@ void HNtypeI_HighPt_FakeRate::initializeAnalyzer(){
   //==== if you use "--userflags RunSyst" with SKFlat.py, HasFlag("RunSyst") will return "true"
   RunSyst = HasFlag("RunSyst");
   cout << "[HNtypeI_HighPt_FakeRate::initializeAnalyzer] RunSyst = " << RunSyst << endl;
+  RunMu17 = HasFlag("RunMu17");
+  RunMu50 = HasFlag("RunMu50");
 
   MuonTightIDs     = {"HighPtTight"};
   MuonLooseIDs     = {"HighPtLoose"};
@@ -16,11 +18,6 @@ void HNtypeI_HighPt_FakeRate::initializeAnalyzer(){
   ElectronTightIDs = {"HNTightV1"};
   ElectronLooseIDs = {"HNLooseV1"};
   ElectronVetoIDs  = {"HNVeto"};
-
-  /*MuonTightIDs = {"HNTightV2"};
-  MuonLooseIDs = {"HNLoose"};
-  ElectronTightIDs = {"HNTight2016"};
-  ElectronLooseIDs = {"HNLoose2016"};*/
 
   //==== At this point, sample informations (e.g., IsDATA, DataStream, MCSample, or DataYear) are all set
   //==== You can define sample-dependent or year-dependent variables here
@@ -33,7 +30,8 @@ void HNtypeI_HighPt_FakeRate::initializeAnalyzer(){
 
   MuonTrig1 = "HLT_Mu3_PFJet40_v";       // DoubleMuon(2016), SingleMuon(2017,2018)
   MuonTrig2 = "HLT_Mu8_TrkIsoVVL_v";     // DoubleMuon
-  MuonTrig3 = "HLT_Mu17_TrkIsoVVL_v";    // DoubleMuon
+  if(RunMu17) MuonTrig3 = "HLT_Mu17_TrkIsoVVL_v";    // DoubleMuon
+  if(RunMu50) MuonTrig3 = "HLT_Mu50_v";              // SingleMuon
 
   MuonTriggers.push_back(MuonTrig1);      
   MuonTriggers.push_back(MuonTrig2);    
@@ -488,7 +486,7 @@ void HNtypeI_HighPt_FakeRate::executeEventFromParameter(AnalyzerParameter param)
   double ptcone_mu = 0.;
   double ptcone_el = 0.;
   //double trkiso_Pt = 0.;
-  double trkiso_miniaodPt = 0.;
+  double relTrkIso_TunePPt = 0.;
   //double ptcone_mu1 = 0.;
   TString PtConeRange = "";
   Particle ZCand, METv;
@@ -523,8 +521,8 @@ void HNtypeI_HighPt_FakeRate::executeEventFromParameter(AnalyzerParameter param)
       MET = METv.Pt();
 
       // Set up pTcone
-      ptcone_mu = muons_loose.at(0).CalcPtCone(muons_loose.at(0).TrkIso(), mu_tight_iso);
-      trkiso_miniaodPt = muons_loose.at(0).TrkIso()/muons_loose.at(0).MiniAODPt();
+      relTrkIso_TunePPt = muons_loose.at(0).TrkIso()/muons_loose.at(0).MiniAODTunePPt();
+      ptcone_mu = muons_loose.at(0).CalcPtCone(relTrkIso_TunePPt, mu_tight_iso);
       //ptcone_mu1 = muons_loose.at(0).Pt()*(1.+std::max(0., muons_loose.at(0).RelIso()-mu_tight_iso));
       //FillHist("PtCone_ratio", ptcone_mu1/ptcone_mu, weight, 20, 0., 2.);
 
@@ -543,15 +541,15 @@ void HNtypeI_HighPt_FakeRate::executeEventFromParameter(AnalyzerParameter param)
 
       // For checking TrkIso and RelIso
       /*if(ev.PassTrigger(MuonTrig1)){
-        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_TrkIso_MiniAODPt_PassMu3", trkiso_miniaodPt, weight, 20, 0., 1.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_TrkIso_TunePPt_PassMu3", relTrkIso_TunePPt, weight, 20, 0., 1.);
         FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_RelIso_PassMu3", muons_loose.at(0).RelIso(), weight, 20, 0., 1.);
       }
       if(ev.PassTrigger(MuonTrig2)){
-        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_TrkIso_MiniAODPt_PassMu8", trkiso_miniaodPt, weight, 20, 0., 1.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_TrkIso_TunePPt_PassMu8", relTrkIso_TunePPt, weight, 20, 0., 1.);
         FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_RelIso_PassMu8", muons_loose.at(0).RelIso(), weight, 20, 0., 1.);
       }*/
       if(ev.PassTrigger(MuonTrig3)){
-        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_TrkIso_MiniAODPt_PassMu17", trkiso_miniaodPt, weight, 20, 0., 1.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_TrkIso_TunePPt_PassMu17", relTrkIso_TunePPt, weight, 20, 0., 1.);
         FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_RelIso_PassMu17", muons_loose.at(0).RelIso(), weight, 20, 0., 1.);
       }
 
@@ -581,15 +579,20 @@ void HNtypeI_HighPt_FakeRate::executeEventFromParameter(AnalyzerParameter param)
       }*/
       if(!(ptcone_mu >= 50.)) continue;
       if(ptcone_mu >= 50.){
-        if(!(muons_loose.at(0).Pt() > 40.)) continue;
+        if(RunMu17){
+          if(!(muons_loose.at(0).Pt() > 40.)) continue;
+        }
+        if(RunMu50){
+          if(!(muons_loose.at(0).Pt() > 50.)) continue;
+        }
         if(!ev.PassTrigger(MuonTrig3)) continue;
         if(!IsDATA) trigLumi = MuonLumi3;
-        PtConeRange = "Range3";
+        //PtConeRange = "Range3";
       }
 
       weight *= trigLumi;
 
-      FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_Eta_NoDijet_"+PtConeRange, muons_loose.at(0).Eta(), weight, 50, -2.5, 2.5);
+      FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_Eta_NoDijet", muons_loose.at(0).Eta(), weight, 50, -2.5, 2.5);
 
       // Away jet selection
       jets_awayFromMuon.clear();
@@ -614,19 +617,21 @@ void HNtypeI_HighPt_FakeRate::executeEventFromParameter(AnalyzerParameter param)
       Pt_ratio = jets_awayFromMuon.at(0).Pt()/muons_loose.at(0).Pt();
 
       // Histograms before applying cuts
-      FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/MET_NoCut_"+PtConeRange, MET, weight, 500, 0., 500.);
-      FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Mt_NoCut_"+PtConeRange, Mt, weight, 500, 0., 500.);
-      FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Ptratio_NoCut_"+PtConeRange, Pt_ratio, weight, 50, 0., 5.);
-      FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_PtCone_NoCut_"+PtConeRange, ptcone_mu, weight, 500, 0., 500.);
-      FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_Eta_NoCut_"+PtConeRange, muons_loose.at(0).Eta(), weight, 50, -2.5, 2.5);
-      FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_TrkIso_MiniAODPt_NoCut_"+PtConeRange, trkiso_miniaodPt, weight, 20, 0., 1.);
-      FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_NoCut_"+PtConeRange, 0.5, weight, 2, 0., 2.);
+      FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/MET_NoCut", MET, weight, 500, 0., 500.);
+      FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Mt_NoCut", Mt, weight, 500, 0., 500.);
+      FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Ptratio_NoCut", Pt_ratio, weight, 50, 0., 5.);
+      FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_PtCone_NoCut", ptcone_mu, weight, 1000, 0., 1000.);
+      FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_Pt_NoCut", muons_loose.at(0).Pt(), weight, 1000, 0., 1000.);
+      FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_Eta_NoCut", muons_loose.at(0).Eta(), weight, 50, -2.5, 2.5);
+      FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_TrkIso_TunePPt_NoCut", relTrkIso_TunePPt, weight, 20, 0., 1.);
+      FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_NoCut", 0.5, weight, 2, 0., 2.);
 
       if(muons_tight.size() > 0){
-        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_PtCone_NoCut_"+PtConeRange, ptcone_mu, weight, 500, 0., 500.);
-        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_Eta_NoCut_"+PtConeRange, muons_tight.at(0).Eta(), weight, 50, -2.5, 2.5);
-        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_TrkIso_MiniAODPt_NoCut_"+PtConeRange, trkiso_miniaodPt, weight, 20, 0., 1.);
-        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_NoCut_"+PtConeRange, 1.5, weight, 2, 0., 2.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_PtCone_NoCut", ptcone_mu, weight, 1000, 0., 1000.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_Pt_NoCut", muons_tight.at(0).Pt(), weight, 1000, 0., 1000.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_Eta_NoCut", muons_tight.at(0).Eta(), weight, 50, -2.5, 2.5);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_TrkIso_TunePPt_NoCut", relTrkIso_TunePPt, weight, 20, 0., 1.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_NoCut", 1.5, weight, 2, 0., 2.);
       }
 
       // Additional cuts to reduce prompt contribution
@@ -635,48 +640,56 @@ void HNtypeI_HighPt_FakeRate::executeEventFromParameter(AnalyzerParameter param)
       if(!(Pt_ratio > PtRatioCut)) continue;
 
       // Histograms after applying cuts
-      FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_PtCone_"+PtConeRange, ptcone_mu, weight, 500, 0., 500.);
-      FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_Eta_"+PtConeRange, muons_loose.at(0).Eta(), weight, 50, -2.5, 2.5);
-      FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_TrkIso_MiniAODPt_"+PtConeRange, trkiso_miniaodPt, weight, 20, 0., 1.);
-      FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_"+PtConeRange, 0.5, weight, 2, 0., 2.);
+      FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_PtCone", ptcone_mu, weight, 1000, 0., 1000.);
+      FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_Pt", muons_loose.at(0).Pt(), weight, 1000, 0., 1000.);
+      FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_Eta", muons_loose.at(0).Eta(), weight, 50, -2.5, 2.5);
+      FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_TrkIso_TunePPt", relTrkIso_TunePPt, weight, 20, 0., 1.);
+      FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events", 0.5, weight, 2, 0., 2.);
 
       if(muons_tight.size() > 0){
-        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_PtCone_"+PtConeRange, ptcone_mu, weight, 500, 0., 500.);
-        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_Eta_"+PtConeRange, muons_tight.at(0).Eta(), weight, 50, -2.5, 2.5);
-        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_TrkIso_MiniAODPt_"+PtConeRange, trkiso_miniaodPt, weight, 20, 0., 1.);
-        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_"+PtConeRange, 1.5, weight, 2, 0., 2.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_PtCone", ptcone_mu, weight, 1000, 0., 1000.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_Pt", muons_tight.at(0).Pt(), weight, 1000, 0., 1000.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_Eta", muons_tight.at(0).Eta(), weight, 50, -2.5, 2.5);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_TrkIso_TunePPt", relTrkIso_TunePPt, weight, 20, 0., 1.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events", 1.5, weight, 2, 0., 2.);
       }
 
       // Inner barrel ( |eta| < 0.8 )
       if(fabs(muons_loose.at(0).Eta()) < 0.8){
         // Loose ID
-        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_PtCone_IB_"+PtConeRange, ptcone_mu, weight, 500, 0., 500.);
-        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_IB_"+PtConeRange, 0.5, weight, 2, 0., 2.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_PtCone_IB", ptcone_mu, weight, 1000, 0., 1000.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_Pt_IB", muons_loose.at(0).Pt(), weight, 1000, 0., 1000.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_IB", 0.5, weight, 2, 0., 2.);
 
         if(systName == "FakeCentral"){
           if(Nbjet_medium == 0){
-            FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_PtCone_IB_NoBJet_"+PtConeRange, ptcone_mu, weight, 500, 0., 500.);
-            FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_IB_NoBJet_"+PtConeRange, 0.5, weight, 2, 0., 2.);
+            FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_PtCone_IB_NoBJet", ptcone_mu, weight, 1000, 0., 1000.);
+            FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_Pt_IB_NoBJet", muons_loose.at(0).Pt(), weight, 1000, 0., 1000.);
+            FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_IB_NoBJet", 0.5, weight, 2, 0., 2.);
           }
           else{
-            FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_PtCone_IB_WithBJet_"+PtConeRange, ptcone_mu, weight, 500, 0., 500.);
-            FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_IB_WithBJet_"+PtConeRange, 0.5, weight, 2, 0., 2.);
+            FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_PtCone_IB_WithBJet", ptcone_mu, weight, 1000, 0., 1000.);
+            FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_Pt_IB_WithBJet", muons_loose.at(0).Pt(), weight, 1000, 0., 1000.);
+            FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_IB_WithBJet", 0.5, weight, 2, 0., 2.);
           }
         }
 
         // Tight ID
         if(muons_tight.size() > 0){
-          FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_PtCone_IB_"+PtConeRange, ptcone_mu, weight, 500, 0., 500.);
-          FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_IB_"+PtConeRange, 1.5, weight, 2, 0., 2.);
+          FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_PtCone_IB", ptcone_mu, weight, 1000, 0., 1000.);
+          FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_Pt_IB", muons_tight.at(0).Pt(), weight, 1000, 0., 1000.);
+          FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_IB", 1.5, weight, 2, 0., 2.);
 
           if(systName == "FakeCentral"){
             if(Nbjet_medium == 0){
-              FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_PtCone_IB_NoBJet_"+PtConeRange, ptcone_mu, weight, 500, 0., 500.);
-              FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_IB_NoBJet_"+PtConeRange, 1.5, weight, 2, 0., 2.);
+              FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_PtCone_IB_NoBJet", ptcone_mu, weight, 1000, 0., 1000.);
+              FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_Pt_IB_NoBJet", muons_tight.at(0).Pt(), weight, 1000, 0., 1000.);
+              FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_IB_NoBJet", 1.5, weight, 2, 0., 2.);
             }
             else{
-              FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_PtCone_IB_WithBJet_"+PtConeRange, ptcone_mu, weight, 500, 0., 500.);
-              FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_IB_WithBJet_"+PtConeRange, 1.5, weight, 2, 0., 2.);
+              FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_PtCone_IB_WithBJet", ptcone_mu, weight, 1000, 0., 1000.);
+              FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_Pt_IB_WithBJet", muons_tight.at(0).Pt(), weight, 1000, 0., 1000.);
+              FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_IB_WithBJet", 1.5, weight, 2, 0., 2.);
             }
           }
         }
@@ -686,33 +699,39 @@ void HNtypeI_HighPt_FakeRate::executeEventFromParameter(AnalyzerParameter param)
       // Outer barrel ( 0.8 < |eta| < 1.479 )
       if(fabs(muons_loose.at(0).Eta()) >= 0.8 && fabs(muons_loose.at(0).Eta()) < 1.479){
         // Loose ID
-        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_PtCone_OB_"+PtConeRange, ptcone_mu, weight, 500, 0., 500.);
-        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_OB_"+PtConeRange, 0.5, weight, 2, 0., 2.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_PtCone_OB", ptcone_mu, weight, 1000, 0., 1000.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_Pt_OB", muons_loose.at(0).Pt(), weight, 1000, 0., 1000.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_OB", 0.5, weight, 2, 0., 2.);
 
         if(systName == "FakeCentral"){
           if(Nbjet_medium == 0){
-            FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_PtCone_OB_NoBJet_"+PtConeRange, ptcone_mu, weight, 500, 0., 500.);
-            FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_OB_NoBJet_"+PtConeRange, 0.5, weight, 2, 0., 2.);
+            FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_PtCone_OB_NoBJet", ptcone_mu, weight, 1000, 0., 1000.);
+            FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_Pt_OB_NoBJet", muons_loose.at(0).Pt(), weight, 1000, 0., 1000.);
+            FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_OB_NoBJet", 0.5, weight, 2, 0., 2.);
           }
           else{
-            FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_PtCone_OB_WithBJet_"+PtConeRange, ptcone_mu, weight, 500, 0., 500.);
-            FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_OB_WithBJet_"+PtConeRange, 0.5, weight, 2, 0., 2.);
+            FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_PtCone_OB_WithBJet", ptcone_mu, weight, 1000, 0., 1000.);
+            FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_Pt_OB_WithBJet", muons_loose.at(0).Pt(), weight, 1000, 0., 1000.);
+            FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_OB_WithBJet", 0.5, weight, 2, 0., 2.);
           }
         }
 
         // Tight ID
         if(muons_tight.size() > 0){
-          FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_PtCone_OB_"+PtConeRange, ptcone_mu, weight, 500, 0., 500.);
-          FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_OB_"+PtConeRange, 1.5, weight, 2, 0., 2.);
+          FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_PtCone_OB", ptcone_mu, weight, 1000, 0., 1000.);
+          FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_Pt_OB", muons_tight.at(0).Pt(), weight, 1000, 0., 1000.);
+          FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_OB", 1.5, weight, 2, 0., 2.);
 
           if(systName == "FakeCentral"){
             if(Nbjet_medium == 0){
-              FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_PtCone_OB_NoBJet_"+PtConeRange, ptcone_mu, weight, 500, 0., 500.);
-              FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_OB_NoBJet_"+PtConeRange, 1.5, weight, 2, 0., 2.);
+              FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_PtCone_OB_NoBJet", ptcone_mu, weight, 1000, 0., 1000.);
+              FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_Pt_OB_NoBJet", muons_tight.at(0).Pt(), weight, 1000, 0., 1000.);
+              FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_OB_NoBJet", 1.5, weight, 2, 0., 2.);
             }
             else{
-              FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_PtCone_OB_WithBJet_"+PtConeRange, ptcone_mu, weight, 500, 0., 500.);
-              FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_OB_WithBJet_"+PtConeRange, 1.5, weight, 2, 0., 2.);
+              FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_PtCone_OB_WithBJet", ptcone_mu, weight, 1000, 0., 1000.);
+              FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_Pt_OB_WithBJet", muons_tight.at(0).Pt(), weight, 1000, 0., 1000.);
+              FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_OB_WithBJet", 1.5, weight, 2, 0., 2.);
             }
           }
         }
@@ -722,33 +741,39 @@ void HNtypeI_HighPt_FakeRate::executeEventFromParameter(AnalyzerParameter param)
       // Endcap ( 1.479 < |eta| < 2.5 )
       if(fabs(muons_loose.at(0).Eta()) >= 1.479 && fabs(muons_loose.at(0).Eta()) < 2.5){
         // Loose ID
-        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_PtCone_EC_"+PtConeRange, ptcone_mu, weight, 500, 0., 500.);
-        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_EC_"+PtConeRange, 0.5, weight, 2, 0., 2.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_PtCone_EC", ptcone_mu, weight, 1000, 0., 1000.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_Pt_EC", muons_loose.at(0).Pt(), weight, 1000, 0., 1000.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_EC", 0.5, weight, 2, 0., 2.);
 
         if(systName == "FakeCentral"){
           if(Nbjet_medium == 0){
-            FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_PtCone_EC_NoBJet_"+PtConeRange, ptcone_mu, weight, 500, 0., 500.);
-            FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_EC_NoBJet_"+PtConeRange, 0.5, weight, 2, 0., 2.);
+            FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_PtCone_EC_NoBJet", ptcone_mu, weight, 1000, 0., 1000.);
+            FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_Pt_EC_NoBJet", muons_loose.at(0).Pt(), weight, 1000, 0., 1000.);
+            FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_EC_NoBJet", 0.5, weight, 2, 0., 2.);
           }
           else{
-            FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_PtCone_EC_WithBJet_"+PtConeRange, ptcone_mu, weight, 500, 0., 500.);
-            FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_EC_WithBJet_"+PtConeRange, 0.5, weight, 2, 0., 2.);
+            FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_PtCone_EC_WithBJet", ptcone_mu, weight, 1000, 0., 1000.);
+            FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_Pt_EC_WithBJet", muons_loose.at(0).Pt(), weight, 1000, 0., 1000.);
+            FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_EC_WithBJet", 0.5, weight, 2, 0., 2.);
           }
         }
 
         // Tight ID
         if(muons_tight.size() > 0){
-          FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_PtCone_EC_"+PtConeRange, ptcone_mu, weight, 500, 0., 500.);
-          FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_EC_"+PtConeRange, 1.5, weight, 2, 0., 2.);
+          FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_PtCone_EC", ptcone_mu, weight, 1000, 0., 1000.);
+          FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_Pt_EC", muons_tight.at(0).Pt(), weight, 1000, 0., 1000.);
+          FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_EC", 1.5, weight, 2, 0., 2.);
 
           if(systName == "FakeCentral"){
             if(Nbjet_medium == 0){
-              FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_PtCone_EC_NoBJet_"+PtConeRange, ptcone_mu, weight, 500, 0., 500.);
-              FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_EC_NoBJet_"+PtConeRange, 1.5, weight, 2, 0., 2.);
+              FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_PtCone_EC_NoBJet", ptcone_mu, weight, 1000, 0., 1000.);
+              FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_Pt_EC_NoBJet", muons_tight.at(0).Pt(), weight, 1000, 0., 1000.);
+              FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_EC_NoBJet", 1.5, weight, 2, 0., 2.);
             }
             else{
-              FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_PtCone_EC_WithBJet_"+PtConeRange, ptcone_mu, weight, 500, 0., 500.);
-              FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_EC_WithBJet_"+PtConeRange, 1.5, weight, 2, 0., 2.);
+              FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_PtCone_EC_WithBJet", ptcone_mu, weight, 1000, 0., 1000.);
+              FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_Pt_EC_WithBJet", muons_tight.at(0).Pt(), weight, 1000, 0., 1000.);
+              FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_EC_WithBJet", 1.5, weight, 2, 0., 2.);
             }
           }
         }
@@ -903,7 +928,7 @@ void HNtypeI_HighPt_FakeRate::executeEventFromParameter(AnalyzerParameter param)
  
   for(unsigned int it_rg2=0; it_rg2<regions.size(); it_rg2++){
     weight = 1.;
-    break;
+    if(RunMu17 || RunMu50) break;
 
     if(IsData){
       if(DataStream.Contains("Muon")) continue;
