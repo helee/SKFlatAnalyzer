@@ -517,6 +517,7 @@ bool Electron::Pass_HNMVALoose(double relisoCut, double dxyCut, double dzCut, bo
   }
   if(! (PassConversionVeto()) ) return false;
   if(! (IsGsfCtfScPixChargeConsistent()) ) return false;
+  if(! (Pass_TriggerEmulation()) ) return false;
   return true;
 }
 
@@ -536,6 +537,7 @@ bool Electron::Pass_HNMVATight(double relisoCut, double dxyCut, double dzCut, bo
   }
   if(! (PassConversionVeto()) ) return false;
   if(! (IsGsfCtfScPixChargeConsistent()) ) return false;
+  if(! (Pass_TriggerEmulation()) ) return false;
   return true;
 }
 
