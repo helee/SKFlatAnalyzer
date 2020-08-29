@@ -18,7 +18,7 @@ void HNtypeI_FakeRate::initializeAnalyzer(){
     MuonVetoIDs      = {"HNVeto2016", "ISRVeto"};
     ElectronTightIDs = {"HNTight2016", "HNTightV1"};
     ElectronLooseIDs = {"HNLoose2016", "HNLooseV1"};
-    ElectronVetoIDs  = {"HNVeto2016", "HNVeto"};
+    ElectronVetoIDs  = {"HNVeto2016", "ISRVeto"};
   }
 
   if(RunElectron){
@@ -27,7 +27,7 @@ void HNtypeI_FakeRate::initializeAnalyzer(){
     MuonVetoIDs      = {"ISRVeto", "ISRVeto"};
     ElectronTightIDs = {"HNTightV1", "HNMVATight"};
     ElectronLooseIDs = {"HNLooseV1", "HNMVALoose"};
-    ElectronVetoIDs  = {"HNVeto", "HNMVAVeto"};
+    ElectronVetoIDs  = {"ISRVeto", "HNMVAVeto"};
   }
 
   //==== At this point, sample informations (e.g., IsDATA, DataStream, MCSample, or DataYear) are all set

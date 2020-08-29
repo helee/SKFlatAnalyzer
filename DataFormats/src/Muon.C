@@ -139,9 +139,10 @@ bool Muon::PassID(TString ID) const {
   if(ID=="ISRLooseIsoDown") return Pass_ISRLoose(0.3);
   if(ID=="ISRTight") return Pass_ISRTight();
 
-  if(ID=="HighPtTight") return Pass_POGHighPtTight();
-  if(ID=="HighPtLoose") return Pass_POGHighPtLoose();
   if(ID=="HighPtVeto") return Pass_POGHighPtVeto();
+  if(ID=="POGLooseWithTrkIso") return Pass_POGLooseWithTrkIso();
+  if(ID=="HighPtLoose") return Pass_POGHighPtLoose();
+  if(ID=="HighPtTight") return Pass_POGHighPtTight();
 
   if(ID=="POGTightRelIso25") return Pass_POGTightRelIso25();
   if(ID=="POGTightRelIso20") return Pass_POGTightRelIso20();
@@ -247,6 +248,31 @@ bool Muon::Pass_ISRTight() const {
   return true;
 }
 
+bool Muon::Pass_POGHighPtVeto() const {
+  if(!( isPOGHighPt() )) return false;
+  if(!( TrkIso()/TuneP4().Pt()<0.4 )) return false;
+  return true;
+}
+
+bool Muon::Pass_POGLooseWithTrkIso() const {
+  if(!( isPOGLoose() )) return false;
+  //if(!( fabs(dXY())<0.2 && fabs(dZ())<0.5) ) return false;
+  if(!( TrkIso()/TuneP4().Pt()<0.4 )) return false;
+  return true;
+}
+
+bool Muon::Pass_POGHighPtLoose() const {
+  if(!( isPOGHighPt() )) return false;
+  if(!( TrkIso()/TuneP4().Pt()<0.3 )) return false;
+  return true;
+}
+
+bool Muon::Pass_POGHighPtTight() const {
+  if(!( isPOGHighPt() )) return false;
+  if(!( TrkIso()/TuneP4().Pt()<0.1 )) return false;
+  return true;
+}
+
 //==== TEST ID
 
 bool Muon::Pass_TESTID() const {
@@ -311,24 +337,6 @@ bool Muon::Pass_POGTightCutsWithTightIso() const {  // This gives the same resul
   if(!( PixelHits()>0 )) return false;
   if(!( TrackerLayers()>5 )) return false;
   if(!( RelIso()<0.15 )) return false;
-  return true;
-}
-
-bool Muon::Pass_POGHighPtTight() const {
-  if(!( isPOGHighPt() )) return false;
-  if(!( TrkIso()/TuneP4().Pt()<0.1 )) return false;
-  return true;
-}
-
-bool Muon::Pass_POGHighPtLoose() const {
-  if(!( isPOGHighPt() )) return false;
-  if(!( TrkIso()/TuneP4().Pt()<0.3 )) return false;
-  return true;
-}
-
-bool Muon::Pass_POGHighPtVeto() const {
-  if(!( isPOGHighPt() )) return false;
-  if(!( TrkIso()/TuneP4().Pt()<0.4 )) return false;
   return true;
 }
 

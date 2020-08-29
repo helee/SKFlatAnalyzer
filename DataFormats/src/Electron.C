@@ -189,7 +189,8 @@ bool Electron::PassID(TString ID) const{
   if(ID=="ISRLooseIsoDown") return Pass_ISRLoose(0.5);
   if(ID=="ISRTight") return Pass_ISRTight();
 
-  if(ID=="HNMVAVeto") return Pass_HNMVAVeto(0.6, 0.2, 0.5, false);
+  //if(ID=="HNMVAVeto") return Pass_HNMVAVeto(0.6, 0.2, 0.5, false);
+  if(ID=="HNMVAVeto") return Pass_HNMVAVeto(0.6);
   if(ID=="HNMVALoose") return Pass_HNMVALoose(0.6, 0.05, 0.1, true);
   if(ID=="HNMVATight") return Pass_HNMVATight(0.08, 0.05, 0.1, true);
 
@@ -498,6 +499,12 @@ bool Electron::Pass_HNMVAVeto(double relisoCut, double dxyCut, double dzCut, boo
       if(! (fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
     }
   }
+  return true;
+}
+
+bool Electron::Pass_HNMVAVeto(double relisoCut) const{
+  if(!( passMVAID_noIso_WPLoose() )) return false;
+  if(! (RelIso()<relisoCut) ) return false;
   return true;
 }
 

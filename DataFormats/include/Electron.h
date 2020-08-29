@@ -144,6 +144,7 @@ public:
   bool Pass_ISRTight() const;
 
   bool Pass_HNMVAVeto(double relisoCut, double dxyCut, double dzCut, bool isPOGIP) const;
+  bool Pass_HNMVAVeto(double relisoCut) const;
   bool Pass_HNMVALoose(double relisoCut, double dxyCut, double dzCut, bool isPOGIP) const;
   bool Pass_HNMVATight(double relisoCut, double dxyCut, double dzCut, bool isPOGIP) const;
 

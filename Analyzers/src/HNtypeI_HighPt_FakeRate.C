@@ -14,10 +14,10 @@ void HNtypeI_HighPt_FakeRate::initializeAnalyzer(){
 
   MuonTightIDs     = {"HighPtTight"};
   MuonLooseIDs     = {"HighPtLoose"};
-  MuonVetoIDs      = {"HighPtVeto"};
+  MuonVetoIDs      = {"POGLooseWithTrkIso"};
   ElectronTightIDs = {"HNTightV1"};
   ElectronLooseIDs = {"HNLooseV1"};
-  ElectronVetoIDs  = {"HNVeto"};
+  ElectronVetoIDs  = {"ISRVeto"};
 
   //==== At this point, sample informations (e.g., IsDATA, DataStream, MCSample, or DataYear) are all set
   //==== You can define sample-dependent or year-dependent variables here
