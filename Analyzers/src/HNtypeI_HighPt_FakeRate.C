@@ -465,6 +465,7 @@ void HNtypeI_HighPt_FakeRate::executeEventFromParameter(AnalyzerParameter param)
   //==== Define particles, variables
   //========================================================
 
+  double muonRecoSF = 1., muonIDSF = 1., muonIsoSF = 1., muon_MiniAODP = 0.;
   double mu_tight_iso = 0.1;
   double el_tight_iso = 0.;   
 
@@ -501,12 +502,8 @@ void HNtypeI_HighPt_FakeRate::executeEventFromParameter(AnalyzerParameter param)
   //========================================================
 
   for(unsigned int it_rg=0; it_rg<regions.size(); it_rg++){
-    weight = 1.;
+    weight = 1., muonRecoSF = 1., muonIDSF = 1., muonIsoSF = 1., muon_MiniAODP = 0.;
     //if(param.Electron_Loose_ID.Contains("V23")) break; // NO_MUON_EVENT : Save muon hists only once!! 
-
-    if(IsData){
-      if(!DataStream.Contains("Muon")) continue;
-    }
 
     // Fake rate measurement region
     if(it_rg == 0){
@@ -514,6 +511,7 @@ void HNtypeI_HighPt_FakeRate::executeEventFromParameter(AnalyzerParameter param)
       if(!IsNorm) continue;
 
       if(!(muons_loose.size()==1 && electrons_loose.size()==0)) continue;
+      if(!(muons_veto.size()==1 && electrons_veto.size()==0)) continue;
       if(!(jets.size() >= 1)) continue;
 
       // MET
@@ -537,6 +535,14 @@ void HNtypeI_HighPt_FakeRate::executeEventFromParameter(AnalyzerParameter param)
         weight *= ev.MCweight();
         weight *= GetPrefireWeight(0);
         weight *= GetPileUpWeight(nPileUp,0);
+
+        muon_MiniAODP = sqrt( muons_loose.at(0).MiniAODPt()*muons_loose.at(0).MiniAODPt() + muons_loose.at(0).Pz()*muons_loose.at(0).Pz() );
+        muonRecoSF = mcCorr->MuonReco_SF("HighPtMuonRecoSF", muons_loose.at(0).Eta(), muon_MiniAODP, 0);
+        muonIDSF   = mcCorr->MuonID_SF("NUM_HighPtID_DEN_genTracks",  muons_loose.at(0).Eta(), muons_loose.at(0).MiniAODPt(), 0);
+        if(muons_tight.size() > 0) muonIsoSF = mcCorr->MuonISO_SF("NUM_LooseRelTkIso_DEN_HighPtIDandIPCut", muons_tight.at(0).Eta(), muons_tight.at(0).MiniAODPt(), 0);
+        else muonIsoSF = 1.;
+
+        weight *= muonRecoSF*muonIDSF*muonIsoSF;
       }
 
       // For checking TrkIso and RelIso
@@ -785,12 +791,22 @@ void HNtypeI_HighPt_FakeRate::executeEventFromParameter(AnalyzerParameter param)
     // DY control region
     if(it_rg == 1){
       if(!(muons_tight.size()==2 && electrons_tight.size()==0)) continue;
+      //if(!(muons_veto.size()==2 && electrons_veto.size()==0)) continue;
 
       if(!IsDATA){
         weight *= weight_norm_1invpb;
         weight *= ev.MCweight();
         weight *= GetPrefireWeight(0);
         weight *= GetPileUpWeight(nPileUp,0);
+
+        for(unsigned int i=0; i<muons_tight.size(); i++){
+          muon_MiniAODP = sqrt( muons_tight.at(i).MiniAODPt()*muons_tight.at(i).MiniAODPt() + muons_tight.at(i).Pz()*muons_tight.at(i).Pz() );
+          muonRecoSF *= mcCorr->MuonReco_SF("HighPtMuonRecoSF", muons_tight.at(i).Eta(), muon_MiniAODP, 0);
+          muonIDSF   *= mcCorr->MuonID_SF("NUM_HighPtID_DEN_genTracks",  muons_tight.at(i).Eta(), muons_tight.at(i).MiniAODPt(), 0);
+          muonIsoSF  *= mcCorr->MuonISO_SF("NUM_LooseRelTkIso_DEN_HighPtIDandIPCut", muons_tight.at(i).Eta(), muons_tight.at(i).MiniAODPt(), 0);
+        }
+
+        weight *= muonRecoSF*muonIDSF*muonIsoSF;
       }
 
       ZCand = muons_tight.at(0) + muons_tight.at(1);
@@ -812,9 +828,15 @@ void HNtypeI_HighPt_FakeRate::executeEventFromParameter(AnalyzerParameter param)
       if(ev.PassTrigger(MuonTrig3)){
         trigLumi = 1.;
         if(!IsDATA) trigLumi = MuonLumi3;
-        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Lep1_Pt_NoCut_Mu17", muons_tight.at(0).Pt(), weight*trigLumi, 500, 0., 500.);
-        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Lep2_Pt_NoCut_Mu17", muons_tight.at(1).Pt(), weight*trigLumi, 500, 0., 500.);
-        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/ZCand_Mass_NoCut_Mu17", ZCand.M(), weight*trigLumi, 80, 50., 130.);
+
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Lep1_Pt_NoCut", muons_tight.at(0).Pt(), weight*trigLumi, 500, 0., 500.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Lep2_Pt_NoCut", muons_tight.at(1).Pt(), weight*trigLumi, 500, 0., 500.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/ZCand_Mass_NoCut", ZCand.M(), weight*trigLumi, 80, 50., 130.);
+        if(muons_veto.size()==2 && electrons_veto.size()==0){
+          FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Lep1_Pt_NoCut_OnlyTight", muons_tight.at(0).Pt(), weight*trigLumi, 500, 0., 500.);
+          FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Lep2_Pt_NoCut_OnlyTight", muons_tight.at(1).Pt(), weight*trigLumi, 500, 0., 500.);
+          FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/ZCand_Mass_NoCut_OnlyTight", ZCand.M(), weight*trigLumi, 80, 50., 130.);
+        }
       }
 
       // Event selection
@@ -845,11 +867,21 @@ void HNtypeI_HighPt_FakeRate::executeEventFromParameter(AnalyzerParameter param)
       if(ev.PassTrigger(MuonTrig3)){
         trigLumi = 1.;
         if(!IsDATA) trigLumi = MuonLumi3;
-        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/ZCand_Mass_Inclusive_Mu17", ZCand.M(), weight*trigLumi, 40, 70., 110.);
-        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_Mu17", 0.5, weight*trigLumi, 2, 0., 2.);
+
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/ZCand_Mass_Inclusive", ZCand.M(), weight*trigLumi, 40, 70., 110.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events", 0.5, weight*trigLumi, 2, 0., 2.);
+        if(muons_veto.size()==2 && electrons_veto.size()==0){
+          FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/ZCand_Mass_Inclusive_OnlyTight", ZCand.M(), weight*trigLumi, 40, 70., 110.);
+          FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_OnlyTight", 0.5, weight*trigLumi, 2, 0., 2.);
+        }
+
         if(muons_tight.at(0).Charge()*muons_tight.at(1).Charge() < 0){
-          FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/ZCand_Mass_Mu17", ZCand.M(), weight*trigLumi, 40, 70., 110.);
-          FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_Mu17", 1.5, weight*trigLumi, 2, 0., 2.);
+          FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/ZCand_Mass", ZCand.M(), weight*trigLumi, 40, 70., 110.);
+          FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events", 1.5, weight*trigLumi, 2, 0., 2.);
+          if(muons_veto.size()==2 && electrons_veto.size()==0){
+            FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/ZCand_Mass_OnlyTight", ZCand.M(), weight*trigLumi, 40, 70., 110.);
+            FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_OnlyTight", 1.5, weight*trigLumi, 2, 0., 2.);
+          }
         }
       }
 
@@ -858,6 +890,7 @@ void HNtypeI_HighPt_FakeRate::executeEventFromParameter(AnalyzerParameter param)
     // W+jets control region
     if(it_rg == 2){
       if(!(muons_tight.size()==1 && electrons_tight.size()==0)) continue;
+      //if(!(muons_veto.size()==1 && electrons_veto.size()==0)) continue;
 
       // MET
       METv = UpdateMETMuon(METv_central, muons_tight);
@@ -868,6 +901,13 @@ void HNtypeI_HighPt_FakeRate::executeEventFromParameter(AnalyzerParameter param)
         weight *= ev.MCweight();
         weight *= GetPrefireWeight(0);
         weight *= GetPileUpWeight(nPileUp,0);
+
+        muon_MiniAODP = sqrt( muons_tight.at(0).MiniAODPt()*muons_tight.at(0).MiniAODPt() + muons_tight.at(0).Pz()*muons_tight.at(0).Pz() );
+        muonRecoSF *= mcCorr->MuonReco_SF("HighPtMuonRecoSF", muons_tight.at(0).Eta(), muon_MiniAODP, 0);
+        muonIDSF   *= mcCorr->MuonID_SF("NUM_HighPtID_DEN_genTracks",  muons_tight.at(0).Eta(), muons_tight.at(0).MiniAODPt(), 0);
+        muonIsoSF  *= mcCorr->MuonISO_SF("NUM_LooseRelTkIso_DEN_HighPtIDandIPCut", muons_tight.at(0).Eta(), muons_tight.at(0).MiniAODPt(), 0);
+
+        weight *= muonRecoSF*muonIDSF*muonIsoSF;
       }
 
       Mt = MT(muons_tight.at(0), METv);
@@ -889,9 +929,15 @@ void HNtypeI_HighPt_FakeRate::executeEventFromParameter(AnalyzerParameter param)
       if(ev.PassTrigger(MuonTrig3)){
         trigLumi = 1.;
         if(!IsDATA) trigLumi = MuonLumi3;
-        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Lep_Pt_NoCut_Mu17", muons_tight.at(0).Pt(), weight*trigLumi, 500, 0., 500.);
-        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/MET_NoCut_Mu17", MET, weight*trigLumi, 500, 0., 500.);
-        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Mt_NoCut_Mu17", Mt, weight*trigLumi, 500, 0., 500.);
+
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Lep_Pt_NoCut", muons_tight.at(0).Pt(), weight*trigLumi, 500, 0., 500.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/MET_NoCut", MET, weight*trigLumi, 500, 0., 500.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Mt_NoCut", Mt, weight*trigLumi, 500, 0., 500.);
+        if(muons_veto.size()==1 && electrons_veto.size()==0){
+          FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Lep_Pt_NoCut_OnlyTight", muons_tight.at(0).Pt(), weight*trigLumi, 500, 0., 500.);
+          FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/MET_NoCut_OnlyTight", MET, weight*trigLumi, 500, 0., 500.);
+          FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Mt_NoCut_OnlyTight", Mt, weight*trigLumi, 500, 0., 500.);
+        }
       }
 
       // Event selection
@@ -915,8 +961,13 @@ void HNtypeI_HighPt_FakeRate::executeEventFromParameter(AnalyzerParameter param)
       if(ev.PassTrigger(MuonTrig3)){
         trigLumi = 1.;
         if(!IsDATA) trigLumi = MuonLumi3;
-        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Mt_Mu17", Mt, weight*trigLumi, 500, 0., 500.);
-        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_Mu17", 0.5, weight*trigLumi, 2, 0., 2.);
+
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Mt", Mt, weight*trigLumi, 500, 0., 500.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events", 0.5, weight*trigLumi, 2, 0., 2.);
+        if(muons_veto.size()==1 && electrons_veto.size()==0){
+          FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Mt_OnlyTight", Mt, weight*trigLumi, 500, 0., 500.);
+          FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Number_Events_OnlyTight", 0.5, weight*trigLumi, 2, 0., 2.);
+        }
       }
     }
 
@@ -929,10 +980,6 @@ void HNtypeI_HighPt_FakeRate::executeEventFromParameter(AnalyzerParameter param)
   for(unsigned int it_rg2=0; it_rg2<regions.size(); it_rg2++){
     weight = 1.;
     if(RunMu17 || RunMu50) break;
-
-    if(IsData){
-      if(DataStream.Contains("Muon")) continue;
-    }
 
     // Fake rate measurement region 
     if(it_rg2 == 0){
