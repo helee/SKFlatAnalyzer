@@ -12,7 +12,7 @@ public:
   void executeEventFromParameter(AnalyzerParameter param);
   void executeEvent();
 
-  bool RunSyst, RunMuon, RunElectron;
+  bool RunSyst, RunMuon, RunElectron, RunMuIso;
   bool RunNewPDF;
   bool RunXSecSyst;
 

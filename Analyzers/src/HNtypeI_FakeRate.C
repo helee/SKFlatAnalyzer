@@ -11,8 +11,9 @@ void HNtypeI_FakeRate::initializeAnalyzer(){
   cout << "[HNtypeI_FakeRate::initializeAnalyzer] RunSyst = " << RunSyst << endl;
   RunMuon = HasFlag("RunMuon");
   RunElectron = HasFlag("RunElectron");
+  RunMuIso = HasFlag("RunMuIso");
 
-  if(RunMuon){
+  if(RunMuon || RunMuIso){
     MuonTightIDs     = {"HNTight2016", "ISRTight", "HNTightV1"};
     MuonLooseIDs     = {"HNLoose2016", "ISRLoose", "HNLooseV1"};
     MuonVetoIDs      = {"HNVeto2016", "ISRVeto", "ISRVeto"};
@@ -402,14 +403,18 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
   //========================================================
 
   //==== Leptons
-  vector<Muon> muons_tight, muons_loose, muons_veto;
+  vector<Muon> muons_tight, muons_loose, muons_veto, muons_POGTight, muons_POGLoose;
   muons_tight.clear();
   muons_loose.clear();
   muons_veto.clear();
+  muons_POGTight.clear();
+  muons_POGLoose.clear();
 
   muons_tight = SelectMuons(this_AllMuons, param.Muon_Tight_ID, 10., 2.4);
   muons_loose = SelectMuons(this_AllMuons, param.Muon_Loose_ID, MuonPtCut1, 2.4);
   muons_veto  = SelectMuons(this_AllMuons, param.Muon_Veto_ID, 5., 2.4);
+  muons_POGTight = SelectMuons(this_AllMuons, "POGTight", 10., 2.4);
+  muons_POGLoose = SelectMuons(this_AllMuons, "POGLoose", 5., 2.4);
 
   vector<Electron> electrons_tight = SelectElectrons(this_AllElectrons, param.Electron_Tight_ID, 10., 2.5);
   vector<Electron> electrons_loose = SelectElectrons(this_AllElectrons, param.Electron_Loose_ID, ElectronPtCut1, 2.5);
@@ -438,6 +443,8 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
   std::sort(muons_tight.begin(), muons_tight.end(), PtComparing);
   std::sort(muons_loose.begin(), muons_loose.end(), PtComparing);
   std::sort(muons_veto.begin(), muons_veto.end(), PtComparing);
+  std::sort(muons_POGTight.begin(), muons_POGTight.end(), PtComparing);
+  std::sort(muons_POGLoose.begin(), muons_POGLoose.end(), PtComparing);
   std::sort(electrons_tight.begin(), electrons_tight.end(), PtComparing);
   std::sort(electrons_loose.begin(), electrons_loose.end(), PtComparing);
   std::sort(electrons_veto.begin(), electrons_veto.end(), PtComparing);
@@ -505,6 +512,46 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
   TString PtConeRange = "";
   Particle ZCand, METv;
 
+  // Track Iso vs PF Iso (Use DoubleMuon w/o skim)
+  if(RunMuIso){
+
+    if(muons_POGLoose.size() == 1){
+
+      FillHist("Muon_MiniAODPt", muons_POGLoose.at(0).MiniAODPt(), weight, 500, 0., 500.);
+
+      relTrkIso_MiniAODPt = muons_POGLoose.at(0).TrkIso()/muons_POGLoose.at(0).MiniAODPt();
+      FillHist("Muon_TrkIso", relTrkIso_MiniAODPt, weight, 100, 0., 1.);
+      FillHist("Muon_PFIso", muons_POGLoose.at(0).RelIso(), weight, 100, 0., 1.);
+      FillHist("Muon_PFIsoTrkIso2D", muons_POGLoose.at(0).RelIso(), relTrkIso_MiniAODPt, weight, 1000, 0., 1., 1000, 0., 1.);
+
+      if(ev.PassTrigger(MuonTrig1)){
+        if(muons_POGLoose.at(0).Pt() > 5.){
+          FillHist("Muon_TrkIso_Mu3", relTrkIso_MiniAODPt, weight, 100, 0., 1.);
+          FillHist("Muon_PFIso_Mu3", muons_POGLoose.at(0).RelIso(), weight, 100, 0., 1.);
+          FillHist("Muon_PFIsoTrkIso2D_Mu3", muons_POGLoose.at(0).RelIso(), relTrkIso_MiniAODPt, weight, 1000, 0., 1., 1000, 0., 1.);
+        }
+      }
+ 
+      if(ev.PassTrigger(MuonTrig2)){
+        if(muons_POGLoose.at(0).Pt() > 10.){
+          FillHist("Muon_TrkIso_Mu8", relTrkIso_MiniAODPt, weight, 100, 0., 1.);
+          FillHist("Muon_PFIso_Mu8", muons_POGLoose.at(0).RelIso(), weight, 100, 0., 1.);
+          FillHist("Muon_PFIsoTrkIso2D_Mu8", muons_POGLoose.at(0).RelIso(), relTrkIso_MiniAODPt, weight, 1000, 0., 1., 1000, 0., 1.);
+        }
+      }
+
+      if(ev.PassTrigger(MuonTrig3)){
+        if(muons_POGLoose.at(0).Pt() > 20.){
+          FillHist("Muon_TrkIso_Mu17", relTrkIso_MiniAODPt, weight, 100, 0., 1.);
+          FillHist("Muon_PFIso_Mu17", muons_POGLoose.at(0).RelIso(), weight, 100, 0., 1.);
+          FillHist("Muon_PFIsoTrkIso2D_Mu17", muons_POGLoose.at(0).RelIso(), relTrkIso_MiniAODPt, weight, 1000, 0., 1., 1000, 0., 1.);
+        }
+      }
+
+    }
+
+  }
+
   /*Gen gen_test;
   FillHist("gen_mother", gen_test.MotherIndex(), weight, 4, -2, 2);
   FillHist("gen_pid", gen_test.PID(), weight, 4, -2, 2);
@@ -564,6 +611,13 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
         weight *= muonIDSF*muonIsoSF;
       }
 
+      /*if(IsDATA){
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_TrkIso_MiniAODPt", relTrkIso_MiniAODPt, weight, 100, 0., 1.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_PFIso", muons_loose.at(0).RelIso(), weight, 100, 0., 1.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_PFIsoTrkIso2D", muons_loose.at(0).RelIso(), relTrkIso_MiniAODPt, weight, 100, 0., 1., 100, 0., 1.);
+        if(muons_tight.size() > 0) FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_PFIsoTrkIso2D", muons_loose.at(0).RelIso(), relTrkIso_MiniAODPt, weight, 100, 0., 1., 100, 0., 1.);
+      }*/
+
       trigLumi = 1.;
       // One prescaled trigger for each pTcone range, setup lumi
       if(!(ptcone_mu >= MuonPtconeCut1)) continue;
@@ -591,22 +645,22 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
 
       // For checking TrkIso and RelIso
       if(ev.PassTrigger(MuonTrig1)){
-        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_TrkIso_MiniAODPt_PassMu3", relTrkIso_MiniAODPt, weight, 100, 0., 1.);
-        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_RelIso_PassMu3", muons_loose.at(0).RelIso(), weight, 100, 0., 1.);
-        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_TrkIsoRelIso2D_PassMu3", relTrkIso_MiniAODPt, muons_loose.at(0).RelIso(), weight, 100, 0., 1., 100, 0., 1.);
-        if(muons_tight.size() > 0) FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_TrkIsoRelIso2D_PassMu3", relTrkIso_MiniAODPt, muons_loose.at(0).RelIso(), weight, 100, 0., 1., 100, 0., 1.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_TrkIso_PassMu3", relTrkIso_MiniAODPt, weight, 100, 0., 1.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_PFIso_PassMu3", muons_loose.at(0).RelIso(), weight, 100, 0., 1.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_PFIsoTrkIso2D_PassMu3", muons_loose.at(0).RelIso(), relTrkIso_MiniAODPt, weight, 100, 0., 1., 100, 0., 1.);
+        if(muons_tight.size() > 0) FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_PFIsoTrkIso2D_PassMu3", muons_loose.at(0).RelIso(), relTrkIso_MiniAODPt, weight, 100, 0., 1., 100, 0., 1.);
       }
       if(ev.PassTrigger(MuonTrig2)){
-        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_TrkIso_MiniAODPt_PassMu8", relTrkIso_MiniAODPt, weight, 100, 0., 1.);
-        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_RelIso_PassMu8", muons_loose.at(0).RelIso(), weight, 100, 0., 1.);
-        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_TrkIsoRelIso2D_PassMu8", relTrkIso_MiniAODPt, muons_loose.at(0).RelIso(), weight, 100, 0., 1., 100, 0., 1.);
-        if(muons_tight.size() > 0) FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_TrkIsoRelIso2D_PassMu8", relTrkIso_MiniAODPt, muons_loose.at(0).RelIso(), weight, 100, 0., 1., 100, 0., 1.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_TrkIso_PassMu8", relTrkIso_MiniAODPt, weight, 100, 0., 1.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_PFIso_PassMu8", muons_loose.at(0).RelIso(), weight, 100, 0., 1.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_PFIsoTrkIso2D_PassMu8", muons_loose.at(0).RelIso(), relTrkIso_MiniAODPt, weight, 100, 0., 1., 100, 0., 1.);
+        if(muons_tight.size() > 0) FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_PFIsoTrkIso2D_PassMu8", muons_loose.at(0).RelIso(), relTrkIso_MiniAODPt, weight, 100, 0., 1., 100, 0., 1.);
       }
       if(ev.PassTrigger(MuonTrig3)){
-        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_TrkIso_MiniAODPt_PassMu17", relTrkIso_MiniAODPt, weight, 100, 0., 1.);
-        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_RelIso_PassMu17", muons_loose.at(0).RelIso(), weight, 100, 0., 1.);
-        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_TrkIsoRelIso2D_PassMu17", relTrkIso_MiniAODPt, muons_loose.at(0).RelIso(), weight, 100, 0., 1., 100, 0., 1.);
-        if(muons_tight.size() > 0) FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_TrkIsoRelIso2D_PassMu17", relTrkIso_MiniAODPt, muons_loose.at(0).RelIso(), weight, 100, 0., 1., 100, 0., 1.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_TrkIso_PassMu17", relTrkIso_MiniAODPt, weight, 100, 0., 1.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_PFIso_PassMu17", muons_loose.at(0).RelIso(), weight, 100, 0., 1.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_LooseID_PFIsoTrkIso2D_PassMu17", muons_loose.at(0).RelIso(), relTrkIso_MiniAODPt, weight, 100, 0., 1., 100, 0., 1.);
+        if(muons_tight.size() > 0) FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Muon_TightID_PFIsoTrkIso2D_PassMu17", muons_loose.at(0).RelIso(), relTrkIso_MiniAODPt, weight, 100, 0., 1., 100, 0., 1.);
       }
 
 
