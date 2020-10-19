@@ -1124,6 +1124,21 @@ std::vector<Muon> HNAnalyzerCore::MuonPromptOnlyHNtypeI(const std::vector<Muon>&
 
 }
 
+std::vector<Muon> HNAnalyzerCore::MuonFakeOnly(const std::vector<Muon>& muons, const std::vector<Gen>& gens){
+
+  if(IsDATA) return muons;
+
+  std::vector<Muon> out;
+
+  for(unsigned int i=0; i<muons.size(); i++){
+    if(GetLeptonType(muons.at(i), gens)>=0 || GetLeptonType(muons.at(i), gens)<-4) continue;
+    out.push_back( muons.at(i) );
+  }
+
+  return out;
+
+}
+
 std::vector<Muon> HNAnalyzerCore::MuonUsePtCone(const std::vector<Muon>& muons){
 
   std::vector<Muon> out;
@@ -1184,6 +1199,21 @@ std::vector<Electron> HNAnalyzerCore::ElectronPromptOnlyHNtypeI(const std::vecto
 
   for(unsigned int i=0; i<electrons.size(); i++){
     if(GetLeptonType(electrons.at(i), gens)<=0 && GetLeptonType(electrons.at(i), gens)>-5) continue;
+    out.push_back( electrons.at(i) );
+  }
+
+  return out;
+
+}
+
+std::vector<Electron> HNAnalyzerCore::ElectronFakeOnly(const std::vector<Electron>& electrons, const std::vector<Gen>& gens){
+
+  if(IsDATA) return electrons;
+
+  std::vector<Electron> out;
+
+  for(unsigned int i=0; i<electrons.size(); i++){
+    if(GetLeptonType(electrons.at(i), gens)>=0 && GetLeptonType(electrons.at(i), gens)<-4) continue;
     out.push_back( electrons.at(i) );
   }
 
@@ -1651,7 +1681,7 @@ std::vector<Electron> HNAnalyzerCore::ShiftElectronEnergy(const std::vector<Elec
   
   for(unsigned int i=0; i<electrons.size(); i++){
     Electron this_electron = electrons.at(i);
-    if(!param.Electron_Tight_ID.Contains("HNTight")){ out.push_back(this_electron); continue; }
+    if(!param.Electron_Tight_ID.Contains("Tight")){ out.push_back(this_electron); continue; }
     if(!applyshift){ out.push_back(this_electron); continue; }
 
     double shiftrate = 1.;
@@ -1670,7 +1700,7 @@ std::vector<Electron> HNAnalyzerCore::ShiftElectronEnergy(const std::vector<Elec
 }
 
 double HNAnalyzerCore::GetCFrates(TString id, double pt, double eta){
-  if(!id.Contains("HNTight")) return 0.;
+  if(!id.Contains("Tight")) return 0.;
   
   eta = fabs(eta);
   double ivt_pt = 1./pt;
@@ -1735,7 +1765,7 @@ double HNAnalyzerCore::GetCFrates(TString id, double pt, double eta){
 }
 
 double HNAnalyzerCore::GetCFweight(const std::vector<Lepton *> leptons, AnalyzerParameter param, bool applySF, int syst){
-  if(!param.Electron_Tight_ID.Contains("HNTight")) return 0.;
+  if(!param.Electron_Tight_ID.Contains("Tight")) return 0.;
   if(leptons.size() > 2) return 0.; 
  
   std::vector<Electron> el;

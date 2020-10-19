@@ -122,12 +122,12 @@ public:
   bool Pass_HNTight2016() const;
 
   bool Pass_HNVeto(double relisoCut, double dxyCut, double dzCut) const;
-  bool Pass_HNLoose(double relisoCut, double dxyCut, double dzCut) const;
-  bool Pass_HNTight(double relisoCut, double dxyCut, double dzCut) const;
+  bool Pass_HNLoose(double relisoCut, double dxyCut, double dzCut, double sipCut) const;
+  bool Pass_HNTight(double relisoCut, double dxyCut, double dzCut, double sipCut) const;
 
   bool Pass_ISRVeto(double relisoCut) const;
   bool Pass_ISRLoose(double relisoCut) const;
-  bool Pass_ISRTight() const;
+  bool Pass_ISRTight(double relisoCut) const;
 
   bool Pass_POGHighPtVeto() const;
   bool Pass_POGLooseWithTrkIso() const;

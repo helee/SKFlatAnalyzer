@@ -8,27 +8,60 @@ void HNtypeI_FakeRate::initializeAnalyzer(){
 
   //==== if you use "--userflags RunSyst" with SKFlat.py, HasFlag("RunSyst") will return "true"
   RunSyst = HasFlag("RunSyst");
-  cout << "[HNtypeI_FakeRate::initializeAnalyzer] RunSyst = " << RunSyst << endl;
   RunMuon = HasFlag("RunMuon");
+  RunTightIP = HasFlag("RunTightIP");
   RunElectron = HasFlag("RunElectron");
   RunMuIso = HasFlag("RunMuIso");
 
-  if(RunMuon || RunMuIso){
-    MuonTightIDs     = {"HNTight2016", "ISRTight", "HNTightV1"};
-    MuonLooseIDs     = {"HNLoose2016", "ISRLoose", "HNLooseV1"};
-    MuonVetoIDs      = {"HNVeto2016", "ISRVeto", "ISRVeto"};
-    ElectronTightIDs = {"HNTight2016", "HNTightV1", "HNTightV1"};
-    ElectronLooseIDs = {"HNLoose2016", "HNLooseV1", "HNLooseV1"};
-    ElectronVetoIDs  = {"HNVeto2016", "ISRVeto", "ISRVeto"};
+  cout << "[HNtypeI_FakeRate::initializeAnalyzer] RunSyst = " << RunSyst << endl;
+  cout << "[HNtypeI_FakeRate::initializeAnalyzer] RunMuon = " << RunMuon << endl;
+  cout << "[HNtypeI_FakeRate::initializeAnalyzer] RunTightIP = " << RunTightIP << endl;
+  cout << "[HNtypeI_FakeRate::initializeAnalyzer] RunElectron = " << RunElectron << endl;
+  cout << "[HNtypeI_FakeRate::initializeAnalyzer] RunMuIso = " << RunMuIso << endl;
+
+  /*if(RunMuon){
+    MuonTightIDs     = {"ISRTightV1", "ISRTightV2", "HNTightV1", "HNTightV2"};
+    MuonLooseIDs     = {"ISRLoose", "ISRLoose", "HNLooseV1", "HNLooseV1"};
+    MuonVetoIDs      = {"ISRVeto", "ISRVeto", "ISRVeto", "ISRVeto"};
+    ElectronTightIDs = {"HNTightV1", "HNTightV1", "HNTightV1", "HNTightV1"};
+    ElectronLooseIDs = {"HNLooseV1", "HNLooseV1", "HNLooseV1", "HNLooseV1"};
+    ElectronVetoIDs  = {"ISRVeto", "ISRVeto", "ISRVeto", "ISRVeto"};
+  }
+
+  if(RunTightIP){
+    MuonTightIDs     = {"HNTightV3", "HNTightV4", "HNTightV5", "HNTightV6"};
+    MuonLooseIDs     = {"HNLooseV2", "HNLooseV2", "HNLooseV2", "HNLooseV2"};
+    MuonVetoIDs      = {"ISRVeto", "ISRVeto", "ISRVeto", "ISRVeto"};
+    ElectronTightIDs = {"HNTightV1", "HNTightV1", "HNTightV1", "HNTightV1"};  // Not used
+    ElectronLooseIDs = {"HNLooseV1", "HNLooseV1", "HNLooseV1", "HNLooseV1"};  // Not used
+    ElectronVetoIDs  = {"ISRVeto", "ISRVeto", "ISRVeto", "ISRVeto"};
   }
 
   if(RunElectron){
-    MuonTightIDs     = {"ISRTight", "ISRTight"};
+    MuonTightIDs     = {"ISRTightV1", "ISRTightV1"};
     MuonLooseIDs     = {"ISRLoose", "ISRLoose"};
     MuonVetoIDs      = {"ISRVeto", "ISRVeto"};
     ElectronTightIDs = {"HNTightV1", "HNMVATight"};
     ElectronLooseIDs = {"HNLooseV1", "HNMVALoose"};
     ElectronVetoIDs  = {"ISRVeto", "HNMVAVeto"};
+  }*/
+
+  if(RunMuon){
+    MuonTightIDs     = {"HNTightV1", "HNTightV1", "HNTightV2"};
+    MuonLooseIDs     = {"HNLooseV1", "HNLooseV2", "HNLooseV2"};
+    MuonVetoIDs      = {"ISRVeto", "ISRVeto", "ISRVeto"};
+    ElectronTightIDs = {"HNTightV1", "HNTightV1", "HNTightV1"};
+    ElectronLooseIDs = {"HNLooseV1", "HNLooseV1", "HNLooseV1"};
+    ElectronVetoIDs  = {"ISRVeto", "ISRVeto", "ISRVeto"};
+  }
+
+  if(RunElectron){
+    MuonTightIDs     = {"HNTightV1"};
+    MuonLooseIDs     = {"HNLooseV1"};
+    MuonVetoIDs      = {"ISRVeto"};
+    ElectronTightIDs = {"HNTightV1"};
+    ElectronLooseIDs = {"HNLooseV1"};
+    ElectronVetoIDs  = {"ISRVeto"};
   }
 
   //==== At this point, sample informations (e.g., IsDATA, DataStream, MCSample, or DataYear) are all set
@@ -191,12 +224,22 @@ void HNtypeI_FakeRate::executeEvent(){
 void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
 
   TString MuonIDname = "HN2016";
-  if(param.Muon_Tight_ID.Contains("ISR")) MuonIDname = "POGCBV1";
-  if(param.Muon_Tight_ID.Contains("HNTightV1")) MuonIDname = "POGCBV2";
+  /*if(param.Muon_Tight_ID.Contains("ISRTightV1")) MuonIDname = "POGCBV1";
+  if(param.Muon_Tight_ID.Contains("ISRTightV2")) MuonIDname = "POGCBV2";
+  if(param.Muon_Tight_ID.Contains("HNTightV1"))  MuonIDname = "POGCBV3";
+  if(param.Muon_Tight_ID.Contains("HNTightV2"))  MuonIDname = "POGCBV4";
+  if(param.Muon_Tight_ID.Contains("HNTightV3"))  MuonIDname = "POGCBV5";
+  if(param.Muon_Tight_ID.Contains("HNTightV4"))  MuonIDname = "POGCBV6";
+  if(param.Muon_Tight_ID.Contains("HNTightV5"))  MuonIDname = "POGCBV7";
+  if(param.Muon_Tight_ID.Contains("HNTightV6"))  MuonIDname = "POGCBV8";*/
+  if(param.Muon_Tight_ID.Contains("V1") && param.Muon_Loose_ID.Contains("V1")) MuonIDname = "HNV11";
+  if(param.Muon_Tight_ID.Contains("V1") && param.Muon_Loose_ID.Contains("V2")) MuonIDname = "HNV12";
+  if(param.Muon_Tight_ID.Contains("V2") && param.Muon_Loose_ID.Contains("V2")) MuonIDname = "HNV22";
 
   TString ElectronIDname = "HN2016";
-  if(param.Electron_Tight_ID.Contains("TightV")) ElectronIDname = "POGCB";
-  if(param.Electron_Tight_ID.Contains("MVA")) ElectronIDname = "POGMVA";
+  //if(param.Electron_Tight_ID.Contains("TightV")) ElectronIDname = "POGCB";
+  //if(param.Electron_Tight_ID.Contains("MVA")) ElectronIDname = "POGMVA";
+  if(param.Electron_Tight_ID.Contains("V1") && param.Electron_Loose_ID.Contains("V1")) ElectronIDname = "HNV11";
 
   vector<TString> regions = {"FR", "DY", "Wjet"};
 
@@ -255,7 +298,7 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
   }
 
   // ISR ID
-  if(param.Muon_Tight_ID.Contains("ISR") || param.Muon_Tight_ID.Contains("HNTightV1")){
+  if(param.Muon_Tight_ID.Contains("ISR") || param.Muon_Tight_ID.Contains("HNTight")){
     if(DataYear==2016){
       MuonLumi1 = 7.408*0.697318, MuonLumi2 = 7.801*1.25839, MuonLumi3 = 216.748*0.933965;
     }
@@ -486,7 +529,13 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
 
   double muonIDSF = 1., muonIsoSF = 1., electronRecoSF = 1., electronIDSF = 1.;
   double mu_tight_iso = 0.07;
-  if(param.Muon_Tight_ID.Contains("ISR") || param.Muon_Tight_ID.Contains("HNTightV1")) mu_tight_iso = 0.15;
+  if(param.Muon_Tight_ID.Contains("V1")) mu_tight_iso = 0.15;
+  if(param.Muon_Tight_ID.Contains("V2")) mu_tight_iso = 0.1;
+  if(param.Muon_Tight_ID.Contains("V3")) mu_tight_iso = 0.1;
+  if(param.Muon_Tight_ID.Contains("V4")) mu_tight_iso = 0.05;
+  if(param.Muon_Tight_ID.Contains("V5")) mu_tight_iso = 0.1;
+  if(param.Muon_Tight_ID.Contains("V6")) mu_tight_iso = 0.05;
+  
   double el_tight_iso = 0.;   
 
   // POG cut-based Medium  
@@ -563,7 +612,7 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
 
   for(unsigned int it_rg=0; it_rg<regions.size(); it_rg++){
     weight = 1., muonIDSF = 1., muonIsoSF = 1.;
-    if(!RunMuon) break;
+    if(!RunMuon && !RunTightIP) break;
 
     // Fake rate measurement region
     if(it_rg == 0){
@@ -598,10 +647,14 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
         weight *= GetPrefireWeight(0);
         weight *= GetPileUpWeight(nPileUp,0);
 
-        if(param.Muon_Tight_ID.Contains("ISR")){
+        if(param.Muon_Tight_ID.Contains("ISRTightV1")){
           muonIDSF  = mcCorr->MuonID_SF("NUM_TightID_DEN_genTracks", muons_loose.at(0).Eta(), muons_loose.at(0).MiniAODPt(), 0);
           if(muons_tight.size() > 0) muonIsoSF = mcCorr->MuonISO_SF("NUM_TightRelIso_DEN_TightIDandIPCut", muons_tight.at(0).Eta(), muons_tight.at(0).MiniAODPt(), 0);
           else muonIsoSF = 1.;
+        }
+        else if(param.Muon_Tight_ID.Contains("ISRTightV2")){
+          muonIDSF  = mcCorr->MuonID_SF("NUM_TightID_DEN_genTracks", muons_loose.at(0).Eta(), muons_loose.at(0).MiniAODPt(), 0);
+          muonIsoSF = 1.;
         }
         else{
           muonIDSF  = 1.;
@@ -900,8 +953,18 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
         weight *= GetPileUpWeight(nPileUp,0);
 
         for(unsigned int i=0; i<muons_tight.size(); i++){
-          muonIDSF  *= mcCorr->MuonID_SF("NUM_TightID_DEN_genTracks", muons_tight.at(i).Eta(), muons_tight.at(i).MiniAODPt(), 0);
-          muonIsoSF *= mcCorr->MuonISO_SF("NUM_TightRelIso_DEN_TightIDandIPCut", muons_tight.at(i).Eta(), muons_tight.at(i).MiniAODPt(), 0);
+          if(param.Muon_Tight_ID.Contains("ISRTightV1")){
+            muonIDSF  *= mcCorr->MuonID_SF("NUM_TightID_DEN_genTracks", muons_tight.at(i).Eta(), muons_tight.at(i).MiniAODPt(), 0);
+            muonIsoSF *= mcCorr->MuonISO_SF("NUM_TightRelIso_DEN_TightIDandIPCut", muons_tight.at(i).Eta(), muons_tight.at(i).MiniAODPt(), 0);
+          }
+          else if(param.Muon_Tight_ID.Contains("ISRTightV2")){
+            muonIDSF  *= mcCorr->MuonID_SF("NUM_TightID_DEN_genTracks", muons_tight.at(i).Eta(), muons_tight.at(i).MiniAODPt(), 0);
+            muonIsoSF *= 1.;
+          }
+          else{
+            muonIDSF  *= 1.;
+            muonIsoSF *= 1.;
+          }
         }
 
         weight *= muonIDSF*muonIsoSF;
@@ -1032,8 +1095,11 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
         weight *= GetPrefireWeight(0);
         weight *= GetPileUpWeight(nPileUp,0);
 
-        muonIDSF  = mcCorr->MuonID_SF("NUM_TightID_DEN_genTracks", muons_tight.at(0).Eta(), muons_tight.at(0).MiniAODPt(), 0);
-        muonIsoSF = mcCorr->MuonISO_SF("NUM_TightRelIso_DEN_TightIDandIPCut", muons_tight.at(0).Eta(), muons_tight.at(0).MiniAODPt(), 0);
+        if(param.Muon_Tight_ID.Contains("ISR")) muonIDSF = mcCorr->MuonID_SF("NUM_TightID_DEN_genTracks", muons_tight.at(0).Eta(), muons_tight.at(0).MiniAODPt(), 0);
+        else muonIDSF = 1.;
+
+        if(param.Muon_Tight_ID.Contains("ISRTightV1")) muonIsoSF = mcCorr->MuonISO_SF("NUM_TightRelIso_DEN_TightIDandIPCut", muons_tight.at(0).Eta(), muons_tight.at(0).MiniAODPt(), 0);
+        else muonIsoSF = 1.;
 
         weight *= muonIDSF*muonIsoSF;
       }
@@ -1193,18 +1259,18 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
         if(!IsDATA) trigLumi = ElectronLumi1;
         PtConeRange = "Range0";
       }
-      if(ptcone_el >= ElectronPtconeCut2 && ptcone_el < ElectronPtconeCut3){
+      if(ptcone_el >= ElectronPtconeCut2 && ptcone_el < ElectronPtconeCut4){
         if(!(electrons_loose.at(0).Pt() > ElectronPtCut2)) continue;      
         if(!ev.PassTrigger(ElectronTrig2)) continue;
         if(!IsDATA) trigLumi = ElectronLumi2;
         PtConeRange = "Range1";
       }
-      if(ptcone_el >= ElectronPtconeCut3){
+      /*if(ptcone_el >= ElectronPtconeCut3 && ptcone_el < ElectronPtconeCut4){
         if(!(electrons_loose.at(0).Pt() > ElectronPtCut3)) continue;
         if(!ev.PassTrigger(ElectronTrig3)) continue;
         if(!IsDATA) trigLumi = ElectronLumi3;
         PtConeRange = "Range2";
-      }
+      }*/
       if(ptcone_el >= ElectronPtconeCut4){
         if(!(electrons_loose.at(0).Pt() > ElectronPtCut4)) continue;
         if(!ev.PassTrigger(ElectronTrig4)) continue;

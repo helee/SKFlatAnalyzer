@@ -12,9 +12,10 @@ public:
   void executeEventFromParameter(AnalyzerParameter param);
   void executeEvent();
 
-  bool RunSyst, RunMuon, RunElectron, RunMuIso;
+  bool RunSyst;
   bool RunNewPDF;
   bool RunXSecSyst;
+  bool RunMuon, RunTightIP, RunElectron, RunMuIso;
 
   // Trigger  
   vector<TString> MuonTriggers;
