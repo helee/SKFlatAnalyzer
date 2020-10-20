@@ -93,8 +93,8 @@ void HNtypeI_FakeRate::initializeAnalyzer(){
   ElectronTriggers.push_back(ElectronTrig2);
   ElectronTriggers.push_back(ElectronTrig3);
   ElectronTriggers.push_back(ElectronTrig4);
-  ElectronPtCut1 = 9.5, ElectronPtCut2 = 15., ElectronPtCut3 = 20., ElectronPtCut4 = 25.;
-  ElectronPtconeCut1 = 10., ElectronPtconeCut2 = 25., ElectronPtconeCut3 = 35., ElectronPtconeCut4 = 40.;
+  ElectronPtCut1 = 8.5, ElectronPtCut2 = 15., ElectronPtCut3 = 20., ElectronPtCut4 = 25.;
+  ElectronPtconeCut1 = 10., ElectronPtconeCut2 = 25., ElectronPtconeCut3 = 35., ElectronPtconeCut4 = 45.;
 
   // luminosity of prescaled triggers
   // Without normalizationfactor
@@ -528,13 +528,7 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
   //========================================================
 
   double muonIDSF = 1., muonIsoSF = 1., electronRecoSF = 1., electronIDSF = 1.;
-  double mu_tight_iso = 0.07;
-  if(param.Muon_Tight_ID.Contains("V1")) mu_tight_iso = 0.15;
-  if(param.Muon_Tight_ID.Contains("V2")) mu_tight_iso = 0.1;
-  if(param.Muon_Tight_ID.Contains("V3")) mu_tight_iso = 0.1;
-  if(param.Muon_Tight_ID.Contains("V4")) mu_tight_iso = 0.05;
-  if(param.Muon_Tight_ID.Contains("V5")) mu_tight_iso = 0.1;
-  if(param.Muon_Tight_ID.Contains("V6")) mu_tight_iso = 0.05;
+  double mu_tight_iso = 0.05;
   
   double el_tight_iso = 0.;   
 
@@ -1218,11 +1212,13 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
 
       // Set up pTcone
       el_tight_iso = 0.08; // 2016 or PGO MVA
+
       if(param.Electron_Tight_ID.Contains("ISR")){ // POG CB Medium
         el_tight_iso = 0.0478+0.506/electrons_loose.at(0).UncorrPt();
         if(fabs(electrons_loose.at(0).scEta()) > 1.479) el_tight_iso = 0.0658+0.963/electrons_loose.at(0).UncorrPt();
       }
-      if(param.Electron_Tight_ID.Contains("TightV")){ // POG CB Tight
+
+      if(param.Electron_Tight_ID.Contains("HNTight")){ // POG CB Tight
         el_tight_iso = 0.0287+0.506/electrons_loose.at(0).UncorrPt();
         if(fabs(electrons_loose.at(0).scEta()) > 1.479) el_tight_iso = 0.0445+0.963/electrons_loose.at(0).UncorrPt();
       }
@@ -1259,18 +1255,18 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
         if(!IsDATA) trigLumi = ElectronLumi1;
         PtConeRange = "Range0";
       }
-      if(ptcone_el >= ElectronPtconeCut2 && ptcone_el < ElectronPtconeCut4){
+      if(ptcone_el >= ElectronPtconeCut2 && ptcone_el < ElectronPtconeCut3){
         if(!(electrons_loose.at(0).Pt() > ElectronPtCut2)) continue;      
         if(!ev.PassTrigger(ElectronTrig2)) continue;
         if(!IsDATA) trigLumi = ElectronLumi2;
         PtConeRange = "Range1";
       }
-      /*if(ptcone_el >= ElectronPtconeCut3 && ptcone_el < ElectronPtconeCut4){
+      if(ptcone_el >= ElectronPtconeCut3 && ptcone_el < ElectronPtconeCut4){
         if(!(electrons_loose.at(0).Pt() > ElectronPtCut3)) continue;
         if(!ev.PassTrigger(ElectronTrig3)) continue;
         if(!IsDATA) trigLumi = ElectronLumi3;
         PtConeRange = "Range2";
-      }*/
+      }
       if(ptcone_el >= ElectronPtconeCut4){
         if(!(electrons_loose.at(0).Pt() > ElectronPtCut4)) continue;
         if(!ev.PassTrigger(ElectronTrig4)) continue;
