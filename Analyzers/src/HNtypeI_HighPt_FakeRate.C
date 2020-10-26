@@ -486,7 +486,7 @@ void HNtypeI_HighPt_FakeRate::executeEventFromParameter(AnalyzerParameter param)
 
   double ptcone_mu = 0.;
   double ptcone_el = 0.;
-  //double trkiso_Pt = 0.;
+  double PtconeCut = 0., PtCut = 0.;
   double relTrkIso_TunePPt = 0.;
   //double ptcone_mu1 = 0.;
   TString PtConeRange = "";
@@ -583,17 +583,22 @@ void HNtypeI_HighPt_FakeRate::executeEventFromParameter(AnalyzerParameter param)
           PtConeRange = "Range2";
         }
       }*/
-      if(!(ptcone_mu >= 50.)) continue;
-      if(ptcone_mu >= 50.){
-        if(RunMu17){
-          if(!(muons_loose.at(0).Pt() > 40.)) continue;
-        }
-        if(RunMu50){
-          if(!(muons_loose.at(0).Pt() > 50.)) continue;
-        }
+
+      if(RunMu17){
+        PtconeCut = 50., PtCut = 40.;
+      }
+      if(RunMu50){
+        PtconeCut = 65., PtCut = 53.;
+      }
+
+      if(!(ptcone_mu >= PtconeCut)) continue;
+      if(ptcone_mu >= PtconeCut){
+        if(!(muons_loose.at(0).Pt() > PtCut)) continue;
         if(!ev.PassTrigger(MuonTrig3)) continue;
-        if(!IsDATA) trigLumi = MuonLumi3;
-        //PtConeRange = "Range3";
+        if(!IsDATA){
+          if(RunMu17) trigLumi = MuonLumi3;
+          if(RunMu50) trigLumi = ev.GetTriggerLumi("Full"); 
+        }
       }
 
       weight *= trigLumi;

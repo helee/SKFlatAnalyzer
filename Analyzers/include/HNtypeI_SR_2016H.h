@@ -12,9 +12,10 @@ public:
   void executeEventFromParameter(AnalyzerParameter param);
   void executeEvent();
 
-  bool RunSyst, RunFake, RunCF;
+  bool RunSyst;
   bool RunNewPDF;
   bool RunXSecSyst;
+  bool RunMuon, RunTightIP, RunElectron, RunEMu, RunTightEMu, RunFake, RunCF;
 
   // Trigger
   vector<TString> MuonTriggers;
@@ -34,7 +35,8 @@ public:
   vector<TString> ElectronTightIDs;
 
   // Fake rate file
-  vector<TString> FakeRateIDs;
+  vector<TString> MuonFRNames;
+  vector<TString> ElectronFRNames;
 
   // Lepton pT cut
   double MuonPtCut1;

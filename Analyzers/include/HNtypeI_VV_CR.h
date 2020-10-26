@@ -1,9 +1,9 @@
-#ifndef HNtypeI_SM_CR_2016H_h
-#define HNtypeI_SM_CR_2016H_h
+#ifndef HNtypeI_VV_CR_h
+#define HNtypeI_VV_CR_h
 
 #include "HNAnalyzerCore.h"
 
-class HNtypeI_SM_CR_2016H : public HNAnalyzerCore {
+class HNtypeI_VV_CR : public HNAnalyzerCore {
 
 public:
 
@@ -12,9 +12,10 @@ public:
   void executeEventFromParameter(AnalyzerParameter param);
   void executeEvent();
 
-  bool RunSyst, RunFake, RunCF;
+  bool RunSyst;
   bool RunNewPDF;
   bool RunXSecSyst;
+  bool RunTightIP, RunFake;
 
   // Trigger
   vector<TString> MuonTriggers;
@@ -34,7 +35,8 @@ public:
   vector<TString> ElectronTightIDs;
 
   // Fake rate file
-  vector<TString> FakeRateIDs;
+  vector<TString> MuonFRNames;
+  vector<TString> ElectronFRNames;
 
   // Lepton pT cut
   double MuonPtCut1;
@@ -52,8 +54,8 @@ public:
 
   //double weight_Prefire;
 
-  HNtypeI_SM_CR_2016H();
-  ~HNtypeI_SM_CR_2016H();
+  HNtypeI_VV_CR();
+  ~HNtypeI_VV_CR();
 
 };
 

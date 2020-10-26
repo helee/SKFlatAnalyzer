@@ -78,7 +78,7 @@ double FakeBackgroundEstimator::GetElectronFakeRate(TString ID, TString key, dou
 
   //if(pt>=200) pt = 199;
   //if(eta>=2.5) eta = 2.49;
-  if(pt>=80.) pt = 79.;
+  if(pt>=100.) pt = 99.;
   //==== HOTFIX FIXME
   //if(eta>=1.479 && pt>=150) pt = 149.;
 
@@ -116,7 +116,12 @@ double FakeBackgroundEstimator::GetMuonFakeRate(TString ID, TString key, double 
 
   //if(pt>=200) pt = 199;
   //if(eta>=2.5) eta = 2.49;
-  if(pt>=80.) pt = 79.;
+  if(DataYear==2018){
+    if(pt>=60.) pt = 59.;
+  }
+  else{
+    if(pt>=80.) pt = 79.;
+  }
   //if(pt>=100.) pt = 99.;  // High-pT muon ID
   //==== HOTFIX FIXME
   //if(eta<0.8 && pt>=150) pt = 149.;

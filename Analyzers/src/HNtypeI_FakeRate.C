@@ -47,12 +47,12 @@ void HNtypeI_FakeRate::initializeAnalyzer(){
   }*/
 
   if(RunMuon){
-    MuonTightIDs     = {"HNTightV1", "HNTightV1", "HNTightV2"};
-    MuonLooseIDs     = {"HNLooseV1", "HNLooseV2", "HNLooseV2"};
-    MuonVetoIDs      = {"ISRVeto", "ISRVeto", "ISRVeto"};
-    ElectronTightIDs = {"HNTightV1", "HNTightV1", "HNTightV1"};
-    ElectronLooseIDs = {"HNLooseV1", "HNLooseV1", "HNLooseV1"};
-    ElectronVetoIDs  = {"ISRVeto", "ISRVeto", "ISRVeto"};
+    MuonTightIDs     = {"HNTightV1", "HNTightV1"};
+    MuonLooseIDs     = {"HNLooseV1", "HNLooseV2"};
+    MuonVetoIDs      = {"ISRVeto", "ISRVeto"};
+    ElectronTightIDs = {"HNTightV1", "HNTightV1"};
+    ElectronLooseIDs = {"HNLooseV1", "HNLooseV1"};
+    ElectronVetoIDs  = {"ISRVeto", "ISRVeto"};
   }
 
   if(RunElectron){
@@ -93,7 +93,7 @@ void HNtypeI_FakeRate::initializeAnalyzer(){
   ElectronTriggers.push_back(ElectronTrig2);
   ElectronTriggers.push_back(ElectronTrig3);
   ElectronTriggers.push_back(ElectronTrig4);
-  ElectronPtCut1 = 8.5, ElectronPtCut2 = 15., ElectronPtCut3 = 20., ElectronPtCut4 = 25.;
+  ElectronPtCut1 = 10., ElectronPtCut2 = 15., ElectronPtCut3 = 20., ElectronPtCut4 = 25.;
   ElectronPtconeCut1 = 10., ElectronPtconeCut2 = 25., ElectronPtconeCut3 = 35., ElectronPtconeCut4 = 45.;
 
   // luminosity of prescaled triggers
@@ -323,7 +323,7 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
   }
 
   // HN POG ID
-  if(param.Electron_Tight_ID.Contains("TightV") || param.Electron_Tight_ID.Contains("MVA")){
+  if(param.Electron_Tight_ID.Contains("HNTight") || param.Electron_Tight_ID.Contains("MVA")){
     if(DataYear==2016){
       //MuonLumi1 = 7.408*0.704597, MuonLumi2 = 7.801*1.24946, MuonLumi3 = 216.748*0.931095;
       ElectronLumi1 = 6.988*1.0641, ElectronLumi2 = 14.851*0.981272, ElectronLumi3 = 62.761*0.941996, ElectronLumi4 = 62.808*0.94131;  
@@ -614,9 +614,7 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
       if(!IsNorm) continue;
 
       if(!(muons_loose.size()==1 && electrons_loose.size()==0)) continue;
-      if(!param.Muon_Tight_ID.Contains("2016")){
-        if(!(muons_veto.size()==1 && electrons_veto.size()==0)) continue;
-      }
+      if(!(muons_veto.size()==1 && electrons_veto.size()==0)) continue;
       if(!(jets.size() >= 1)) continue;
 
       // MET
@@ -1201,9 +1199,7 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
       if(!IsNorm) continue;
 
       if(!(muons_loose.size()==0 && electrons_loose.size()==1)) continue;
-      if(!param.Electron_Tight_ID.Contains("2016")){
-        if(!(muons_veto.size()==0 && electrons_veto.size()==1)) continue;
-      }
+      if(!(muons_veto.size()==0 && electrons_veto.size()==1)) continue;
       if(!(jets.size() >= 1)) continue;
 
       // MET
@@ -1224,8 +1220,8 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
       }
 
       // For the same bin in 2016 analysis
-      if(param.Electron_Tight_ID.Contains("2016")) ElectronPtconeCut2 = 23.;
-      else ElectronPtconeCut2 = 25.;
+      //if(param.Electron_Tight_ID.Contains("2016")) ElectronPtconeCut2 = 23.;
+      //else ElectronPtconeCut2 = 25.;
 
       ptcone_el = electrons_loose.at(0).CalcPtCone(electrons_loose.at(0).RelIso(), el_tight_iso);
       

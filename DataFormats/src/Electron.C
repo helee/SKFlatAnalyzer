@@ -445,7 +445,7 @@ bool Electron::Pass_HNLoose(double relisoCut, double dxyCut, double dzCut, doubl
     }
   }
   if(! (fabs(IP3D()/IP3Derr())<sipCut) ) return false;
-  if(UncorrPt() > 300.){
+  if(UncorrPt() < 300.){
     if(! (IsGsfCtfScPixChargeConsistent()) ) return false;
   }
   if(! (Pass_TriggerEmulation()) ) return false;
@@ -467,7 +467,7 @@ bool Electron::Pass_HNTight(double dxyCut, double dzCut, double sipCut, bool isP
     }
   }
   if(! (fabs(IP3D()/IP3Derr())<sipCut) ) return false;
-  if(UncorrPt() > 300.){
+  if(UncorrPt() < 300.){
     if(! (IsGsfCtfScPixChargeConsistent()) ) return false;
   }
   if(! (Pass_TriggerEmulation()) ) return false;

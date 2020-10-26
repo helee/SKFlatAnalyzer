@@ -168,11 +168,13 @@ public:
   std::vector<Muon> MuonWithoutGap(const std::vector<Muon>& muons);
   std::vector<Muon> MuonPromptOnly(const std::vector<Muon>& muons, const std::vector<Gen>& gens);
   std::vector<Muon> MuonPromptOnlyHNtypeI(const std::vector<Muon>& muons, const std::vector<Gen>& gens);
+  std::vector<Muon> MuonFakeOnly(const std::vector<Muon>& muons, const std::vector<Gen>& gens);
   std::vector<Muon> MuonUsePtCone(const std::vector<Muon>& muons);
   Muon MuonUsePtCone(const Muon& muon);
   std::vector<Muon> MuonApplyPtCut(const std::vector<Muon>& muons, double ptcut);
   std::vector<Electron> ElectronPromptOnly(const std::vector<Electron>& electrons, const std::vector<Gen>& gens);
   std::vector<Electron> ElectronPromptOnlyHNtypeI(const std::vector<Electron>& electrons, const std::vector<Gen>& gens);
+  std::vector<Electron> ElectronFakeOnly(const std::vector<Electron>& electrons, const std::vector<Gen>& gens);
   std::vector<Electron> ElectronUsePtCone(const std::vector<Electron>& electrons);
   Electron ElectronUsePtCone(const Electron& electron);
   std::vector<Electron> ElectronApplyPtCut(const std::vector<Electron>& electrons, double ptcut);
