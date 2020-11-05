@@ -1804,6 +1804,34 @@ double HNAnalyzerCore::GetCFweight(const std::vector<Lepton *> leptons, Analyzer
   
 }
 
+double HNAnalyzerCore::GetCFWeightElectron(std::vector<Lepton *> leptons, TString tight_id){
+
+  if(leptons.size() > 2) return 0.;
+
+  std::vector<Electron> electrons;
+  for(unsigned int i=0; i<leptons.size(); i++){
+    if(leptons.at(i)->LeptonFlavour() == Lepton::ELECTRON){
+      Electron *el_tmp = (Electron *)leptons.at(i);
+      electrons.push_back(*el_tmp);
+    }
+  }
+  if(electrons.size()==2 && electrons.at(0).Charge()*electrons.at(1).Charge()>0) return 0.;
+
+  TString tight_id_tmp = tight_id;
+  double el1_cf_rate   = cfEst->GetElectronCFRateJA(tight_id_tmp, "HNCF", electrons.at(0).scEta(), electrons.at(0).Pt(), 0);
+  double el2_cf_rate   = cfEst->GetElectronCFRateJA(tight_id_tmp, "HNCF", electrons.at(1).scEta(), electrons.at(1).Pt(), 0);
+
+  if((electrons[0].scEta()) < 1.5) el1_cf_rate *= 0.95;
+  else el1_cf_rate *= 0.95;
+  if((electrons[1].scEta()) < 1.5) el2_cf_rate *= 0.95;
+  else el2_cf_rate *= 0.95;
+
+  double cf_weight = (el1_cf_rate / (1.-el1_cf_rate))  + (el2_cf_rate/(1.-el2_cf_rate));
+
+  return cf_weight;
+
+}
+
 //=========================================================
 //==== Gen Matching Tools
 

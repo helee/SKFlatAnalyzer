@@ -26,7 +26,9 @@ void CFBackgroundEstimator::ReadHistograms(){
     for(int i=0;i<histlist->Capacity();i++){
       TString this_cfname = histlist->At(i)->GetName();
       histDir->cd();
-      map_hist_Electron[a+"_"+this_cfname] = (TH1D *)file->Get(this_cfname)->Clone();
+      if (!this_cfname.Contains(a)) continue;
+      map_hist_Electron[this_cfname] = (TH2D *)file->Get(this_cfname)->Clone();
+      //map_hist_Electron[a+"_"+this_cfname] = (TH1D *)file->Get(this_cfname)->Clone();
       file->Close();
       delete file;
       origDir->cd();
@@ -80,7 +82,7 @@ double CFBackgroundEstimator::GetElectronCFRate(TString ID, TString key, double 
   else if(eta<1.479) EtaRegion = "OuterBarrel";
   else EtaRegion = "EndCap";
 
-  std::map< TString, TH1D* >::const_iterator mapit;
+  std::map< TString, TH2D* >::const_iterator mapit;
   mapit = map_hist_Electron.find(ID+"_"+key+"_"+EtaRegion+"_InvGenPt");
 
   if(mapit==map_hist_Electron.end()){
@@ -93,6 +95,29 @@ double CFBackgroundEstimator::GetElectronCFRate(TString ID, TString key, double 
   error = (mapit->second)->GetBinError(this_bin);
 
   //cout << "[CFBackgroundEstimator::CFBackgroundEstimator] value = " << value << endl;
+
+  return value+double(sys)*error;
+
+}
+
+double CFBackgroundEstimator::GetElectronCFRateJA(TString ID, TString key, double eta, double pt, int sys){
+
+  double value = 1.;
+  double error = 0.;
+
+  eta = fabs(eta);
+  if(eta>=2.5) eta = 2.49;
+
+  std::map< TString, TH2D* >::const_iterator mapit;                                                                                                                
+  mapit = map_hist_Electron.find(ID+"_"+key);
+
+  if(mapit==map_hist_Electron.end()){
+    exit(EXIT_FAILURE);
+  }
+
+  int this_bin = (mapit->second)->FindBin(pt,eta);
+  value = (mapit->second)->GetBinContent(this_bin);
+  error = (mapit->second)->GetBinError(this_bin);
 
   return value+double(sys)*error;
 
@@ -162,7 +187,3 @@ double CFBackgroundEstimator::GetWeight(vector<Lepton *> lepptrs, AnalyzerParame
   return this_weight;
 
 }
-
-
-
-

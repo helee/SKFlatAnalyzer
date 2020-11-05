@@ -206,6 +206,7 @@ public:
   std::vector<Electron> ShiftElectronEnergy(const std::vector<Electron>& beforeshift, AnalyzerParameter param, bool applyshift);
   double GetCFrates(TString id, double pt, double eta);
   double GetCFweight(const std::vector<Lepton *> leptons, AnalyzerParameter param, bool applySF, int syst);
+  double GetCFWeightElectron(const std::vector<Lepton *> leptons, TString tight_id);
 
   //==== GenMatching
 
