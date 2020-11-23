@@ -9,13 +9,13 @@ void HNtypeI_QCDFakeRate::initializeAnalyzer(){
   //==== if you use "--userflags RunSyst" with SKFlat.py, HasFlag("RunSyst") will return "true"
   RunSyst = HasFlag("RunSyst");
   RunMuon = HasFlag("RunMuon");
-  RunTightIP = HasFlag("RunTightIP");
+  RunLooseMuon = HasFlag("RunLooseMuon");
   RunElectron = HasFlag("RunElectron");
   RunMuIso = HasFlag("RunMuIso");
 
   cout << "[HNtypeI_QCDFakeRate::initializeAnalyzer] RunSyst = " << RunSyst << endl;
   cout << "[HNtypeI_QCDFakeRate::initializeAnalyzer] RunMuon = " << RunMuon << endl;
-  cout << "[HNtypeI_QCDFakeRate::initializeAnalyzer] RunTightIP = " << RunTightIP << endl;
+  cout << "[HNtypeI_QCDFakeRate::initializeAnalyzer] RunLooseMuon = " << RunLooseMuon << endl;
   cout << "[HNtypeI_QCDFakeRate::initializeAnalyzer] RunElectron = " << RunElectron << endl;
 
   /*if(RunMuon){
@@ -52,6 +52,15 @@ void HNtypeI_QCDFakeRate::initializeAnalyzer(){
     ElectronTightIDs = {"HNTightV1", "HNTightV1"};
     ElectronLooseIDs = {"HNLooseV1", "HNLooseV1"};
     ElectronVetoIDs  = {"ISRVeto", "ISRVeto"};
+  }
+
+  if(RunLooseMuon){
+    MuonTightIDs     = {"HNTightV1"};
+    MuonLooseIDs     = {"HNLooseV3"};
+    MuonVetoIDs      = {"ISRVeto"};
+    ElectronTightIDs = {"HNTightV1"};
+    ElectronLooseIDs = {"HNLooseV1"};
+    ElectronVetoIDs  = {"ISRVeto"};
   }
 
   if(RunElectron){
@@ -233,6 +242,7 @@ void HNtypeI_QCDFakeRate::executeEventFromParameter(AnalyzerParameter param){
   if(param.Muon_Tight_ID.Contains("HNTightV6"))  MuonIDname = "POGCBV8";*/
   if(param.Muon_Tight_ID.Contains("V1") && param.Muon_Loose_ID.Contains("V1")) MuonIDname = "HNV11";
   if(param.Muon_Tight_ID.Contains("V1") && param.Muon_Loose_ID.Contains("V2")) MuonIDname = "HNV12";
+  if(param.Muon_Tight_ID.Contains("V1") && param.Muon_Loose_ID.Contains("V3")) MuonIDname = "HNV13";
   if(param.Muon_Tight_ID.Contains("V2") && param.Muon_Loose_ID.Contains("V2")) MuonIDname = "HNV22";
 
   TString ElectronIDname = "HN2016";
@@ -605,7 +615,7 @@ void HNtypeI_QCDFakeRate::executeEventFromParameter(AnalyzerParameter param){
 
   for(unsigned int it_rg=0; it_rg<regions.size(); it_rg++){
     weight = 1., muonIDSF = 1., muonIsoSF = 1.;
-    if(!RunMuon && !RunTightIP) break;
+    if(!RunMuon && !RunLooseMuon) break;
 
     // Fake rate measurement region
     if(it_rg == 0){

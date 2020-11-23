@@ -177,11 +177,10 @@ bool Electron::PassID(TString ID) const{
   if(ID=="HNLooseV1") return Pass_HNLoose(0.6, 0.05, 0.1, 4., true);
   if(ID=="HNLooseV1IsoUp") return Pass_HNLoose(0.7, 0.05, 0.1, 4., true);
   if(ID=="HNLooseV1IsoDown") return Pass_HNLoose(0.5, 0.05, 0.1, 4., true);
-  /*if(ID=="HNLooseV2") return Pass_HNLoose(0.6, 0.2, 0.2, false);
-  if(ID=="HNLooseV2IsoUp") return Pass_HNLoose(0.7, 0.2, 0.2, false);
-  if(ID=="HNLooseV2IsoDown") return Pass_HNLoose(0.5, 0.2, 0.2, false);*/
-  if(ID=="HNTightV1") return Pass_HNTight(0.05, 0.1, 4., true);
-  if(ID=="HNTightV2") return Pass_HNTight(0.01, 0.04, 4., false);
+  //if(ID=="HNLooseV2") return Pass_HNLoose(0.6, 0.2, 0.2, 4., false);
+  //if(ID=="HNLooseV3") return Pass_HNLoose(0.6, 0.2, 0.2, 10., false);
+  if(ID=="HNTightV1") return Pass_HNTight(0.05, 0.1, 4., 250., true);
+  if(ID=="HNTightV2") return Pass_HNTight(0.01, 0.04, 4., 250., false);
 
   if(ID=="ISRVeto") return Pass_ISRVeto(0.6);
   if(ID=="ISRLoose") return Pass_ISRLoose(0.6);
@@ -345,7 +344,7 @@ bool Electron::Pass_TriggerEmulation() const{
   else{
     if(! (Full5x5_sigmaIetaIeta() < 0.031) ) return false;       // < 0.035, 0.031
     if(! (fabs(dEtaSeed()) < 0.007) ) return false;              // < 0.015, 0.0085
-    if(! (fabs(dPhiIn()) < 0.08) ) return false;                 // < 0.1  , 0.1
+    if(! (fabs(dPhiIn()) < 0.04) ) return false;                 // < 0.1  , 0.05
     if(! (HoverE() < 0.08) ) return false;                       // < 0.13 , 0.1
     if(! (fabs(InvEminusInvP()) < 0.01) ) return false;          // < 9999., 0.05
   }
@@ -452,7 +451,7 @@ bool Electron::Pass_HNLoose(double relisoCut, double dxyCut, double dzCut, doubl
   return true;
 }
 
-bool Electron::Pass_HNTight(double dxyCut, double dzCut, double sipCut, bool isPOGIP) const{
+bool Electron::Pass_HNTight(double dxyCut, double dzCut, double sipCut, double ptCut, bool isPOGIP) const{
   if(! (passTightID()) ) return false;
   //if(! (RelIso()<relisoCut) ) return false;
   if( fabs(scEta()) <= 1.479 ){
@@ -467,7 +466,7 @@ bool Electron::Pass_HNTight(double dxyCut, double dzCut, double sipCut, bool isP
     }
   }
   if(! (fabs(IP3D()/IP3Derr())<sipCut) ) return false;
-  if(UncorrPt() < 300.){
+  if(UncorrPt() < ptCut){
     if(! (IsGsfCtfScPixChargeConsistent()) ) return false;
   }
   if(! (Pass_TriggerEmulation()) ) return false;

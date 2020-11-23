@@ -9,15 +9,17 @@ void HNtypeI_FakeRate::initializeAnalyzer(){
   //==== if you use "--userflags RunSyst" with SKFlat.py, HasFlag("RunSyst") will return "true"
   RunSyst = HasFlag("RunSyst");
   RunMuon = HasFlag("RunMuon");
-  RunTightIP = HasFlag("RunTightIP");
+  RunLooseMuon = HasFlag("RunLooseMuon");
   RunElectron = HasFlag("RunElectron");
-  RunMuIso = HasFlag("RunMuIso");
+  RunIso = HasFlag("RunIso");
+  RunIso = HasFlag("RunISR");
 
   cout << "[HNtypeI_FakeRate::initializeAnalyzer] RunSyst = " << RunSyst << endl;
   cout << "[HNtypeI_FakeRate::initializeAnalyzer] RunMuon = " << RunMuon << endl;
-  cout << "[HNtypeI_FakeRate::initializeAnalyzer] RunTightIP = " << RunTightIP << endl;
+  cout << "[HNtypeI_FakeRate::initializeAnalyzer] RunLooseMuon = " << RunLooseMuon << endl;
   cout << "[HNtypeI_FakeRate::initializeAnalyzer] RunElectron = " << RunElectron << endl;
-  cout << "[HNtypeI_FakeRate::initializeAnalyzer] RunMuIso = " << RunMuIso << endl;
+  cout << "[HNtypeI_FakeRate::initializeAnalyzer] RunIso = " << RunIso << endl;
+  cout << "[HNtypeI_FakeRate::initializeAnalyzer] RunISR = " << RunISR << endl;
 
   /*if(RunMuon){
     MuonTightIDs     = {"ISRTightV1", "ISRTightV2", "HNTightV1", "HNTightV2"};
@@ -55,9 +57,18 @@ void HNtypeI_FakeRate::initializeAnalyzer(){
     ElectronVetoIDs  = {"ISRVeto", "ISRVeto"};
   }
 
-  if(RunElectron){
+  if(RunLooseMuon){
     MuonTightIDs     = {"HNTightV1"};
-    MuonLooseIDs     = {"HNLooseV1"};
+    MuonLooseIDs     = {"HNLooseV3"};
+    MuonVetoIDs      = {"ISRVeto"};
+    ElectronTightIDs = {"HNTightV1"};
+    ElectronLooseIDs = {"HNLooseV1"};
+    ElectronVetoIDs  = {"ISRVeto"};
+  }
+
+  if(RunElectron || RunIso){
+    MuonTightIDs     = {"HNTightV1"};
+    MuonLooseIDs     = {"HNLooseV3"};
     MuonVetoIDs      = {"ISRVeto"};
     ElectronTightIDs = {"HNTightV1"};
     ElectronLooseIDs = {"HNLooseV1"};
@@ -234,6 +245,7 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
   if(param.Muon_Tight_ID.Contains("HNTightV6"))  MuonIDname = "POGCBV8";*/
   if(param.Muon_Tight_ID.Contains("V1") && param.Muon_Loose_ID.Contains("V1")) MuonIDname = "HNV11";
   if(param.Muon_Tight_ID.Contains("V1") && param.Muon_Loose_ID.Contains("V2")) MuonIDname = "HNV12";
+  if(param.Muon_Tight_ID.Contains("V1") && param.Muon_Loose_ID.Contains("V3")) MuonIDname = "HNV13";
   if(param.Muon_Tight_ID.Contains("V2") && param.Muon_Loose_ID.Contains("V2")) MuonIDname = "HNV22";
 
   TString ElectronIDname = "HN2016";
@@ -281,7 +293,7 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
     ElectronLumi1 = 6.412*0.89131, ElectronLumi2 = 38.849*0.92211, ElectronLumi3 = 38.861*0.79613, ElectronLumi4 = 38.906*0.791474;
   }*/
 
-  // HN 2016 ID
+  // Muon, Electron : 2016 HN
   if(param.Muon_Tight_ID.Contains("2016")){
     if(DataYear==2016){
       MuonLumi1 = 7.408*0.679317, MuonLumi2 = 7.801*1.26668, MuonLumi3 = 216.748*0.940637;
@@ -297,7 +309,7 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
     }
   }
 
-  // ISR ID
+  // Muon : ISR
   if(param.Muon_Tight_ID.Contains("ISR") || param.Muon_Tight_ID.Contains("HNTight")){
     if(DataYear==2016){
       MuonLumi1 = 7.408*0.697318, MuonLumi2 = 7.801*1.25839, MuonLumi3 = 216.748*0.933965;
@@ -310,6 +322,7 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
     }
   }
 
+  // Electron : ISR
   if(param.Electron_Tight_ID.Contains("ISR")){
     if(DataYear==2016){
       ElectronLumi1 = 6.988*1.09595, ElectronLumi2 = 14.851*1.02164, ElectronLumi3 = 62.761*0.975231, ElectronLumi4 = 62.808*0.974035;
@@ -322,7 +335,7 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
     }
   }
 
-  // HN POG ID
+  // Electron : HN
   if(param.Electron_Tight_ID.Contains("HNTight") || param.Electron_Tight_ID.Contains("MVA")){
     if(DataYear==2016){
       //MuonLumi1 = 7.408*0.704597, MuonLumi2 = 7.801*1.24946, MuonLumi3 = 216.748*0.931095;
@@ -556,9 +569,9 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
   Particle ZCand, METv;
 
   // Track Iso vs PF Iso (Use DoubleMuon w/o skim)
-  if(RunMuIso){
+  if(RunIso){
 
-    if(muons_POGLoose.size() == 1){
+    if(muons_POGLoose.size()==1 && muons_POGTight.size()==1){
 
       FillHist("Muon_MiniAODPt", muons_POGLoose.at(0).MiniAODPt(), weight, 500, 0., 500.);
 
@@ -606,7 +619,7 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
 
   for(unsigned int it_rg=0; it_rg<regions.size(); it_rg++){
     weight = 1., muonIDSF = 1., muonIsoSF = 1.;
-    if(!RunMuon && !RunTightIP) break;
+    if(!RunMuon && !RunLooseMuon) break;
 
     // Fake rate measurement region
     if(it_rg == 0){

@@ -81,14 +81,14 @@ void HNtypeI_SR::initializeAnalyzer(){
   }*/
 
   if(RunMuon || RunEMu){
-    MuonTightIDs     = {"HNTightV1", "HNTightV1"};
-    MuonLooseIDs     = {"HNLooseV1", "HNLooseV2"};
-    MuonVetoIDs      = {"ISRVeto", "ISRVeto"};
-    ElectronTightIDs = {"HNTightV1", "HNTightV1"};
-    ElectronLooseIDs = {"HNLooseV1", "HNLooseV1"};
-    ElectronVetoIDs  = {"ISRVeto", "ISRVeto"};
-    MuonFRNames      = {"HNV11", "HNV12"};
-    ElectronFRNames  = {"HNV11", "HNV11"};
+    MuonTightIDs     = {"HNTightV1", "HNTightV1", "HNTightV1"};
+    MuonLooseIDs     = {"HNLooseV1", "HNLooseV2", "HNLooseV3"};
+    MuonVetoIDs      = {"ISRVeto", "ISRVeto", "ISRVeto"};
+    ElectronTightIDs = {"HNTightV1", "HNTightV1", "HNTightV1"};
+    ElectronLooseIDs = {"HNLooseV1", "HNLooseV1", "HNLooseV1"};
+    ElectronVetoIDs  = {"ISRVeto", "ISRVeto", "ISRVeto"};
+    MuonFRNames      = {"HNV11", "HNV12", "HNV13"};
+    ElectronFRNames  = {"HNV11", "HNV11", "HNV11"};
   }
 
   if(RunElectron){
@@ -313,6 +313,7 @@ void HNtypeI_SR::executeEventFromParameter(AnalyzerParameter param){
   if(RunMuon || RunEMu){
     if(param.Muon_Tight_ID.Contains("V1") && param.Muon_Loose_ID.Contains("V1")) IDsuffix = "HNV11";
     if(param.Muon_Tight_ID.Contains("V1") && param.Muon_Loose_ID.Contains("V2")) IDsuffix = "HNV12";
+    if(param.Muon_Tight_ID.Contains("V1") && param.Muon_Loose_ID.Contains("V3")) IDsuffix = "HNV13";
     if(param.Muon_Tight_ID.Contains("V2") && param.Muon_Loose_ID.Contains("V2")) IDsuffix = "HNV22";
   }
 

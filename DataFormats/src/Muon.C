@@ -129,6 +129,7 @@ bool Muon::PassID(TString ID) const {
   //if(ID=="HNLooseV1IsoDown") return Pass_HNLoose(0.3, 0.2, 0.5);
   if(ID=="HNLooseV1") return Pass_HNLoose(0.4, 0.05, 0.1, 3.);
   if(ID=="HNLooseV2") return Pass_HNLoose(0.4, 0.2, 0.1, 3.);
+  if(ID=="HNLooseV3") return Pass_HNLoose(0.4, 0.2, 0.5, 10.);
   if(ID=="HNLooseV1IsoUp") return Pass_HNLoose(0.5, 0.05, 0.1, 3.);
   if(ID=="HNLooseV1IsoDown") return Pass_HNLoose(0.3, 0.05, 0.1, 3.);
   /*if(ID=="HNTightV1") return Pass_HNTight(0.15, 0.05, 0.1);
@@ -146,8 +147,7 @@ bool Muon::PassID(TString ID) const {
   if(ID=="ISRLoose") return Pass_ISRLoose(0.4);
   if(ID=="ISRLooseIsoUp") return Pass_ISRLoose(0.5);
   if(ID=="ISRLooseIsoDown") return Pass_ISRLoose(0.3);
-  if(ID=="ISRTightV1") return Pass_ISRTight(0.15);
-  if(ID=="ISRTightV2") return Pass_ISRTight(0.1);
+  if(ID=="ISRTight") return Pass_ISRTight(0.15);
 
   if(ID=="HighPtVeto") return Pass_POGHighPtVeto();
   if(ID=="POGLooseWithTrkIso") return Pass_POGLooseWithTrkIso();
