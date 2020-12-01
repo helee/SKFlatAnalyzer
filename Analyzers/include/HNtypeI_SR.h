@@ -15,7 +15,7 @@ public:
   bool RunSyst;
   bool RunNewPDF;
   bool RunXSecSyst;
-  bool RunMuon, RunTightIP, RunElectron, RunEMu, RunTightEMu, RunFake, RunCF;
+  bool RunFake, RunCF;
 
   // Trigger
   vector<TString> MuonTriggers;
@@ -25,6 +25,8 @@ public:
   vector<TString> EMuTriggersH;
   vector<TString> Mu8Ele23Triggers;
   vector<TString> Mu23Ele12Triggers;
+  vector<TString> Mu8Ele23TriggersH;
+  vector<TString> Mu23Ele12TriggersH;
 
   // Lepton ID
   vector<TString> MuonVetoIDs;

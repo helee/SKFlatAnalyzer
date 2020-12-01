@@ -8,11 +8,9 @@ void HNtypeI_VV_CR_2016H::initializeAnalyzer(){
 
   //==== if you use "--userflags RunSyst" with SKFlat.py, HasFlag("RunSyst") will return "true"
   RunSyst = HasFlag("RunSyst");
-  RunTightIP = HasFlag("RunTightIP");
   RunFake = HasFlag("RunFake");
 
   cout << "[HNtypeI_VV_CR_2016H::initializeAnalyzer] RunSyst = " << RunSyst << endl;
-  cout << "[HNtypeI_VV_CR_2016H::initializeAnalyzer] RunTightIP = " << RunTightIP << endl;
   cout << "[HNtypeI_VV_CR_2016H::initializeAnalyzer] RunFake = " << RunFake << endl;
 
   /*if(!RunTightIP){
@@ -34,7 +32,7 @@ void HNtypeI_VV_CR_2016H::initializeAnalyzer(){
     ElectronVetoIDs  = {"ISRVeto", "HNMVAVeto", "ISRVeto", "HNMVAVeto"};
     MuonFRNames      = {"POGCBV7", "POGCBV7", "POGCBV8", "POGCBV8"};
     ElectronFRNames  = {"POGCB", "POGMVA", "POGCB", "POGMVA"};
-  }*/
+  }
 
   MuonTightIDs     = {"HNTightV1", "HNTightV1", "HNTightV1"};
   MuonLooseIDs     = {"HNLooseV1", "HNLooseV2", "HNLooseV3"};
@@ -43,7 +41,16 @@ void HNtypeI_VV_CR_2016H::initializeAnalyzer(){
   ElectronLooseIDs = {"HNLooseV1", "HNLooseV1", "HNLooseV1"};
   ElectronVetoIDs  = {"ISRVeto", "ISRVeto", "ISRVeto"};
   MuonFRNames      = {"HNV11", "HNV12", "HNV13"};
-  ElectronFRNames  = {"HNV11", "HNV11", "HNV11"};
+  ElectronFRNames  = {"HNV11", "HNV11", "HNV11"};*/
+
+  MuonTightIDs     = {"HNTightV1"};
+  MuonLooseIDs     = {"HNLooseV3"};
+  MuonVetoIDs      = {"ISRVeto"};
+  ElectronTightIDs = {"HNTightV1"};
+  ElectronLooseIDs = {"HNLooseV1"};
+  ElectronVetoIDs  = {"ISRVeto"};
+  MuonFRNames      = {"HNV13"};
+  ElectronFRNames  = {"HNV11"};
 
   //==== At this point, sample informations (e.g., IsDATA, DataStream, MCSample, or DataYear) are all set
   //==== You can define sample-dependent or year-dependent variables here
@@ -55,59 +62,59 @@ void HNtypeI_VV_CR_2016H::initializeAnalyzer(){
   MuonTriggers.clear();
   MuonTriggersH.clear();
   ElectronTriggers.clear();
-  EMuTriggers.clear();
-  EMuTriggersH.clear();
+  //EMuTriggers.clear();
+  //EMuTriggersH.clear();
 
   if(DataYear==2016){                                                                   // Lumi values for trigger weight (/pb)
-    //MuonTriggers.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v");                       // 27267.591112919   // NOTE : Change for 2016H
-    //MuonTriggers.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v");                     // 27267.591112919   // NOTE : Change for 2016H
+    MuonTriggers.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v");                       // 27267.591112919
+    MuonTriggers.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v");                     // 27267.591112919
     MuonTriggers.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v");                    // 35918.219492947
     MuonTriggers.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v");                  // 35918.219492947
     MuonTriggersH.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v");                   // 35918.219492947
     MuonTriggersH.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v");                 // 35918.219492947
     ElectronTriggers.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");          // 35918.219492947
-    EMuTriggers.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v");          // 27267.591112919
-    EMuTriggers.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v");         // 27267.591112919
-    EMuTriggersH.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v");      // 8650.628380028
-    EMuTriggersH.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");     // 8650.628380028
+    //EMuTriggers.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v");          // 27267.591112919
+    //EMuTriggers.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v");         // 27267.591112919
+    //EMuTriggersH.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v");      // 8650.628380028
+    //EMuTriggersH.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");     // 8650.628380028
 
     // These are needed for applying lepton pT cuts 
-    Mu8Ele23Triggers.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v");
-    Mu8Ele23Triggers.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v");
-    Mu23Ele12Triggers.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v");
-    Mu23Ele12Triggers.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");
+    //Mu8Ele23Triggers.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v");
+    //Mu8Ele23Triggers.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v");
+    //Mu23Ele12Triggers.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v");
+    //Mu23Ele12Triggers.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");
 
     MuonPtCut1 = 20., MuonPtCut2 = 10.;
     ElectronPtCut1 = 25., ElectronPtCut2 = 15.;
-    EMuPtCut1 = 25., EMuPtCut2 = 15.;
+    //EMuPtCut1 = 25., EMuPtCut2 = 15.;
   }
   else if(DataYear==2017){
     MuonTriggers.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v");
     ElectronTriggers.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v");
-    EMuTriggers.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v");
-    EMuTriggers.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");
+    //EMuTriggers.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v");
+    //EMuTriggers.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");
 
     // These are needed for applying lepton pT cuts 
-    Mu8Ele23Triggers.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v");
-    Mu23Ele12Triggers.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");
+    //Mu8Ele23Triggers.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v");
+    //Mu23Ele12Triggers.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");
 
     MuonPtCut1 = 20., MuonPtCut2 = 10.;
     ElectronPtCut1 = 25., ElectronPtCut2 = 15.;
-    EMuPtCut1 = 25., EMuPtCut2 = 15.;
+    //EMuPtCut1 = 25., EMuPtCut2 = 15.;
   }
   else if(DataYear==2018){
     MuonTriggers.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v");
     ElectronTriggers.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v");
-    EMuTriggers.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v");
-    EMuTriggers.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");
+    //EMuTriggers.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v");
+    //EMuTriggers.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");
 
     // These are needed for applying lepton pT cuts 
-    Mu8Ele23Triggers.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v");
-    Mu23Ele12Triggers.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");
+    //Mu8Ele23Triggers.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v");
+    //Mu23Ele12Triggers.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");
 
     MuonPtCut1 = 20., MuonPtCut2 = 10.;
     ElectronPtCut1 = 25., ElectronPtCut2 = 15.;
-    EMuPtCut1 = 25., EMuPtCut2 = 15.;
+    //EMuPtCut1 = 25., EMuPtCut2 = 15.;
   }
 
   //cout << "[HNtypeI_VV_CR_2016H::initializeAnalyzer] IsoMuTriggerName = " << IsoMuTriggerName << endl;
@@ -221,7 +228,7 @@ void HNtypeI_VV_CR_2016H::executeEvent(){
 
 void HNtypeI_VV_CR_2016H::executeEventFromParameter(AnalyzerParameter param){
 
-  TString IDsuffix = "";
+  TString IDsuffix = "HNRun2";
   /*if(param.Muon_Tight_ID.Contains("ISRTightV2") && param.Electron_Tight_ID.Contains("HNTight")) IDsuffix = "POGCBV1";
   if(param.Muon_Tight_ID.Contains("ISRTightV2") && param.Electron_Tight_ID.Contains("HNMVA"))   IDsuffix = "POGMVAV1";
   if(param.Muon_Tight_ID.Contains("HNTightV2") && param.Electron_Tight_ID.Contains("HNTight"))  IDsuffix = "POGCBV2";
@@ -230,12 +237,12 @@ void HNtypeI_VV_CR_2016H::executeEventFromParameter(AnalyzerParameter param){
   if(param.Muon_Tight_ID.Contains("HNTightV5") && param.Electron_Tight_ID.Contains("HNTight")) IDsuffix = "POGCBV3";
   if(param.Muon_Tight_ID.Contains("HNTightV5") && param.Electron_Tight_ID.Contains("MVA")) IDsuffix = "POGMVAV3";
   if(param.Muon_Tight_ID.Contains("HNTightV6") && param.Electron_Tight_ID.Contains("HNTight")) IDsuffix = "POGCBV4";
-  if(param.Muon_Tight_ID.Contains("HNTightV6") && param.Electron_Tight_ID.Contains("MVA")) IDsuffix = "POGMVAV4";*/
+  if(param.Muon_Tight_ID.Contains("HNTightV6") && param.Electron_Tight_ID.Contains("MVA")) IDsuffix = "POGMVAV4";
 
   if(param.Muon_Tight_ID.Contains("V1") && param.Muon_Loose_ID.Contains("V1")) IDsuffix = "HNV11";
   if(param.Muon_Tight_ID.Contains("V1") && param.Muon_Loose_ID.Contains("V2")) IDsuffix = "HNV12";
   if(param.Muon_Tight_ID.Contains("V1") && param.Muon_Loose_ID.Contains("V3")) IDsuffix = "HNV13";
-  if(param.Muon_Tight_ID.Contains("V2") && param.Muon_Loose_ID.Contains("V2")) IDsuffix = "HNV22";
+  if(param.Muon_Tight_ID.Contains("V2") && param.Muon_Loose_ID.Contains("V2")) IDsuffix = "HNV22";*/
 
   vector<TString> regions = {"WZ", "ZG", "WG", "ZZ"}; 
   vector<TString> channels3L = {"mmm", "mme", "mee", "eee"};
@@ -246,12 +253,16 @@ void HNtypeI_VV_CR_2016H::executeEventFromParameter(AnalyzerParameter param){
   TString NjetBin = "", VtxBin = "";
   double cutflow_max = 10.;
   int cutflow_bin = 10;
-  double weight = 1., weight_noPU = 1., weight_vertex = 1., weight_rho = 1., PUweight_up = 1., PUweight_down = 1.;
-  double trigger_lumi = 1., dimu_trig_weight = 0., emu_trig_weight = 0.;
+  double weight = 1., weight_noPU = 1.;
+  double trigger_lumi = 1., dimu_trig_weight = 0., diel_trig_weight = 0.;
   double muon_miniaodP = 0.;
- 
+
   Event ev = GetEvent();
 
+  // Boolean : passTrigger
+  bool passMuMu = ev.PassTrigger(MuonTriggers);     // NOTE : Change for 2016H 
+  bool passEE   = ev.PassTrigger(ElectronTriggers);
+ 
   //========================================================
   //==== No Cut
   //========================================================
@@ -269,12 +280,8 @@ void HNtypeI_VV_CR_2016H::executeEventFromParameter(AnalyzerParameter param){
 
   int Nvtx = nPV;
   //if(!IsDATA) Nvtx = nPileUp+1;
-
-  /*FillHist("nPileUp", nPileUp, weight, 200., 0., 200.);
-  FillHist("Nvtx", Nvtx, weight, 200., 0., 200.);
-
-  FillHist("nPileUp_noPU", nPileUp, weight_noPU, 200., 0., 200.);
-  FillHist("Nvtx_noPU", Nvtx, weight_noPU, 200., 0., 200.);*/
+  FillHist("Nvtx_noPU", Nvtx, weight_noPU, 100, 0., 100.);
+  FillHist("Nvtx", Nvtx, weight, 100, 0., 100.);
 
   // Cutflow : No Cuts
   for(unsigned int it_rg=0; it_rg<regions.size(); it_rg++){
@@ -298,13 +305,7 @@ void HNtypeI_VV_CR_2016H::executeEventFromParameter(AnalyzerParameter param){
   //==== Trigger
   //========================================================
 
-  if(!(ev.PassTrigger(MuonTriggers) || ev.PassTrigger(ElectronTriggers))) return; 
-  /*if(DataYear==2016){
-    if(!(ev.PassTrigger(MuonTriggers) || ev.PassTrigger(ElectronTriggers) || ev.PassTrigger(EMuTriggers) || ev.PassTrigger(EMuTriggersH))) return;
-  }
-  else{
-    if(!(ev.PassTrigger(MuonTriggers) || ev.PassTrigger(ElectronTriggers) || ev.PassTrigger(EMuTriggers))) return;
-  }*/
+  if(!(passMuMu || passEE)) return; 
 
   //========================================================
   //==== Copy AllObjects
@@ -523,7 +524,7 @@ void HNtypeI_VV_CR_2016H::executeEventFromParameter(AnalyzerParameter param){
           if(fabs(electrons.at(i).scEta()) > 1.479) el_tight_iso = 0.0445+0.963/electrons.at(i).UncorrPt();
         }
 
-        if(param.Electron_Tight_ID.Contains("HNMVA")) el_tight_iso = 0.08;
+        //if(param.Electron_Tight_ID.Contains("HNMVA")) el_tight_iso = 0.08;
 
         this_ptcone_electron = electrons.at(i).CalcPtCone(electrons.at(i).RelIso(), el_tight_iso);
         electrons.at(i).SetPtCone(this_ptcone_electron);
@@ -595,20 +596,16 @@ void HNtypeI_VV_CR_2016H::executeEventFromParameter(AnalyzerParameter param){
   //=====================================================================================
 
   // Period-dependent trigger weight (only for 2016 MC)
-  trigger_lumi = 1., dimu_trig_weight = 0., emu_trig_weight = 0.;
+  trigger_lumi = 1., dimu_trig_weight = 0., diel_trig_weight = 0.;
   if(!IsDATA){
     if(DataYear==2016){
-      if(ev.PassTrigger(MuonTriggers)){
-        if(ev.PassTrigger(MuonTriggers)) dimu_trig_weight += 27267.591;
-        if(ev.PassTrigger(MuonTriggersH)) dimu_trig_weight += 8650.628;
-        trigger_lumi = dimu_trig_weight;
-      }
-      if(ev.PassTrigger(ElectronTriggers)){
-        trigger_lumi = ev.GetTriggerLumi("Full"); 
-      }
+      if(ev.PassTrigger(MuonTriggers))  dimu_trig_weight += 27267.591;
+      if(ev.PassTrigger(MuonTriggersH)) dimu_trig_weight += 8650.628;
+      diel_trig_weight = ev.GetTriggerLumi("Full"); 
     }
     else{
-      trigger_lumi = ev.GetTriggerLumi("Full");
+      dimu_trig_weight = ev.GetTriggerLumi("Full");
+      diel_trig_weight = ev.GetTriggerLumi("Full");
     }
   }
 
@@ -621,14 +618,16 @@ void HNtypeI_VV_CR_2016H::executeEventFromParameter(AnalyzerParameter param){
     ossf_mass10 = 0;
 
     if(!IsDATA){
-      weight *= weight_norm_1invpb*trigger_lumi;
+      weight *= weight_norm_1invpb;
       weight *= ev.MCweight();
       weight *= GetPrefireWeight(0);
       weight *= GetPileUpWeight(nPileUp,0);
     }
-    // Cutflow : passing dilepton triggers (dimu || diel || emu)
+    // Cutflow : passing dilepton triggers (dimu || diel)
+    // This is not correct because the double counting due to events passing both mumu & ee triggers is not considered here
     for(unsigned int it_rg=0; it_rg<regions.size(); it_rg++){
-      FillHist(systName+"/"+regions.at(it_rg)+"/Number_Events_"+IDsuffix, 2.5, weight, cutflow_bin, 0., cutflow_max);
+      if(!IsDATA) trigger_lumi = diel_trig_weight;
+      FillHist(systName+"/"+regions.at(it_rg)+"/Number_Events_"+IDsuffix, 2.5, weight*trigger_lumi, cutflow_bin, 0., cutflow_max);
       FillHist(systName+"/"+regions.at(it_rg)+"/Number_Events_unweighted_"+IDsuffix, 2.5, 1., cutflow_bin, 0., cutflow_max);
     }
 
@@ -649,8 +648,8 @@ void HNtypeI_VV_CR_2016H::executeEventFromParameter(AnalyzerParameter param){
       if(leptons.size() != 3) continue;
 
       // Passing triggers
-      if(muons.size() >= 2){ if(!ev.PassTrigger(MuonTriggers)) continue; }
-      if(electrons.size() >= 2){ if(!ev.PassTrigger(ElectronTriggers)) continue; }
+      if(muons.size() >= 2){ if(!passMuMu) continue; }
+      if(electrons.size() >= 2){ if(!passEE) continue; }
 
       trigger_lumi = 1., dimu_trig_weight = 0.;
       if(!IsDATA){
@@ -730,7 +729,7 @@ void HNtypeI_VV_CR_2016H::executeEventFromParameter(AnalyzerParameter param){
           if(param.Electron_Tight_ID.Contains("HEEP")){
             electronIDSF *= mcCorr->ElectronID_SF("HEEP", electrons.at(i).scEta(), electrons.at(i).UncorrPt(), 0);
           }
-          else electronIDSF = 1.;
+          else electronIDSF *= 1.;
           weight *= electronRecoSF*electronIDSF;
         }
 
@@ -985,8 +984,8 @@ void HNtypeI_VV_CR_2016H::executeEventFromParameter(AnalyzerParameter param){
       if((muons.size()==1 && electrons.size()==3) || (muons.size()==3 && electrons.size()==1)) continue;
 
       // Passing triggers
-      if(muons.size() >= 2){ if(!ev.PassTrigger(MuonTriggers)) continue; }
-      if(electrons.size() == 4){ if(!ev.PassTrigger(ElectronTriggers)) continue; }
+      if(muons.size() >= 2){ if(!passMuMu) continue; }
+      if(electrons.size() == 4){ if(!passEE) continue; }
 
       trigger_lumi = 1., dimu_trig_weight = 0.;
       if(!IsDATA){
