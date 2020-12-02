@@ -259,6 +259,13 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
 
   Event ev = GetEvent();
 
+  // Boolean : primary datasets
+  bool isDoubleMuon = false, isDoubleEG = false;
+  if(IsDATA){
+    if(DataStream.Contains("DoubleMuon")) isDoubleMuon = true;
+    if(DataStream.Contains("DoubleEG") || DataStream.Contains("EGamma")) isDoubleEG = true;
+  }
+
   // Boolean : passTrigger
   bool passMuMu = ev.PassTrigger(MuonTriggers);
   bool passEE   = ev.PassTrigger(ElectronTriggers);
@@ -648,8 +655,14 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
       if(leptons.size() != 3) continue;
 
       // Passing triggers
-      if(muons.size() >= 2){ if(!passMuMu) continue; }
-      if(electrons.size() >= 2){ if(!passEE) continue; }
+      if(muons.size() >= 2){
+        if(!passMuMu) continue;
+        if(IsDATA){ if(!isDoubleMuon) continue; }
+      }
+      if(electrons.size() >= 2){
+        if(!passEE) continue;
+        if(IsDATA){ if(!isDoubleEG) continue; }
+      }
 
       trigger_lumi = 1., dimu_trig_weight = 0.;
       if(!IsDATA){
@@ -984,8 +997,14 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
       if((muons.size()==1 && electrons.size()==3) || (muons.size()==3 && electrons.size()==1)) continue;
 
       // Passing triggers
-      if(muons.size() >= 2){ if(!passMuMu) continue; }
-      if(electrons.size() == 4){ if(!passEE) continue; }
+      if(muons.size() >= 2){
+        if(!passMuMu) continue;
+        if(IsDATA){ if(!isDoubleMuon) continue; }
+      }
+      if(electrons.size() == 4){
+        if(!passEE) continue;
+        if(IsDATA){ if(!isDoubleEG) continue; }
+      }
 
       trigger_lumi = 1., dimu_trig_weight = 0.;
       if(!IsDATA){
