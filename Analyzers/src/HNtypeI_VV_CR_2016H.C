@@ -260,7 +260,7 @@ void HNtypeI_VV_CR_2016H::executeEventFromParameter(AnalyzerParameter param){
   Event ev = GetEvent();
 
   // Boolean : passTrigger
-  bool passMuMu = ev.PassTrigger(MuonTriggers);     // NOTE : Change for 2016H 
+  bool passMuMu = ev.PassTrigger(MuonTriggersH);     // NOTE : Change for 2016H 
   bool passEE   = ev.PassTrigger(ElectronTriggers);
  
   //========================================================
