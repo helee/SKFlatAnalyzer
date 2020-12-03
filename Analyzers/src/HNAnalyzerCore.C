@@ -119,9 +119,6 @@ std::vector<Muon> HNAnalyzerCore::GetAllMuons(){
     mu.SetisPOGHighPt(muon_ishighpt->at(i));
     mu.SetChi2(muon_normchi->at(i));
     mu.SetIso(muon_PfChargedHadronIsoR04->at(i),muon_PfNeutralHadronIsoR04->at(i),muon_PfGammaIsoR04->at(i),muon_PFSumPUIsoR04->at(i),muon_trkiso->at(i));
-    mu.SetValidMuonHits(muon_validmuonhits->at(i));
-    mu.SetMatchedStations(muon_matchedstations->at(i));
-    mu.SetPixelHits(muon_pixelHits->at(i));
     mu.SetTrackerLayers(muon_trackerLayers->at(i));
 
     //==== Should be set after Eta is set
@@ -263,7 +260,7 @@ std::vector<Lepton *> HNAnalyzerCore::MakeLeptonPointerVector(const std::vector<
   for(unsigned int i=0; i<muons.size(); i++){
     Lepton *l = (Lepton *)(&muons.at(i));
     if( !(l->LeptonFlavour() == Lepton::MUON) ){
-//      cout << "[HNAnalyzerCore::MakeLeptonPointerVector(std::vector<Muon>& muons)] Not muon.." << endl;
+      //cout << "[HNAnalyzerCore::MakeLeptonPointerVector(std::vector<Muon>& muons)] Not muon.." << endl;
       cerr << "[HNAnalyzerCore::MakeLeptonPointerVector(std::vector<Muon>& muons)] Not muon.." << endl;
       exit(EXIT_FAILURE);
     }
@@ -280,13 +277,14 @@ std::vector<Lepton *> HNAnalyzerCore::MakeLeptonPointerVector(const std::vector<
   return out;
 
 }
+
 std::vector<Lepton *> HNAnalyzerCore::MakeLeptonPointerVector(const std::vector<Electron>& electrons, double TightIso, bool UseMini){
 
   std::vector<Lepton *> out;
   for(unsigned int i=0; i<electrons.size(); i++){
     Lepton *l = (Lepton *)(&electrons.at(i));
     if( !(l->LeptonFlavour() == Lepton::ELECTRON) ){
-//      cout << "[HNAnalyzerCore::MakeLeptonPointerVector(std::vector<ELECTRON>& electrons)] Not electron.." << endl;
+      //cout << "[HNAnalyzerCore::MakeLeptonPointerVector(std::vector<ELECTRON>& electrons)] Not electron.." << endl;
       cerr << "[HNAnalyzerCore::MakeLeptonPointerVector(std::vector<ELECTRON>& electrons)] Not electron.." << endl;
       exit(EXIT_FAILURE);
     }
@@ -303,8 +301,6 @@ std::vector<Lepton *> HNAnalyzerCore::MakeLeptonPointerVector(const std::vector<
   return out;
 
 }
-
-
 
 std::vector<Photon> HNAnalyzerCore::GetAllPhotons(){
 
@@ -948,7 +944,7 @@ double HNAnalyzerCore::GetPrefireWeight(int sys){
 
   }
 
-//  cout << "[HNAnalyzerCore::GetPrefireWeight] wtf" << endl;
+  //cout << "[HNAnalyzerCore::GetPrefireWeight] wtf" << endl;
   cerr << "[HNAnalyzerCore::GetPrefireWeight] wtf" << endl;
   exit(EXIT_FAILURE);
   return 1.;
@@ -973,11 +969,11 @@ double HNAnalyzerCore::GetPileUpWeight(int N_pileup, int syst){
     }
     else if(DataYear==2018){
       //==== TODO 2018 not yet added
-//      return 1.;
-      return mcCorr->GetPileUpWeight(N_pileup, syst); // The same method for 2016 MC
+      //return 1.;
+      return mcCorr->GetPileUpWeight(N_pileup, syst); // The same method which is applied for 2016 MC
     }
     else{
-//      cout << "[HNAnalyzerCore::GetPileUpWeight] Wrong year : " << DataYear << endl;
+      //cout << "[HNAnalyzerCore::GetPileUpWeight] Wrong year : " << DataYear << endl;
       cerr << "[HNAnalyzerCore::GetPileUpWeight] Wrong year : " << DataYear << endl;
       exit(EXIT_FAILURE);
       return 1.;
@@ -1109,36 +1105,6 @@ std::vector<Muon> HNAnalyzerCore::MuonPromptOnly(const std::vector<Muon>& muons,
 
 }
 
-std::vector<Muon> HNAnalyzerCore::MuonPromptOnlyHNtypeI(const std::vector<Muon>& muons, const std::vector<Gen>& gens){
-
-  if(IsDATA) return muons;
-
-  std::vector<Muon> out;
-
-  for(unsigned int i=0; i<muons.size(); i++){
-    if(GetLeptonType(muons.at(i), gens)<=0 && GetLeptonType(muons.at(i), gens)>-5) continue;
-    out.push_back( muons.at(i) );
-  }
-
-  return out;
-
-}
-
-std::vector<Muon> HNAnalyzerCore::MuonFakeOnly(const std::vector<Muon>& muons, const std::vector<Gen>& gens){
-
-  if(IsDATA) return muons;
-
-  std::vector<Muon> out;
-
-  for(unsigned int i=0; i<muons.size(); i++){
-    if(GetLeptonType(muons.at(i), gens)>=0 || GetLeptonType(muons.at(i), gens)<-4) continue;
-    out.push_back( muons.at(i) );
-  }
-
-  return out;
-
-}
-
 std::vector<Muon> HNAnalyzerCore::MuonUsePtCone(const std::vector<Muon>& muons){
 
   std::vector<Muon> out;
@@ -1163,6 +1129,31 @@ Muon HNAnalyzerCore::MuonUsePtCone(const Muon& muon){
 
 }
 
+Particle HNAnalyzerCore::UpdateMET(const Particle& METv, const std::vector<Muon>& muons){
+
+  float met_x = METv.Px();
+  float met_y = METv.Py();
+
+  double px_orig(0.), py_orig(0.),px_corrected(0.), py_corrected(0.);
+  for(unsigned int i=0; i<muons.size(); i++){
+
+    px_orig+= muons.at(i).MiniAODPt()*TMath::Cos(muons.at(i).Phi());
+    py_orig+= muons.at(i).MiniAODPt()*TMath::Sin(muons.at(i).Phi());
+
+    px_corrected += muons.at(i).Px();
+    py_corrected += muons.at(i).Py();
+
+  }
+
+  met_x = met_x + px_orig - px_corrected;
+  met_y = met_y + py_orig - py_corrected;
+
+  Particle METout;
+  METout.SetPxPyPzE(met_x,met_y,0,sqrt(met_x*met_x+met_y*met_y));
+  return METout;
+
+}
+
 std::vector<Muon> HNAnalyzerCore::MuonApplyPtCut(const std::vector<Muon>& muons, double ptcut){
 
   std::vector<Muon> out;
@@ -1184,36 +1175,6 @@ std::vector<Electron> HNAnalyzerCore::ElectronPromptOnly(const std::vector<Elect
 
   for(unsigned int i=0; i<electrons.size(); i++){
     if(GetLeptonType(electrons.at(i), gens)<=0) continue;
-    out.push_back( electrons.at(i) );
-  }
-
-  return out;
-
-}
-
-std::vector<Electron> HNAnalyzerCore::ElectronPromptOnlyHNtypeI(const std::vector<Electron>& electrons, const std::vector<Gen>& gens){
-
-  if(IsDATA) return electrons;
-
-  std::vector<Electron> out;
-
-  for(unsigned int i=0; i<electrons.size(); i++){
-    if(GetLeptonType(electrons.at(i), gens)<=0 && GetLeptonType(electrons.at(i), gens)>-5) continue;
-    out.push_back( electrons.at(i) );
-  }
-
-  return out;
-
-}
-
-std::vector<Electron> HNAnalyzerCore::ElectronFakeOnly(const std::vector<Electron>& electrons, const std::vector<Gen>& gens){
-
-  if(IsDATA) return electrons;
-
-  std::vector<Electron> out;
-
-  for(unsigned int i=0; i<electrons.size(); i++){
-    if(GetLeptonType(electrons.at(i), gens)>=0 && GetLeptonType(electrons.at(i), gens)<-4) continue;
     out.push_back( electrons.at(i) );
   }
 
@@ -1271,26 +1232,6 @@ std::vector<Jet> HNAnalyzerCore::JetsAwayFromFatJet(const std::vector<Jet>& jets
       }
     }
     if(!Overlap) out.push_back( jets.at(i) );
-
-  }
-
-  return out;
-
-}
-
-std::vector<Jet> HNAnalyzerCore::JetsInsideFatJet(const std::vector<Jet>& jets, const std::vector<FatJet>& fatjets, double mindr){
-
-  std::vector<Jet> out;
-  for(unsigned int i=0; i<jets.size(); i++){
-
-    bool Outside = false;
-    for(unsigned int j=0; j<fatjets.size(); j++){
-      if( ( jets.at(i) ).DeltaR( fatjets.at(j) ) >= mindr ){
-        Outside = true;
-        break;
-      }
-    }
-    if(!Outside) out.push_back( jets.at(i) );
 
   }
 
@@ -1391,6 +1332,90 @@ Particle HNAnalyzerCore::AddFatJetAndLepton(const FatJet& fatjet, const Lepton& 
   else{
     return fatjet+lep;
   }
+
+}
+
+//=========================================================
+//==== Lepton, jet functions for HNtypeI
+//=========================================================
+
+std::vector<Muon> HNAnalyzerCore::MuonPromptOnlyHNtypeI(const std::vector<Muon>& muons, const std::vector<Gen>& gens){
+
+  if(IsDATA) return muons;
+
+  std::vector<Muon> out;
+
+  for(unsigned int i=0; i<muons.size(); i++){
+    if(GetLeptonType(muons.at(i), gens)<=0 && GetLeptonType(muons.at(i), gens)>-5) continue;
+    out.push_back( muons.at(i) );
+  }
+
+  return out;
+
+}
+
+std::vector<Muon> HNAnalyzerCore::MuonFakeOnly(const std::vector<Muon>& muons, const std::vector<Gen>& gens){
+
+  if(IsDATA) return muons;
+
+  std::vector<Muon> out;
+
+  for(unsigned int i=0; i<muons.size(); i++){
+    if(GetLeptonType(muons.at(i), gens)>=0 || GetLeptonType(muons.at(i), gens)<-4) continue;
+    out.push_back( muons.at(i) );
+  }
+
+  return out;
+
+}
+
+std::vector<Electron> HNAnalyzerCore::ElectronPromptOnlyHNtypeI(const std::vector<Electron>& electrons, const std::vector<Gen>& gens){
+
+  if(IsDATA) return electrons;
+
+  std::vector<Electron> out;
+
+  for(unsigned int i=0; i<electrons.size(); i++){
+    if(GetLeptonType(electrons.at(i), gens)<=0 && GetLeptonType(electrons.at(i), gens)>-5) continue;
+    out.push_back( electrons.at(i) );
+  }
+
+  return out;
+
+}
+
+std::vector<Electron> HNAnalyzerCore::ElectronFakeOnly(const std::vector<Electron>& electrons, const std::vector<Gen>& gens){
+
+  if(IsDATA) return electrons;
+
+  std::vector<Electron> out;
+
+  for(unsigned int i=0; i<electrons.size(); i++){
+    if(GetLeptonType(electrons.at(i), gens)>=0 && GetLeptonType(electrons.at(i), gens)<-4) continue;
+    out.push_back( electrons.at(i) );
+  }
+
+  return out;
+
+}
+
+std::vector<Jet> HNAnalyzerCore::JetsInsideFatJet(const std::vector<Jet>& jets, const std::vector<FatJet>& fatjets, double mindr){
+
+  std::vector<Jet> out;
+  for(unsigned int i=0; i<jets.size(); i++){
+
+    bool Outside = false;
+    for(unsigned int j=0; j<fatjets.size(); j++){
+      if( ( jets.at(i) ).DeltaR( fatjets.at(j) ) >= mindr ){
+        Outside = true;
+        break;
+      }
+    }
+    if(!Outside) out.push_back( jets.at(i) );
+
+  }
+
+  return out;
 
 }
 
@@ -1510,7 +1535,7 @@ FatJet HNAnalyzerCore::FatJetWCand(const std::vector<FatJet>& fatjets, double MW
 }
 
 //=========================================================
-//==== Correct MET
+//==== Correct MET for HNtypeI
 //=========================================================
 
 Particle HNAnalyzerCore::UpdateMETMuon(const Particle& METv, const std::vector<Muon>& muons){
@@ -1670,26 +1695,25 @@ Particle HNAnalyzerCore::UpdateMETElectronCF(const Particle& METv, const std::ve
 
 }
 
-
 //=========================================================
-//==== Electron CF
+//==== Electron charge flip for HNtypeI
 //=========================================================
 
 std::vector<Electron> HNAnalyzerCore::ShiftElectronEnergy(const std::vector<Electron>& electrons, AnalyzerParameter param, bool applyshift){
 
   std::vector<Electron> out;
-  
+
   for(unsigned int i=0; i<electrons.size(); i++){
     Electron this_electron = electrons.at(i);
     if(!param.Electron_Tight_ID.Contains("Tight")){ out.push_back(this_electron); continue; }
     if(!applyshift){ out.push_back(this_electron); continue; }
 
     double shiftrate = 1.;
-    if(electrons.size() == 2){ 
+    if(electrons.size() == 2){
       if(param.Electron_Tight_ID == "HNTight") shiftrate = 0.987;       // 1.3%
       else if(param.Electron_Tight_ID == "HNTightV2") shiftrate = 0.99; // 1.0%
       else shiftrate = 0.988;                                           // 1.2%
-    } 
+    }
 
     this_electron.SetPtEtaPhiM( electrons.at(i).Pt()*shiftrate, electrons.at(i).Eta(), electrons.at(i).Phi(), electrons.at(i).M() ); // M = 0.511e-03
     out.push_back(this_electron);
@@ -1701,7 +1725,7 @@ std::vector<Electron> HNAnalyzerCore::ShiftElectronEnergy(const std::vector<Elec
 
 double HNAnalyzerCore::GetCFrates(TString id, double pt, double eta){
   if(!id.Contains("Tight")) return 0.;
-  
+
   eta = fabs(eta);
   double ivt_pt = 1./pt;
   double a = 999., b = 999.;  // fit function = a + b/pT
@@ -1766,8 +1790,8 @@ double HNAnalyzerCore::GetCFrates(TString id, double pt, double eta){
 
 double HNAnalyzerCore::GetCFweight(const std::vector<Lepton *> leptons, AnalyzerParameter param, bool applySF, int syst){
   if(!param.Electron_Tight_ID.Contains("Tight")) return 0.;
-  if(leptons.size() > 2) return 0.; 
- 
+  if(leptons.size() > 2) return 0.;
+
   std::vector<Electron> el;
   for(unsigned int i=0; i<leptons.size(); i++){
     if(leptons.at(i)->LeptonFlavour() == Lepton::ELECTRON){
@@ -1775,7 +1799,7 @@ double HNAnalyzerCore::GetCFweight(const std::vector<Lepton *> leptons, Analyzer
       el.push_back(*el_tmp);
     }
   }
-  if(el.size()==2 && el.at(0).Charge()*el.at(1).Charge()>0) return 0.; 
+  if(el.size()==2 && el.at(0).Charge()*el.at(1).Charge()>0) return 0.;
 
   std::vector<double> CFrate, CFweight, sf;
   double cfweight = 0.;
@@ -1801,7 +1825,7 @@ double HNAnalyzerCore::GetCFweight(const std::vector<Lepton *> leptons, Analyzer
   }
 
   return cfweight;
-  
+
 }
 
 double HNAnalyzerCore::GetCFWeightElectron(std::vector<Lepton *> leptons, TString tight_id){
@@ -1834,6 +1858,7 @@ double HNAnalyzerCore::GetCFWeightElectron(std::vector<Lepton *> leptons, TStrin
 
 //=========================================================
 //==== Gen Matching Tools
+//=========================================================
 
 void HNAnalyzerCore::PrintGen(const std::vector<Gen>& gens){
 
@@ -1857,14 +1882,14 @@ Gen HNAnalyzerCore::GetGenMatchedLepton(const Lepton& lep, const std::vector<Gen
   if(lep.LeptonFlavour()==Lepton::ELECTRON) reco_PID = 11;
   else if(lep.LeptonFlavour()==Lepton::MUON) reco_PID = 13;
   else{
-//    cout << "[HNAnalyzerCore::GetGenMatchedLepton] input lepton flavour not set" << endl;
+    //cout << "[HNAnalyzerCore::GetGenMatchedLepton] input lepton flavour not set" << endl;
     cerr << "[HNAnalyzerCore::GetGenMatchedLepton] input lepton flavour not set" << endl;
     exit(EXIT_FAILURE);
   }
 
   double min_dR = 0.1;
   Gen gen_closest;
-  for(unsigned int i=0; i<gens.size(); i++){
+  for(unsigned int i=2; i<gens.size(); i++){
 
     Gen gen = gens.at(i);
 
@@ -1887,29 +1912,22 @@ Gen HNAnalyzerCore::GetGenMatchedLepton(const Lepton& lep, const std::vector<Gen
 }
 
 Gen HNAnalyzerCore::GetGenMatchedPhoton(const Lepton& lep, const std::vector<Gen>& gens){
+//Find if there is a photon candidate for a source of external conversion (similar pt, direction of lepton)
 
-  double min_dR = 0.2;
+  double min_dR = 0.2;//1)
   Gen gen_closest;
-  double pt_min = 10.;
-  for(unsigned int i=0; i<gens.size(); i++){
+  double pt_min = 10., dPtRelmax=0.5, dRmax=0.2;//1)
+  for(unsigned int i=2; i<gens.size(); i++){
 
     Gen gen = gens.at(i);
 
-    //==== reject ISR?
     if( gen.MotherIndex() < 0 ) continue;
-    //==== Hard scattered photon
-    //==== PID==22 && (status=1 or 23)
-    //==== FIXME why not status 2?
-    if( ! ( abs(gen.PID())==22 && (gen.Status()==1 || gen.Status()==23) ) ) continue;
-    //==== min pt
+    if( ! ( abs(gen.PID())==22 && (gen.Status()==1 || gen.Status()==23) ) ) continue;//2)
     if( gen.Pt() < pt_min ) continue;
-    //==== pt balance
-    if( !(lep.Pt()/gen.Pt()>0.8 && lep.Pt()/gen.Pt()<1.2) ) continue;
+    if( !(lep.Pt()/gen.Pt()>(1.-dPtRelmax) && lep.Pt()/gen.Pt()<(1.+dPtRelmax)) ) continue;
+    if( gen.DeltaR( lep ) > dRmax ) continue;
+    if( gen.Status()==23 && !IsFinalPhotonSt23_Public(gens) ) continue;//2)
 
-    //==== TODO photonstatus23 from JH
-    //==== if( TruthColl.at(i).GenStatus()==23 && !IsFinalPhotonSt23(TruthColl) ) continue;//4)
-
-    //==== dR matching
     if( gen.DeltaR( lep ) < min_dR ){
       min_dR = gen.DeltaR( lep ) ;
       gen_closest = gen;
@@ -1919,9 +1937,17 @@ Gen HNAnalyzerCore::GetGenMatchedPhoton(const Lepton& lep, const std::vector<Gen
 
   return gen_closest;
 
+//1) Validity of cuts are checked for electron with PT>10. Note that the previous dPtRel<0.2 cut in the CatNtuple analysis was optimized for PT(e)>25.
+//   External conversion rate proportionate to M^{-2}, thus muon external conversion rate is negligible.
+//2) As the algorithm targets stable photon near lepton, only status-1 photon should be investigated theoretically. 
+//   However, in some events, last status in photon history is 23. This is believed to be due to skimming of GEN history between pythia & MiniAOD. 
+//   This case is also covered here. Note that IsFinalPhotonSt23 has to analyze whole history, i.e. computationally heavier part in this function.
+//   Therefore it is put at last part of criteria for efficient functioning.
+//For more details about the optimization, ask J.B..
 }
 
 vector<int> HNAnalyzerCore::TrackGenSelfHistory(const Gen& me, const std::vector<Gen>& gens){
+//returns {index of the first history of the gen, index of the last history of the gen's mother}
 
   int myindex = me.Index();
 
@@ -1992,7 +2018,6 @@ bool HNAnalyzerCore::IsFromHadron(const Gen& me, const std::vector<Gen>& gens){
     //==== From Signal
     if( IsSignalPID(current_mother_PID) ){
       out = false;
-      break;
     }
     if( (current_mother_PID==11 || current_mother_PID==13 || current_mother_PID==15 || current_mother_PID==22) && (StartOf_current_mother.Status()>20 && StartOf_current_mother.Status()<30)){
       out = false;
@@ -2012,6 +2037,138 @@ bool HNAnalyzerCore::IsFromHadron(const Gen& me, const std::vector<Gen>& gens){
   return out;
 
 }
+
+
+int HNAnalyzerCore::GetPrElType_InSameSCRange_Public(int TruthIdx, const std::vector<Gen>& TruthColl){
+//Abbreviation: Get Prompt Electron Type In Same Supercluster Range (Public (shared) version of J.B.'s original gen-matching code)
+//Prompt e>eee (int. conv.) case, collimated electrons can be merged in one SC & track is selected among them, and reconstructed as single electron. 
+//In this case, still there will be a nearby prompt electron of LepType 1-3 within supercluster merging range.
+//Supercluster merging range: |dphi|<0.3/0.3 (EB/EE), |deta|<0/0.07 (EB/EE) (additionally put 0.03 for marginal difference from size of crystals)
+//Ref:JINST 10 (2015) P06005, arXiv:1502.02701
+//Return Value: 1/2/3:LeptonType-1/2/3 electron found in same SC range
+//             -1: No LeptonType-1/2/3 electron found in same SC range
+//
+//Note: Hadronic origins are not included in this algo. as I am not sure of effect of many nearby particles in jets on the ele-reco performance.
+//      + it is not of my interest yet.
+
+  if(TruthIdx<2) return false;
+  if(abs(TruthColl.at(TruthIdx).PID())!=11) return false;
+  if(TruthColl.at(TruthIdx).Status()!=1) return false;
+
+  float dPhiMax=0.3, dEtaMax=0.1;
+  int NearbyElType=-1;
+
+  for(unsigned int it_gen=2; it_gen<TruthColl.size(); it_gen++){
+    if(TruthColl.at(it_gen).Status()!=1) continue;
+    if(abs(TruthColl.at(it_gen).PID())!=11) continue;
+    if(fabs(TruthColl.at(TruthIdx).Eta()-TruthColl.at(it_gen).Eta())>dEtaMax) continue;
+    if(TruthColl.at(TruthIdx).DeltaPhi(TruthColl.at(it_gen))>dPhiMax) continue;
+
+    int LepType = GetLeptonType_Public(it_gen, TruthColl);
+    if(!(LepType>=1 && LepType<=3)) continue;
+    NearbyElType  = LepType;
+  }
+
+  return NearbyElType;
+}
+
+
+int HNAnalyzerCore::GetLeptonType_Public(int TruthIdx, const std::vector<Gen>& TruthColl){
+//Type : 1:EW-Prompt / 2: BSM-Prompt / 3:EW/BSM-Prompt-Tau Daughter 
+//       4:Internal Conversion from Soft QED Radiation (PS-level) / 5:Internal Conversion from Hard Process Photon (ME-level)
+//      -1:Unmatched & not EW Conversion candidate (mis-reco. or external conversion within jets)
+//      -2:Hadron Daughter / -3:Daughter of Tau from Hadron or Parton / -4:Internal Conversion Daughter having hadronic origin
+//      -5:External Conversion from Hard process photon / -6:External conversion from t/EWV/EWlep
+//      (-4:Daughter of Non-hard scattered photon & has parton or hadron ancestor OR implicit Conv from quark)
+//       0:Error / >0: Non-fake: Non-hadronic origin / <0 : Fakes: Hadronic origin or external conversion
+//Note: There is no physical distinction between type 4 vs. 5 and type -5 vs. -6. The distinction is only intended for straightforward debugging.
+
+
+  //Only consider Status 1 lepton
+  if(TruthIdx<2) return 0;
+  if(TruthColl.at(TruthIdx).Status()!=1) return 0;
+  if( !(fabs(TruthColl.at(TruthIdx).PID())==11 || fabs(TruthColl.at(TruthIdx).PID())==13) ) return 0;
+
+
+  int LeptonType=0;
+  int MPID=0, GrMPID=0;
+  vector<int> my_history, mom_history, grmom_history;
+  int LastSelfIdx=-1, MotherIdx=-1, LastSelfMIdx=-1, GrMotherIdx=-1, LastSelfGrMIdx=-1;
+  int Status_orig=0, MStatus_orig=0, MStatus_last=0, GrMStatus_orig=0, GrMStatus_last=0;
+  bool HadronicOrigin = false;
+
+  my_history      = TrackGenSelfHistory(TruthColl.at(TruthIdx), TruthColl);
+  LastSelfIdx     = my_history[0];
+  MotherIdx       = my_history[1];
+  Status_orig     = TruthColl.at(LastSelfIdx).Status();
+  HadronicOrigin  = IsFromHadron(TruthColl.at(TruthIdx), TruthColl);
+  
+  if(   MotherIdx!=-1   ){ mom_history  = TrackGenSelfHistory(TruthColl.at(MotherIdx), TruthColl);
+                           LastSelfMIdx = mom_history[0];
+                           GrMotherIdx  = mom_history[1];
+                           MPID         = TruthColl.at(MotherIdx).PID();
+                           MStatus_orig = TruthColl.at(LastSelfMIdx).Status();
+                           MStatus_last = TruthColl.at(MotherIdx).Status();
+                         }
+  if(  GrMotherIdx!=-1  ){ grmom_history  = TrackGenSelfHistory(TruthColl.at(GrMotherIdx), TruthColl);
+                           LastSelfGrMIdx = grmom_history[0];
+                           GrMPID         = TruthColl.at(GrMotherIdx).PID();
+                           GrMStatus_orig = TruthColl.at(LastSelfGrMIdx).Status();
+                           GrMStatus_last = TruthColl.at(GrMotherIdx).Status();
+                         }
+
+  if     ( TruthIdx==-1 )                                       LeptonType= 0;
+  else if( fabs(MPID)==23 || fabs(MPID)==24 || fabs(MPID)==25 ) LeptonType= 1;
+  else if( IsSignalPID(MPID) )                                  LeptonType= 2;
+  else if( Status_orig>20 && Status_orig<30 )                   LeptonType= 1;//1)
+  else if( fabs(MPID)>50 )                                      LeptonType=-2;
+  else if( fabs(MPID)==15 && MStatus_last==2 ){
+           if     ( fabs(GrMPID)==23 || fabs(GrMPID)==24 || fabs(GrMPID)==25 ) LeptonType= 3;
+           else if( IsSignalPID(GrMPID) )                                      LeptonType= 3;
+           else if( MStatus_orig>20  && MStatus_orig<30  )                     LeptonType= 3;//1)
+           else if( HadronicOrigin )                                           LeptonType=-3;//2-a)
+           else if( fabs(GrMPID)==22  && GrMStatus_orig>20 && GrMStatus_orig<30 )                     LeptonType= 5;//2-b)
+           else if( fabs(GrMPID)==22 )                                                                LeptonType= 4;//2-c)
+           else if( (fabs(GrMPID)==11 || fabs(GrMPID)==13 || fabs(GrMPID)==15) && GrMStatus_last!=2 ) LeptonType= 4;//2-d)
+           else                                                                                       LeptonType= 0;
+         }
+  else if( fabs(MPID)==22 ){
+           if( MStatus_orig>20 && MStatus_orig<30 )                            LeptonType= 5;//3-a)
+           else if( HadronicOrigin )                                           LeptonType=-4;//3-b)
+           else if( fabs(GrMPID)==24 || fabs(GrMPID)==23 || fabs(GrMPID)==6  ) LeptonType= 4;//3-c)
+           else if( fabs(GrMPID)==11 || fabs(GrMPID)==13 || fabs(GrMPID)==15 ) LeptonType= 4;//3-d)
+           else                                                                LeptonType= 0;
+         }
+  else if( (fabs(MPID)==11 || fabs(MPID)==13 || fabs(MPID)==15) && MStatus_last!=2 && !HadronicOrigin ) LeptonType= 4;//4-a)
+  else if( ((fabs(MPID)>=1 && fabs(MPID)<=5) || fabs(MPID)==21) && MStatus_last!=2 )                    LeptonType=-4;//4-b)
+  else if( fabs(MPID)==6 ) LeptonType=4;//4-c)
+  else LeptonType=0;
+
+
+  return LeptonType;
+
+//**footnote
+//These are based on observation in DY,ZG,TT sample(DY,ZG:amcnlo+pythia, TT:powheg+pythia) for other PS generator, convention may differ.
+//1) In MG5aMC@NLO generator, output of ME level generation does not have specific guage field mother if it is not on-shell specific generation.
+//   e.g. u u~ > l+ l- -> fabs(MID)=1 .
+//   This line is put after checking prompt mother PID checking, in order to distinguish type 1 and 2.
+//2-a) e.g. a)Had > ta+X, ta>l+2nu b) q>ta+X in jet fragmentation (ta is not from hard process (ME), as it was already checked in prev. step)
+//2-b) e.g. gamma>ta(+)+ta(-)+X, ta>lnu (St=2)
+//2-c) e.g. " " " " " " " " " " " " " " " " " ", but soft gamma case. this is not observed in test sample but put here just in case.
+//          (hadronic origin was already checked before, so no need to worry about contamination from hadronic origins at this line)
+//2-d) e.g. l>tata..+l.. , ta>l+2nu (tau pair produced from internal conversion), photon radiation is not decay: GenStatus!=2
+//3-a) e.g. hard process gamma>ll
+//3-b) e.g. a) Had>gamma+X, gamma>ll+X (in PS+Had stage intermediate process is omitted you see just Had>Nphoton+Mhadrons+..)
+//          b) q>gamma+q, gamma>ll+X in jet fragmentation or radiations of tops.
+//          c) gluon>Ngamma+Mhadrons in jet fragmentation (actually observed in samples)
+//3-c) e.g. W+>W+ gamma, or t>t+gamma, gamma>ll+X, not yet observed in test sample but possible (upto radiation is observed so far)
+//3-d) e.g. ta>ta+gamma, gamma>ll+X, tau not from hadron(e.g. pp>tata)
+//4-a) e.g. EW lep l, l>lll... just implicit conversion. 
+//4-b) e.g. q or g> Nlepton +MHadrons... in parton shower history
+//4-c) e.g. t>t+ll.. implicit conversion
+}
+
+
 
 int HNAnalyzerCore::GetLeptonType(const Lepton& lep, const std::vector<Gen>& gens){
 
@@ -2055,181 +2212,36 @@ int HNAnalyzerCore::GetLeptonType(const Lepton& lep, const std::vector<Gen>& gen
 
   //==== 2) Use Gen history
 
+  int LeptonType=0, MatchedTruthIdx=-1;
   //==== No matched gen lepton
   if( gen_closest.IsEmpty() ){
-
-    //==== Find if we have near photon
     Gen gen_photon_closest = GetGenMatchedPhoton(lep, gens);
-    int photontype = GetGenPhotonType(gen_photon_closest,gens);
-    if(photontype<=0){
-      return -1;
-    }
-    else if(photontype==1){
-      return -5;
-    }
-    else if(photontype==2){
-      return -6;
-    }
-    else{
-      return 0;
-    }
-
+    int NearPhotonType = GetGenPhotonType(gen_photon_closest,gens);
+    if     ( NearPhotonType<=0 ) LeptonType=-1;//1)
+    else if( NearPhotonType==1 ) LeptonType=-5;//2)
+    else if( NearPhotonType==2 ) LeptonType=-6;//3)
   }
   //==== Has macthed gen lepton
   else{
-
-    vector<int> my_history = TrackGenSelfHistory(gen_closest, gens);
-    Gen          Start = gens.at( my_history[0] );
-    Gen MotherOf_Start = gens.at( my_history[1] );
-    int MotherOf_Start_PID = abs(MotherOf_Start.PID()); // |PID|
-
-    //cout << "[HNAnalyzerCore::GetLeptonType] Start Index = " << Start.Index() << endl;
-    //cout << "[HNAnalyzerCore::GetLeptonType] MotherOf_Start Index = " << MotherOf_Start.Index() << endl;
-
-    bool fromhadron = IsFromHadron(gen_closest, gens);
-
-    if     ( 20 < Start.Status() && Start.Status() < 30 ){
-      return 1;
+    MatchedTruthIdx = gen_closest.Index();
+    LeptonType = GetLeptonType_Public(MatchedTruthIdx, gens);//4)
+    if(LeptonType>=4 && LeptonType<=5){//5)
+      int NearbyPrElType = GetPrElType_InSameSCRange_Public(MatchedTruthIdx, gens);
+      if(NearbyPrElType>0) LeptonType = NearbyPrElType;
     }
-    else if( MotherOf_Start_PID==23 || MotherOf_Start_PID==24 || MotherOf_Start_PID==25 ){
-      return 1;
-    }
-    else if( IsSignalPID(MotherOf_Start_PID) ){
-      return 2;
-    }
-    else if( MotherOf_Start_PID>50 ){
-      return -2;
-    }
-
-    //==== Mother is tau,
-    //==== and this tau is decayed by pythia (so status is 2, not 23)
-    else if( MotherOf_Start_PID==15 && MotherOf_Start.Status()==2 ){
-
-      //==== [Histody of this lepton]
-      //====    GrandMother
-      //====
-      //==== => StartOf_MotherOf_StartOf_tau (V/a/Hadron/*lepton)
-      //==== ~>         MotherOf_StartOf_tau (V/a/Hadron/*lepton)
-      //====
-      //==== =>                  StartOf_tau (tau)
-      //==== ~>                          tau (tau)
-      //====
-      //==== =>                       (MY LEPTON) + !@#$
-
-      vector<int> tau_history = TrackGenSelfHistory(MotherOf_Start, gens);
-      
-      Gen          StartOf_tau = gens.at( tau_history[0] );
-      Gen MotherOf_StartOf_tau = gens.at( tau_history[1] );
-      int MotherOf_StartOf_tau_PID = abs(MotherOf_StartOf_tau.PID()); // |PID|
-
-      vector<int> motheroftau_history = TrackGenSelfHistory(MotherOf_StartOf_tau, gens);
-      Gen StartOf_MotherOf_StartOf_tau = gens.at( motheroftau_history[0] );
-
-      //==== tau from Z,W,H
-      if     ( MotherOf_StartOf_tau_PID==23 || MotherOf_StartOf_tau_PID==24 || MotherOf_StartOf_tau_PID==25 ){
-        return 3;
-      }
-      //==== tau from Signal
-      else if( IsSignalPID(MotherOf_StartOf_tau_PID) ){
-        return 3;
-      }
-      else if( 20 < StartOf_MotherOf_StartOf_tau.Status() && StartOf_MotherOf_StartOf_tau.Status() < 30 ){
-        return 3;
-      }
-
-      else if( fromhadron ){
-        return -3;
-      }
-
-      else if( MotherOf_StartOf_tau_PID==22 && (20 < StartOf_MotherOf_StartOf_tau.Status() && StartOf_MotherOf_StartOf_tau.Status() < 30) ){
-        return 5;
-      }
-
-      else if( MotherOf_StartOf_tau_PID==22 ){
-        return 4;
-      }
-
-      //==== conversions for;
-      //==== l > (*a)+l, (*a)>tau+tau, tau>(MyLepton)+2nu
-      //==== this case, first "l" status is not 2 when it radiates photon like this..
-      else if( (MotherOf_StartOf_tau_PID==11||MotherOf_StartOf_tau_PID==13||MotherOf_StartOf_tau_PID==15) && (MotherOf_StartOf_tau.Status()!=2) ){
-        return 4;
-      }
-      else{
-        return 0;
-      }
-
-    }
-
-    //==== Mother is photon
-    else if( MotherOf_Start_PID==22 ){
-
-      //==== [Histody of this lepton]
-      //====    GrandMother
-      //====
-      //==== => StartOf_MotherOf_StartOf_photon (V/a/Hadron/*lepton)
-      //==== ~>         MotherOf_StartOf_photon (V/a/Hadron/*lepton)
-      //====
-      //==== =>                  StartOf_photon (photon)
-      //==== ~>                          photon (photon)
-      //====
-      //==== =>                       (MY LEPTON) + !@#$
-
-      vector<int> photon_history = TrackGenSelfHistory(MotherOf_Start, gens);
-      
-      Gen          StartOf_photon = gens.at( photon_history[0] );
-      Gen MotherOf_StartOf_photon = gens.at( photon_history[1] );
-      int MotherOf_StartOf_photon_PID = abs(MotherOf_StartOf_photon.PID()); // |PID|
-      vector<int> motherofphoton_history = TrackGenSelfHistory(MotherOf_StartOf_photon, gens);
-      Gen StartOf_MotherOf_StartOf_photon = gens.at( motherofphoton_history[0] );
-
-      if     ( 20 < StartOf_MotherOf_StartOf_photon.Status() && StartOf_MotherOf_StartOf_photon.Status() < 30 ){
-        return 5;
-      }
-
-      else if( fromhadron ){
-        return -4;
-      }
-
-      //==== Photon from Z,W,top
-      else if( MotherOf_StartOf_photon_PID==23 || MotherOf_StartOf_photon_PID==24 || MotherOf_StartOf_photon_PID==6 ){
-        return 4;
-      }
-
-      //==== Photon from lepton
-      else if( MotherOf_StartOf_photon_PID==11 || MotherOf_StartOf_photon_PID==13 || MotherOf_StartOf_photon_PID==15 ){
-        return 4;
-      }
-
-      else{
-        return 0;
-      }
-
-    }
-
-    //==== Mother is Lepton,
-    //==== Lepton is not from hadron
-    //==== Internal conversion
-    else if( (MotherOf_Start_PID==11||MotherOf_Start_PID==13||MotherOf_Start_PID==15) && (MotherOf_Start.Status()!=2) && (!fromhadron) ){
-      return 4;
-    }
-
-    else if( ( (1<=MotherOf_Start_PID && MotherOf_Start_PID<=5) || MotherOf_Start_PID==21 ) && (MotherOf_Start.Status()!=2) ){
-      return -4;
-    }
-
-    //==== mother is top
-    else if( MotherOf_Start_PID==6 ){
-      return 4;
-    }
-
-    else{
-      return 0;
-    }
-
   }
 
+  return LeptonType;
 
+//**footnote
+//1) matched to no gen-lepton nor gen-photon -> mis-reco.
+//   matched to no gen-lepton, but to photon with hadronic origin -> mis-reco. (e.g. pions->e) or external conversion from photon in jets
+//2) matched to no gen-lepton, but to photon with non-hadronic origin (hard process) -> external conversion from photon with non-hadronic source (ME-level)
+//3) matched to no gen-lepton, but to photon with non-hadronic origin (soft QED radiation) -> external conversion from photon with non-hadronic source (PS-level)
+//4) matched to gen-lepton, categorize based on the truth categorization algo.: HNAnalyzerCore::GetLeptonType_Public(int TruthIdx, std::vector<Gen>& TruthColl)
+//5) collimated e/gm objects are merged in SC, hence if there is prompt electron within SC-merging range, reco-electron's properties actually represent pre-QED-FSR prompt-electron,
+//   rather than the closest internal conversion electron. Therefore shift the type to the prompt lepton's type.
+//- Note: distinction between type 4 vs. 5 and type -5 vs. -6 is unphysical. it is only for debugging.
 }
 
 int HNAnalyzerCore::GetGenPhotonType(const Gen& genph, const std::vector<Gen>& gens){
@@ -2246,11 +2258,10 @@ int HNAnalyzerCore::GetGenPhotonType(const Gen& genph, const std::vector<Gen>& g
   if( genph_index<2 ) return 0;
   if( !(gens.at(genph_index).PID()==22 && (gens.at(genph_index).Status()==1 || gens.at(genph_index).Status()==23)) ) return 0;
 
-  //==== TODO photonstatus23 from JH
-  //==== if(gens.at(genph_index).Status()==23){
-  //====   if(IsFinalPhotonSt23(gens)) return 1;
-  //====   else                             return 0;
-  //==== }//From this pt, only St1 Photon is treated.
+  if(gens.at(genph_index).Status()==23){
+    if(IsFinalPhotonSt23_Public(gens)) return 1;
+    else                               return 0;
+  }//From this pt, only St1 Photon is treated.
 
   vector<int> phhist = TrackGenSelfHistory(genph, gens);
 
@@ -2260,26 +2271,66 @@ int HNAnalyzerCore::GetGenPhotonType(const Gen& genph, const std::vector<Gen>& g
 
   bool fromhadron = IsFromHadron(genph, gens);
 
-  //==== hardscattered photon
-  if     ( 20 < Start.Status() && Start.Status() < 30 ) return 1;
-
-  //==== ZG; Z>l*l, l*>la, then sometimes mother of a is Z (becaues l* is not shown)
-  //==== neutral boson
-  else if( MotherOf_Start_PID==23 || MotherOf_Start_PID==25) return 1;
-
-  //==== t or W+- or h+-
-  else if( MotherOf_Start_PID==24 || MotherOf_Start_PID==6 || MotherOf_Start_PID==37 ) return 2;
-
-  //==== from hadron
-  else if( fromhadron ) return -2;
-
-  //==== radiated from lepton
-  else if( MotherOf_Start_PID==11 || MotherOf_Start_PID==13 || MotherOf_Start_PID==15 ) return 2;
-
-
+  if     ( 20 < Start.Status() && Start.Status() < 30 ) return 1;//1)
+  else if( MotherOf_Start_PID==23 || MotherOf_Start_PID==25) return 1;//2)
+  else if( MotherOf_Start_PID==24 || MotherOf_Start_PID==6 || IsSignalPID(MotherOf_Start_PID) ) return 2;//3)
+  else if( fromhadron ) return -2;//4)
+  else if( MotherOf_Start_PID==11 || MotherOf_Start_PID==13 || MotherOf_Start_PID==15 ) return 2;//5)
   else return 0;
 
+//*footnote
+//1) Hard process photon's original status is 20's, unless the history is skimmed in MiniAOD.
+//2) If part of intermediate history is skimmed at MinoAOD, then last photon status is 1 without any preceding history lines.
+//   In that case, intermediate mother is written in history, and this line catches the case.
+//3) top and charged bosons can radiate photons.
+// - Note that distinction between 1 and 2 is not physical. You should use both 1 & 2 for prompt photons.
+//4) this category does not include top, but photons from hadrons and quarks. Predominantly, in most of the cases they are daughter of pi0.
+//   Rarer, but other mesons as eta, B, or even some quarks can also radiate energetic photons.
+//5) Photons radiated from lepton FSR. Sometimes they are quite energetic.
 }
+
+
+bool HNAnalyzerCore::IsFinalPhotonSt23_Public(const std::vector<Gen>& TruthColl){
+//In Some XG proc events, it is observed that some of photons' last status is 23. Presumably due to skimming of generator history between pythia and MiniAOD.
+//The function returns if this is the case.
+//And this is designed only for 1 hard photon case as W+G or Z+G or TT+G
+
+  bool IsFinalGammaStatus23 = false;
+  bool HasStatus23Photon    = false;
+  for(unsigned int i=2; i<TruthColl.size(); i++){
+    int fpid  = fabs(TruthColl.at(i).PID());
+    int GenSt = TruthColl.at(i).Status();
+    int MPID_direct= TruthColl.at(TruthColl.at(i).MotherIndex()).PID();
+    if( !((fpid!=22 && MPID_direct==22) || (fpid==22 && (GenSt==23||GenSt==1))) ) continue;
+
+    vector<int> my_history, mom_history;
+    my_history  = TrackGenSelfHistory(TruthColl.at(i), TruthColl);
+    int LastSelfIdx     = my_history[0];
+    int MotherIdx       = my_history[1];
+    int LastSelfSt      = TruthColl.at(LastSelfIdx).Status();
+    int LastSelfMIdx=-1, MStatus_orig=-1;
+    if(MotherIdx!=-1){
+      mom_history  = TrackGenSelfHistory(TruthColl.at(MotherIdx), TruthColl);
+      LastSelfMIdx = mom_history[0];
+      MStatus_orig = TruthColl.at(LastSelfMIdx).Status();
+    }
+
+    if(fpid==22){
+      if(GenSt==23) {HasStatus23Photon=true; IsFinalGammaStatus23=true;}
+      else if(GenSt==1 && LastSelfSt==23) {IsFinalGammaStatus23=false; break;}//a)
+    }
+    else if( MPID_direct==22 && MStatus_orig==23 ){ IsFinalGammaStatus23=false; break;}//b)
+  }
+
+  if(!HasStatus23Photon) return false;
+
+  return IsFinalGammaStatus23;
+
+//**footnotes
+//a) Status-23 photon's last is 1. Thus status-23 photon is not the last history.
+//b) Daughter particle of status-23 photon is found. Thus status-23 photon is not the last history.
+}
+
 
 bool HNAnalyzerCore::IsSignalPID(int pid){
 
@@ -2288,7 +2339,7 @@ bool HNAnalyzerCore::IsSignalPID(int pid){
   //==== HeavyNeutrino
   if(pid>=9900000) return true;
   //==== ChargedHiggs
-  if(pid==32 || pid==36) return true;
+  if(pid==36 || pid==37) return true;
 
   return false;
 
@@ -2605,29 +2656,29 @@ void HNAnalyzerCore::FillLeptonPlots(std::vector<Lepton *> leps, TString this_re
 
     Lepton *lep = leps[i];
 
-    JSFillHist(this_region, "Lepton_"+this_itoa+"_Pt_"+this_region, lep->Pt(), weight, 1000, 0., 1000.);
-    JSFillHist(this_region, "Lepton_"+this_itoa+"_Eta_"+this_region, lep->Eta(), weight, 60, -3., 3.);
-    JSFillHist(this_region, "Lepton_"+this_itoa+"_RelIso_"+this_region, lep->RelIso(), weight, 100, 0., 1.);
-    JSFillHist(this_region, "Lepton_"+this_itoa+"_MiniRelIso_"+this_region, lep->MiniRelIso(), weight, 100, 0., 1.);
+    FillHist(this_region+"/Lepton_"+this_itoa+"_Pt_"+this_region, lep->Pt(), weight, 1000, 0., 1000.);
+    FillHist(this_region+"/Lepton_"+this_itoa+"_Eta_"+this_region, lep->Eta(), weight, 60, -3., 3.);
+    FillHist(this_region+"/Lepton_"+this_itoa+"_RelIso_"+this_region, lep->RelIso(), weight, 100, 0., 1.);
+    FillHist(this_region+"/Lepton_"+this_itoa+"_MiniRelIso_"+this_region, lep->MiniRelIso(), weight, 100, 0., 1.);
 
-    JSFillHist(this_region, "Lepton_"+this_itoa+"_dXY_"+this_region, fabs(lep->dXY()), weight, 500, 0., 0.05);
-    JSFillHist(this_region, "Lepton_"+this_itoa+"_dXYSig_"+this_region, fabs(lep->dXY()/lep->dXYerr()), weight, 100, 0., 10);
-    JSFillHist(this_region, "Lepton_"+this_itoa+"_dZ_"+this_region, fabs(lep->dZ()), weight, 500, 0., 0.5);
-    JSFillHist(this_region, "Lepton_"+this_itoa+"_dZSig_"+this_region, fabs(lep->dZ()/lep->dZerr()), weight, 100, 0., 10);
-    JSFillHist(this_region, "Lepton_"+this_itoa+"_IP3D_"+this_region, fabs(lep->IP3D()), weight, 500, 0., 0.5);
-    JSFillHist(this_region, "Lepton_"+this_itoa+"_IP3DSig_"+this_region, fabs(lep->IP3D()/lep->IP3Derr()), weight, 100, 0., 10);
+    FillHist(this_region+"/Lepton_"+this_itoa+"_dXY_"+this_region, fabs(lep->dXY()), weight, 500, 0., 0.05);
+    FillHist(this_region+"/Lepton_"+this_itoa+"_dXYSig_"+this_region, fabs(lep->dXY()/lep->dXYerr()), weight, 100, 0., 10);
+    FillHist(this_region+"/Lepton_"+this_itoa+"_dZ_"+this_region, fabs(lep->dZ()), weight, 500, 0., 0.5);
+    FillHist(this_region+"/Lepton_"+this_itoa+"_dZSig_"+this_region, fabs(lep->dZ()/lep->dZerr()), weight, 100, 0., 10);
+    FillHist(this_region+"/Lepton_"+this_itoa+"_IP3D_"+this_region, fabs(lep->IP3D()), weight, 500, 0., 0.5);
+    FillHist(this_region+"/Lepton_"+this_itoa+"_IP3DSig_"+this_region, fabs(lep->IP3D()/lep->IP3Derr()), weight, 100, 0., 10);
 
     if(lep->LeptonFlavour()==Lepton::ELECTRON){
       Electron *el = (Electron *)lep;
-      JSFillHist(this_region, "Lepton_"+this_itoa+"_MVANoIso_"+this_region, el->MVANoIso(), weight, 200, -1., 1.);
+      FillHist(this_region+"/Lepton_"+this_itoa+"_MVANoIso_"+this_region, el->MVANoIso(), weight, 200, -1., 1.);
     }
     else if(lep->LeptonFlavour()==Lepton::MUON){
       Muon *mu = (Muon *)lep;
-      JSFillHist(this_region, "Lepton_"+this_itoa+"_Chi2_"+this_region, mu->Chi2(), weight, 500, 0., 50.);
-      JSFillHist(this_region, "Lepton_"+this_itoa+"_TrkRelIso_"+this_region, mu->TrkIso()/mu->TuneP4().Pt(), weight, 100, 0., 1.);
+      FillHist(this_region+"/Lepton_"+this_itoa+"_Chi2_"+this_region, mu->Chi2(), weight, 500, 0., 50.);
+      FillHist(this_region+"/Lepton_"+this_itoa+"_TrkRelIso_"+this_region, mu->TrkIso()/mu->TuneP4().Pt(), weight, 100, 0., 1.);
     }
     else{
-//      cout << "[HNAnalyzerCore::FillLeptonPlots] lepton flavour wrong.." << endl;
+      //cout << "[HNAnalyzerCore::FillLeptonPlots] lepton flavour wrong.." << endl;
       cerr << "[HNAnalyzerCore::FillLeptonPlots] lepton flavour wrong.." << endl;
       exit(EXIT_FAILURE);
     }
@@ -2642,22 +2693,22 @@ void HNAnalyzerCore::FillJetPlots(std::vector<Jet> jets, std::vector<FatJet> fat
   for(unsigned int i=0; i<jets.size(); i++){
 
     TString this_itoa = TString::Itoa(i,10);
-    JSFillHist(this_region, "Jet_"+this_itoa+"_Pt_"+this_region, jets.at(i).Pt(), weight, 1000, 0., 1000.);
-    JSFillHist(this_region, "Jet_"+this_itoa+"_Eta_"+this_region, jets.at(i).Eta(), weight, 60, -3., 3.);
+    FillHist(this_region+"/Jet_"+this_itoa+"_Pt_"+this_region, jets.at(i).Pt(), weight, 1000, 0., 1000.);
+    FillHist(this_region+"/Jet_"+this_itoa+"_Eta_"+this_region, jets.at(i).Eta(), weight, 60, -3., 3.);
 
   }
 
   for(unsigned int i=0; i<fatjets.size(); i++){
 
     TString this_itoa = TString::Itoa(i,10);
-    JSFillHist(this_region, "FatJet_"+this_itoa+"_Pt_"+this_region, fatjets.at(i).Pt(), weight, 1000, 0., 1000.);
-    JSFillHist(this_region, "FatJet_"+this_itoa+"_Eta_"+this_region, fatjets.at(i).Eta(), weight, 60, -3., 3.);
-    JSFillHist(this_region, "FatJet_"+this_itoa+"_Mass_"+this_region, fatjets.at(i).M(), weight, 3000, 0., 3000.);
-    JSFillHist(this_region, "FatJet_"+this_itoa+"_SDMass_"+this_region, fatjets.at(i).SDMass(), weight, 3000, 0., 3000.);
-    JSFillHist(this_region, "FatJet_"+this_itoa+"_LSF_"+this_region, fatjets.at(i).LSF(), weight, 100, 0., 1.);
-    JSFillHist(this_region, "FatJet_"+this_itoa+"_PuppiTau21_"+this_region, fatjets.at(i).PuppiTau2()/fatjets.at(i).PuppiTau1(), weight, 100, 0., 1.);
-    JSFillHist(this_region, "FatJet_"+this_itoa+"_PuppiTau31_"+this_region, fatjets.at(i).PuppiTau3()/fatjets.at(i).PuppiTau1(), weight, 100, 0., 1.);
-    JSFillHist(this_region, "FatJet_"+this_itoa+"_PuppiTau32_"+this_region, fatjets.at(i).PuppiTau3()/fatjets.at(i).PuppiTau2(), weight, 100, 0., 1.);
+    FillHist(this_region+"/FatJet_"+this_itoa+"_Pt_"+this_region, fatjets.at(i).Pt(), weight, 1000, 0., 1000.);
+    FillHist(this_region+"/FatJet_"+this_itoa+"_Eta_"+this_region, fatjets.at(i).Eta(), weight, 60, -3., 3.);
+    FillHist(this_region+"/FatJet_"+this_itoa+"_Mass_"+this_region, fatjets.at(i).M(), weight, 3000, 0., 3000.);
+    FillHist(this_region+"/FatJet_"+this_itoa+"_SDMass_"+this_region, fatjets.at(i).SDMass(), weight, 3000, 0., 3000.);
+    FillHist(this_region+"/FatJet_"+this_itoa+"_LSF_"+this_region, fatjets.at(i).LSF(), weight, 100, 0., 1.);
+    FillHist(this_region+"/FatJet_"+this_itoa+"_PuppiTau21_"+this_region, fatjets.at(i).PuppiTau2()/fatjets.at(i).PuppiTau1(), weight, 100, 0., 1.);
+    FillHist(this_region+"/FatJet_"+this_itoa+"_PuppiTau31_"+this_region, fatjets.at(i).PuppiTau3()/fatjets.at(i).PuppiTau1(), weight, 100, 0., 1.);
+    FillHist(this_region+"/FatJet_"+this_itoa+"_PuppiTau32_"+this_region, fatjets.at(i).PuppiTau3()/fatjets.at(i).PuppiTau2(), weight, 100, 0., 1.);
   }
 
 }

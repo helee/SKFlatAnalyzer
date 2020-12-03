@@ -141,6 +141,7 @@ public:
   //==== PU Reweight
   double GetPileUpWeight(int N_pileup, int syst);
 
+  //==== Nvtx, rho reweight
   double GetVertexWeight(int Nvtx, TString channel);
   double GetRhoWeight(double rho, TString channel);
 
@@ -167,25 +168,29 @@ public:
   bool HasFlag(TString flag);
   std::vector<Muon> MuonWithoutGap(const std::vector<Muon>& muons);
   std::vector<Muon> MuonPromptOnly(const std::vector<Muon>& muons, const std::vector<Gen>& gens);
-  std::vector<Muon> MuonPromptOnlyHNtypeI(const std::vector<Muon>& muons, const std::vector<Gen>& gens);
-  std::vector<Muon> MuonFakeOnly(const std::vector<Muon>& muons, const std::vector<Gen>& gens);
   std::vector<Muon> MuonUsePtCone(const std::vector<Muon>& muons);
   Muon MuonUsePtCone(const Muon& muon);
+  Particle UpdateMET(const Particle& METv, const std::vector<Muon>& muons);
   std::vector<Muon> MuonApplyPtCut(const std::vector<Muon>& muons, double ptcut);
   std::vector<Electron> ElectronPromptOnly(const std::vector<Electron>& electrons, const std::vector<Gen>& gens);
-  std::vector<Electron> ElectronPromptOnlyHNtypeI(const std::vector<Electron>& electrons, const std::vector<Gen>& gens);
-  std::vector<Electron> ElectronFakeOnly(const std::vector<Electron>& electrons, const std::vector<Gen>& gens);
   std::vector<Electron> ElectronUsePtCone(const std::vector<Electron>& electrons);
   Electron ElectronUsePtCone(const Electron& electron);
   std::vector<Electron> ElectronApplyPtCut(const std::vector<Electron>& electrons, double ptcut);
   //See https://indico.cern.ch/event/613931/contributions/2476973/attachments/1413452/2181248/update_WTagging_JMAR15022017_Simone.pdf
   //We've changed dR(l,j) > 0.3 -> dR(l,j) > 0.4
-  std::vector<Jet> JetsAwayFromFatJet(const std::vector<Jet>& jets, const std::vector<FatJet>& fatjets, double mindr=0.8);
-  std::vector<Jet> JetsInsideFatJet(const std::vector<Jet>& jets, const std::vector<FatJet>& fatjets, double mindr=0.8);
+  std::vector<Jet> JetsAwayFromFatJet(const std::vector<Jet>& jets, const std::vector<FatJet>& fatjets, double mindr=0.8); // 0.8 is used in EXO-17-028
   std::vector<Jet> JetsVetoLeptonInside(const std::vector<Jet>& jets, const std::vector<Electron>& els, const std::vector<Muon>& mus, double dR=0.4);
-  std::vector<FatJet> FatJetsVetoLeptonInside(const std::vector<FatJet>& jets, const std::vector<Electron>& els, const std::vector<Muon>& mus, double dR=1.0);
+  std::vector<FatJet> FatJetsVetoLeptonInside(const std::vector<FatJet>& jets, const std::vector<Electron>& els, const std::vector<Muon>& mus, double dR=1.0); // 1.0 is used in EXO-17-028
   std::vector<Jet> JetsAwayFromPhoton(const std::vector<Jet>& jets, const std::vector<Photon>& photons, double mindr);
   Particle AddFatJetAndLepton(const FatJet& fatjet, const Lepton& lep);
+
+  //==== Lepton, jet functions for HNtypeI
+
+  std::vector<Muon> MuonPromptOnlyHNtypeI(const std::vector<Muon>& muons, const std::vector<Gen>& gens);
+  std::vector<Muon> MuonFakeOnly(const std::vector<Muon>& muons, const std::vector<Gen>& gens);
+  std::vector<Electron> ElectronPromptOnlyHNtypeI(const std::vector<Electron>& electrons, const std::vector<Gen>& gens);
+  std::vector<Electron> ElectronFakeOnly(const std::vector<Electron>& electrons, const std::vector<Gen>& gens);
+  std::vector<Jet> JetsInsideFatJet(const std::vector<Jet>& jets, const std::vector<FatJet>& fatjets, double mindr=0.8);
   std::vector<Jet> JetsAwayFromLepton(const std::vector<Jet>& jets, const Muon& muon, double mindphi=2.5);
   std::vector<Jet> JetsAwayFromLepton(const std::vector<Jet>& jets, const Electron& electron, double mindphi=2.5);
   std::vector<Jet> JetsPassPileupMVA(const std::vector<Jet>& jets);
@@ -193,7 +198,8 @@ public:
   std::vector<Jet> JetsWCandHighMass(const std::vector<Jet>& jets, double MW);
   FatJet FatJetWCand(const std::vector<FatJet>& fatjets, double MW);
 
-  //==== Correct MET
+  //==== Correct MET for HNtypeI
+
   Particle UpdateMETMuon(const Particle& METv, const std::vector<Muon>& muons);
   Particle UpdateMETElectron(const Particle& METv, const std::vector<Electron>& electrons);
   Particle UpdateMETFake(const Particle& METv, const std::vector<Muon>& muons);
@@ -201,7 +207,7 @@ public:
   Particle UpdateMETFake(const Particle& METv, const std::vector<Electron>& electrons, const std::vector<Muon>& muons);
   Particle UpdateMETElectronCF(const Particle& METv, const std::vector<Electron>& electrons1, const std::vector<Electron>& electrons2);
 
-  //==== Electron CF
+  //==== Electron charge flip for HNtypeI
 
   std::vector<Electron> ShiftElectronEnergy(const std::vector<Electron>& beforeshift, AnalyzerParameter param, bool applyshift);
   double GetCFrates(TString id, double pt, double eta);
@@ -216,7 +222,10 @@ public:
   vector<int> TrackGenSelfHistory(const Gen& me, const std::vector<Gen>& gens);
   bool IsFromHadron(const Gen& me, const std::vector<Gen>& gens);
   int GetLeptonType(const Lepton& lep, const std::vector<Gen>& gens);
+  int GetLeptonType_Public(int TruthIdx, const std::vector<Gen>& TruthColl);
   int GetGenPhotonType(const Gen& genph, const std::vector<Gen>& gens);
+  bool IsFinalPhotonSt23_Public(const std::vector<Gen>& TruthColl);
+  int  GetPrElType_InSameSCRange_Public(int TruthIdx, const std::vector<Gen>& TruthColl);
   bool IsSignalPID(int pid);
 
   //==== Plotting
