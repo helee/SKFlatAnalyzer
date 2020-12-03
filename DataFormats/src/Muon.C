@@ -229,6 +229,8 @@ bool Muon::Pass_HNLoose(double relisoCut, double dxyCut, double dzCut, double si
   if(!( fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
   if(!( PixelHits()>0 )) return false;
   if(!( TrackerLayers()>5 )) return false;
+  //if(!( isPOGTight() )) return false;
+  //if(!( fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
   // RelPFIso
   if(!( RelIso()<relisoCut )) return false;
   if(!( fabs(IP3D()/IP3Derr())<sipCut )) return false;
