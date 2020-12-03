@@ -8,16 +8,10 @@ void HNtypeI_FakeRate::initializeAnalyzer(){
 
   //==== if you use "--userflags RunSyst" with SKFlat.py, HasFlag("RunSyst") will return "true"
   RunSyst = HasFlag("RunSyst");
-  RunMuon = HasFlag("RunMuon");
-  RunLooseMuon = HasFlag("RunLooseMuon");
-  RunElectron = HasFlag("RunElectron");
   RunIso = HasFlag("RunIso");
   RunIso = HasFlag("RunISR");
 
   cout << "[HNtypeI_FakeRate::initializeAnalyzer] RunSyst = " << RunSyst << endl;
-  cout << "[HNtypeI_FakeRate::initializeAnalyzer] RunMuon = " << RunMuon << endl;
-  cout << "[HNtypeI_FakeRate::initializeAnalyzer] RunLooseMuon = " << RunLooseMuon << endl;
-  cout << "[HNtypeI_FakeRate::initializeAnalyzer] RunElectron = " << RunElectron << endl;
   cout << "[HNtypeI_FakeRate::initializeAnalyzer] RunIso = " << RunIso << endl;
   cout << "[HNtypeI_FakeRate::initializeAnalyzer] RunISR = " << RunISR << endl;
 
@@ -46,7 +40,7 @@ void HNtypeI_FakeRate::initializeAnalyzer(){
     ElectronTightIDs = {"HNTightV1", "HNMVATight"};
     ElectronLooseIDs = {"HNLooseV1", "HNMVALoose"};
     ElectronVetoIDs  = {"ISRVeto", "HNMVAVeto"};
-  }*/
+  }
 
   if(RunMuon){
     MuonTightIDs     = {"HNTightV1", "HNTightV1"};
@@ -73,7 +67,14 @@ void HNtypeI_FakeRate::initializeAnalyzer(){
     ElectronTightIDs = {"HNTightV1"};
     ElectronLooseIDs = {"HNLooseV1"};
     ElectronVetoIDs  = {"ISRVeto"};
-  }
+  }*/
+
+  MuonTightIDs     = {"HNTightV1"};
+  MuonLooseIDs     = {"HNLooseV3"};
+  MuonVetoIDs      = {"ISRVeto"};
+  ElectronTightIDs = {"HNTightV1"};
+  ElectronLooseIDs = {"HNLooseV1"};
+  ElectronVetoIDs  = {"ISRVeto"};
 
   //==== At this point, sample informations (e.g., IsDATA, DataStream, MCSample, or DataYear) are all set
   //==== You can define sample-dependent or year-dependent variables here
@@ -234,7 +235,7 @@ void HNtypeI_FakeRate::executeEvent(){
 
 void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
 
-  TString MuonIDname = "HN2016";
+  TString MuonIDname = "MuonHNRun2";
   /*if(param.Muon_Tight_ID.Contains("ISRTightV1")) MuonIDname = "POGCBV1";
   if(param.Muon_Tight_ID.Contains("ISRTightV2")) MuonIDname = "POGCBV2";
   if(param.Muon_Tight_ID.Contains("HNTightV1"))  MuonIDname = "POGCBV3";
@@ -242,18 +243,25 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
   if(param.Muon_Tight_ID.Contains("HNTightV3"))  MuonIDname = "POGCBV5";
   if(param.Muon_Tight_ID.Contains("HNTightV4"))  MuonIDname = "POGCBV6";
   if(param.Muon_Tight_ID.Contains("HNTightV5"))  MuonIDname = "POGCBV7";
-  if(param.Muon_Tight_ID.Contains("HNTightV6"))  MuonIDname = "POGCBV8";*/
+  if(param.Muon_Tight_ID.Contains("HNTightV6"))  MuonIDname = "POGCBV8";
   if(param.Muon_Tight_ID.Contains("V1") && param.Muon_Loose_ID.Contains("V1")) MuonIDname = "HNV11";
   if(param.Muon_Tight_ID.Contains("V1") && param.Muon_Loose_ID.Contains("V2")) MuonIDname = "HNV12";
   if(param.Muon_Tight_ID.Contains("V1") && param.Muon_Loose_ID.Contains("V3")) MuonIDname = "HNV13";
-  if(param.Muon_Tight_ID.Contains("V2") && param.Muon_Loose_ID.Contains("V2")) MuonIDname = "HNV22";
+  if(param.Muon_Tight_ID.Contains("V2") && param.Muon_Loose_ID.Contains("V2")) MuonIDname = "HNV22";*/
 
-  TString ElectronIDname = "HN2016";
+  TString ElectronIDname = "ElectronHNRun2";
   //if(param.Electron_Tight_ID.Contains("TightV")) ElectronIDname = "POGCB";
   //if(param.Electron_Tight_ID.Contains("MVA")) ElectronIDname = "POGMVA";
-  if(param.Electron_Tight_ID.Contains("V1") && param.Electron_Loose_ID.Contains("V1")) ElectronIDname = "HNV11";
+  //if(param.Electron_Tight_ID.Contains("V1") && param.Electron_Loose_ID.Contains("V1")) ElectronIDname = "HNV11";
 
   vector<TString> regions = {"FR", "DY", "Wjet"};
+
+  // Boolean : primary datasets
+  bool isMuon = false, isElectron = false;
+  if(IsDATA){
+    if(DataStream.Contains("SingleMuon") || DataStream.Contains("DoubleMuon")) isMuon = true;
+    if(DataStream.Contains("DoubleEG") || (DataStream.Contains("SingleElectron")) || DataStream.Contains("EGamma")) isElectron = true;
+  }
 
   // ID version
   /*vector<TString> regions = {"muonFR_2016", "muonDY_2016", "muonWJ_2016"};                               // 2016 ID
@@ -369,7 +377,6 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
 
 
   Event ev = GetEvent();
-  ev.SetMET(pfMET_Type1_pt, pfMET_Type1_phi);
 
   //========================================================
   //==== No Cut
@@ -529,12 +536,8 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
 
   Particle METv_central = ev.GetMETVector();
 
-  /*if(muons_loose.size()==1 || electrons_loose.size()==1){
-    METv = UpdateMETMuon(METv, muons_loose);
-    METv = UpdateMETElectron(METv, electrons_loose);
-  }*/
-
   double MET = METv_central.Pt();
+  double METPhi = METv_central.Phi();
 
   //========================================================    
   //==== Define particles, variables
@@ -542,7 +545,6 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
 
   double muonIDSF = 1., muonIsoSF = 1., electronRecoSF = 1., electronIDSF = 1.;
   double mu_tight_iso = 0.05;
-  
   double el_tight_iso = 0.;   
 
   // POG cut-based Medium  
@@ -619,7 +621,8 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
 
   for(unsigned int it_rg=0; it_rg<regions.size(); it_rg++){
     weight = 1., muonIDSF = 1., muonIsoSF = 1.;
-    if(!RunMuon && !RunLooseMuon) break;
+    if(!(muons_loose.size()>0)) break;
+    if(IsDATA){ if(!isMuon) break; }
 
     // Fake rate measurement region
     if(it_rg == 0){
@@ -633,6 +636,7 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
       // MET
       METv = UpdateMETMuon(METv_central, muons_loose);
       MET = METv.Pt();
+      METPhi = METv.Phi();
 
       // Set up pTcone
       ptcone_mu = muons_loose.at(0).CalcPtCone(muons_loose.at(0).RelIso(), mu_tight_iso);
@@ -749,7 +753,9 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
 
       // Histograms before applying cuts
       FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/MET_NoCut", MET, weight, 500, 0., 500.);
+      FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/METPhi_NoCut", METPhi, weight, 64, -3.2, 3.2);
       FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/MET_NoCut_"+PtConeRange, MET, weight, 500, 0., 500.);
+      FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/METPhi_NoCut_"+PtConeRange, METPhi, weight, 64, -3.2, 3.2);
       FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Mt_NoCut", Mt, weight, 500, 0., 500.);
       FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Mt_NoCut_"+PtConeRange, Mt, weight, 500, 0., 500.);
       FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Ptratio_NoCut", Pt_ratio, weight, 50, 0., 5.);
@@ -1093,6 +1099,7 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
       // MET
       METv = UpdateMETMuon(METv_central, muons_tight);
       MET = METv.Pt();
+      METPhi = METv.Phi();
 
       if(!IsDATA){
         weight *= weight_norm_1invpb;
@@ -1117,10 +1124,12 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
 
         FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Lep_Pt_NoCut_Mu3", muons_tight.at(0).Pt(), weight*trigLumi, 500, 0., 500.);
         FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/MET_NoCut_Mu3", MET, weight*trigLumi, 500, 0., 500.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/METPhi_NoCut_Mu3", METPhi, weight*trigLumi, 64, -3.2, 3.2);
         FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Mt_NoCut_Mu3", Mt, weight*trigLumi, 500, 0., 500.);
         if(muons_veto.size()==1 && electrons_veto.size()==0){
           FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Lep_Pt_NoCut_OnlyTight_Mu3", muons_tight.at(0).Pt(), weight*trigLumi, 500, 0., 500.);
           FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/MET_NoCut_OnlyTight_Mu3", MET, weight*trigLumi, 500, 0., 500.);
+          FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/METPhi_NoCut_OnlyTight_Mu3", METPhi, weight*trigLumi, 64, -3.2, 3.2);
           FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Mt_NoCut_OnlyTight_Mu3", Mt, weight*trigLumi, 500, 0., 500.);
         }
       }
@@ -1130,10 +1139,12 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
 
         FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Lep_Pt_NoCut_Mu8", muons_tight.at(0).Pt(), weight*trigLumi, 500, 0., 500.);
         FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/MET_NoCut_Mu8", MET, weight*trigLumi, 500, 0., 500.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/METPhi_NoCut_Mu8", METPhi, weight*trigLumi, 64, -3.2, 3.2);
         FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Mt_NoCut_Mu8", Mt, weight*trigLumi, 500, 0., 500.);
         if(muons_veto.size()==1 && electrons_veto.size()==0){
           FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Lep_Pt_NoCut_OnlyTight_Mu8", muons_tight.at(0).Pt(), weight*trigLumi, 500, 0., 500.);
           FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/MET_NoCut_OnlyTight_Mu8", MET, weight*trigLumi, 500, 0., 500.);
+          FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/METPhi_NoCut_OnlyTight_Mu8", METPhi, weight*trigLumi, 64, -3.2, 3.2);
           FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Mt_NoCut_OnlyTight_Mu8", Mt, weight*trigLumi, 500, 0., 500.);
         }
       }
@@ -1143,10 +1154,12 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
 
         FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Lep_Pt_NoCut_Mu17", muons_tight.at(0).Pt(), weight*trigLumi, 500, 0., 500.);
         FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/MET_NoCut_Mu17", MET, weight*trigLumi, 500, 0., 500.);
+        FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/METPhi_NoCut_Mu17", METPhi, weight*trigLumi, 64, -3.2, 3.2);
         FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Mt_NoCut_Mu17", Mt, weight*trigLumi, 500, 0., 500.);
         if(muons_veto.size()==1 && electrons_veto.size()==0){
           FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Lep_Pt_NoCut_OnlyTight_Mu17", muons_tight.at(0).Pt(), weight*trigLumi, 500, 0., 500.);
           FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/MET_NoCut_OnlyTight_Mu17", MET, weight*trigLumi, 500, 0., 500.);
+          FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/METPhi_NoCut_OnlyTight_Mu17", METPhi, weight*trigLumi, 64, -3.2, 3.2);
           FillHist(MuonIDname+"/"+systName+"/"+regions.at(it_rg)+"/Mt_NoCut_OnlyTight_Mu17", Mt, weight*trigLumi, 500, 0., 500.);
         }
       }
@@ -1200,11 +1213,8 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
  
   for(unsigned int it_rg2=0; it_rg2<regions.size(); it_rg2++){
     weight = 1.;
-    if(!RunElectron) break;
-
-    if(IsData){
-      if(DataStream.Contains("Muon")) continue;
-    }
+    if(!(electrons_loose.size()>0)) break;
+    if(IsDATA){ if(!isElectron) break; }
 
     // Fake rate measurement region 
     if(it_rg2 == 0){
@@ -1218,6 +1228,7 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
       // MET
       METv = UpdateMETElectron(METv_central, electrons_loose);
       MET = METv.Pt();
+      METPhi = METv.Phi();
 
       // Set up pTcone
       el_tight_iso = 0.08; // 2016 or PGO MVA
@@ -1312,7 +1323,9 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
 
       // Histograms before applying cuts
       FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/MET_NoCut", MET, weight, 500, 0., 500.);
+      FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/METPhi_NoCut", METPhi, weight, 64, -3.2, 3.2);
       FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/MET_NoCut_"+PtConeRange, MET, weight, 500, 0., 500.);
+      FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/METPhi_NoCut_"+PtConeRange, METPhi, weight, 64, -3.2, 3.2);
       FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/Mt_NoCut", Mt, weight, 500, 0., 500.);
       FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/Mt_NoCut_"+PtConeRange, Mt, weight, 500, 0., 500.);
       FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/Ptratio_NoCut", Pt_ratio, weight, 50, 0., 5.);
@@ -1676,6 +1689,7 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
       // MET
       METv = UpdateMETElectron(METv_central, electrons_tight);
       MET = METv.Pt();
+      METPhi = METv.Phi();
 
       if(!IsDATA){
         weight *= weight_norm_1invpb;
@@ -1696,10 +1710,12 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
 
         FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/Lep_Pt_NoCut_Ele8", electrons_tight.at(0).Pt(), weight*trigLumi, 500, 0., 500.);
         FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/MET_NoCut_Ele8", MET, weight*trigLumi, 500, 0., 500.);
+        FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/METPhi_NoCut_Ele8", METPhi, weight*trigLumi, 64, -3.2, 3.2);
         FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/Mt_NoCut_Ele8", Mt, weight*trigLumi, 500, 0., 500.);
         if(muons_veto.size()==0 && electrons_veto.size()==1){
           FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/Lep_Pt_NoCut_OnlyTight_Ele8", electrons_tight.at(0).Pt(), weight*trigLumi, 500, 0., 500.);
           FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/MET_NoCut_OnlyTight_Ele8", MET, weight*trigLumi, 500, 0., 500.);
+          FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/METPhi_NoCut_OnlyTight_Ele8", METPhi, weight*trigLumi, 64, -3.2, 3.2);
           FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/Mt_NoCut_OnlyTight_Ele8", Mt, weight*trigLumi, 500, 0., 500.);
         }
       }
@@ -1709,10 +1725,12 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
 
         FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/Lep_Pt_NoCut_Ele12", electrons_tight.at(0).Pt(), weight*trigLumi, 500, 0., 500.);
         FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/MET_NoCut_Ele12", MET, weight*trigLumi, 500, 0., 500.);
+        FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/METPhi_NoCut_Ele12", METPhi, weight*trigLumi, 64, -3.2, 3.2);
         FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/Mt_NoCut_Ele12", Mt, weight*trigLumi, 500, 0., 500.);
         if(muons_veto.size()==0 && electrons_veto.size()==1){
           FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/Lep_Pt_NoCut_OnlyTight_Ele12", electrons_tight.at(0).Pt(), weight*trigLumi, 500, 0., 500.);
           FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/MET_NoCut_OnlyTight_Ele12", MET, weight*trigLumi, 500, 0., 500.);
+          FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/METPhi_NoCut_OnlyTight_Ele12", METPhi, weight*trigLumi, 64, -3.2, 3.2);
           FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/Mt_NoCut_OnlyTight_Ele12", Mt, weight*trigLumi, 500, 0., 500.);
         }
       }
@@ -1722,10 +1740,12 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
 
         FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/Lep_Pt_NoCut_Ele17", electrons_tight.at(0).Pt(), weight*trigLumi, 500, 0., 500.);
         FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/MET_NoCut_Ele17", MET, weight*trigLumi, 500, 0., 500.);
+        FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/METPhi_NoCut_Ele17", METPhi, weight*trigLumi, 64, -3.2, 3.2);
         FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/Mt_NoCut_Ele17", Mt, weight*trigLumi, 500, 0., 500.);
         if(muons_veto.size()==0 && electrons_veto.size()==1){
           FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/Lep_Pt_NoCut_OnlyTight_Ele17", electrons_tight.at(0).Pt(), weight*trigLumi, 500, 0., 500.);
           FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/MET_NoCut_OnlyTight_Ele17", MET, weight*trigLumi, 500, 0., 500.);
+          FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/METPhi_NoCut_OnlyTight_Ele17", METPhi, weight*trigLumi, 64, -3.2, 3.2);
           FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/Mt_NoCut_OnlyTight_Ele17", Mt, weight*trigLumi, 500, 0., 500.);
         }
       }
@@ -1735,10 +1755,12 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
 
         FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/Lep_Pt_NoCut_Ele23", electrons_tight.at(0).Pt(), weight*trigLumi, 500, 0., 500.);
         FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/MET_NoCut_Ele23", MET, weight*trigLumi, 500, 0., 500.);
+        FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/METPhi_NoCut_Ele23", METPhi, weight*trigLumi, 64, -3.2, 3.2);
         FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/Mt_NoCut_Ele23", Mt, weight*trigLumi, 500, 0., 500.);
         if(muons_veto.size()==0 && electrons_veto.size()==1){
           FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/Lep_Pt_NoCut_OnlyTight_Ele23", electrons_tight.at(0).Pt(), weight*trigLumi, 500, 0., 500.);
           FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/MET_NoCut_OnlyTight_Ele23", MET, weight*trigLumi, 500, 0., 500.);
+          FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/METPhi_NoCut_OnlyTight_Ele23", METPhi, weight*trigLumi, 64, -3.2, 3.2);
           FillHist(ElectronIDname+"/"+systName+"/"+regions.at(it_rg2)+"/Mt_NoCut_OnlyTight_Ele23", Mt, weight*trigLumi, 500, 0., 500.);
         }
       }

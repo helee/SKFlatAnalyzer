@@ -8,15 +8,8 @@ void HNtypeI_QCDFakeRate::initializeAnalyzer(){
 
   //==== if you use "--userflags RunSyst" with SKFlat.py, HasFlag("RunSyst") will return "true"
   RunSyst = HasFlag("RunSyst");
-  RunMuon = HasFlag("RunMuon");
-  RunLooseMuon = HasFlag("RunLooseMuon");
-  RunElectron = HasFlag("RunElectron");
-  RunMuIso = HasFlag("RunMuIso");
 
   cout << "[HNtypeI_QCDFakeRate::initializeAnalyzer] RunSyst = " << RunSyst << endl;
-  cout << "[HNtypeI_QCDFakeRate::initializeAnalyzer] RunMuon = " << RunMuon << endl;
-  cout << "[HNtypeI_QCDFakeRate::initializeAnalyzer] RunLooseMuon = " << RunLooseMuon << endl;
-  cout << "[HNtypeI_QCDFakeRate::initializeAnalyzer] RunElectron = " << RunElectron << endl;
 
   /*if(RunMuon){
     MuonTightIDs     = {"ISRTightV1", "ISRTightV2", "HNTightV1", "HNTightV2"};
@@ -43,7 +36,7 @@ void HNtypeI_QCDFakeRate::initializeAnalyzer(){
     ElectronTightIDs = {"HNTightV1", "HNMVATight"};
     ElectronLooseIDs = {"HNLooseV1", "HNMVALoose"};
     ElectronVetoIDs  = {"ISRVeto", "HNMVAVeto"};
-  }*/
+  }
 
   if(RunMuon){
     MuonTightIDs     = {"HNTightV1", "HNTightV1"};
@@ -70,7 +63,14 @@ void HNtypeI_QCDFakeRate::initializeAnalyzer(){
     ElectronTightIDs = {"HNTightV1"};
     ElectronLooseIDs = {"HNLooseV1"};
     ElectronVetoIDs  = {"ISRVeto"};
-  }
+  }*/
+
+  MuonTightIDs     = {"HNTightV1"};
+  MuonLooseIDs     = {"HNLooseV3"};
+  MuonVetoIDs      = {"ISRVeto"};
+  ElectronTightIDs = {"HNTightV1"};
+  ElectronLooseIDs = {"HNLooseV1"};
+  ElectronVetoIDs  = {"ISRVeto"};
 
   //==== At this point, sample informations (e.g., IsDATA, DataStream, MCSample, or DataYear) are all set
   //==== You can define sample-dependent or year-dependent variables here
@@ -231,7 +231,7 @@ void HNtypeI_QCDFakeRate::executeEvent(){
 
 void HNtypeI_QCDFakeRate::executeEventFromParameter(AnalyzerParameter param){
 
-  TString MuonIDname = "HN2016";
+  TString MuonIDname = "MuonHNRun2";
   /*if(param.Muon_Tight_ID.Contains("ISRTightV1")) MuonIDname = "POGCBV1";
   if(param.Muon_Tight_ID.Contains("ISRTightV2")) MuonIDname = "POGCBV2";
   if(param.Muon_Tight_ID.Contains("HNTightV1"))  MuonIDname = "POGCBV3";
@@ -239,16 +239,16 @@ void HNtypeI_QCDFakeRate::executeEventFromParameter(AnalyzerParameter param){
   if(param.Muon_Tight_ID.Contains("HNTightV3"))  MuonIDname = "POGCBV5";
   if(param.Muon_Tight_ID.Contains("HNTightV4"))  MuonIDname = "POGCBV6";
   if(param.Muon_Tight_ID.Contains("HNTightV5"))  MuonIDname = "POGCBV7";
-  if(param.Muon_Tight_ID.Contains("HNTightV6"))  MuonIDname = "POGCBV8";*/
+  if(param.Muon_Tight_ID.Contains("HNTightV6"))  MuonIDname = "POGCBV8";
   if(param.Muon_Tight_ID.Contains("V1") && param.Muon_Loose_ID.Contains("V1")) MuonIDname = "HNV11";
   if(param.Muon_Tight_ID.Contains("V1") && param.Muon_Loose_ID.Contains("V2")) MuonIDname = "HNV12";
   if(param.Muon_Tight_ID.Contains("V1") && param.Muon_Loose_ID.Contains("V3")) MuonIDname = "HNV13";
-  if(param.Muon_Tight_ID.Contains("V2") && param.Muon_Loose_ID.Contains("V2")) MuonIDname = "HNV22";
+  if(param.Muon_Tight_ID.Contains("V2") && param.Muon_Loose_ID.Contains("V2")) MuonIDname = "HNV22";*/
 
-  TString ElectronIDname = "HN2016";
+  TString ElectronIDname = "ElectronHNRun2";
   //if(param.Electron_Tight_ID.Contains("TightV")) ElectronIDname = "POGCB";
   //if(param.Electron_Tight_ID.Contains("MVA")) ElectronIDname = "POGMVA";
-  if(param.Electron_Tight_ID.Contains("V1") && param.Electron_Loose_ID.Contains("V1")) ElectronIDname = "HNV11";
+  //if(param.Electron_Tight_ID.Contains("V1") && param.Electron_Loose_ID.Contains("V1")) ElectronIDname = "HNV11";
 
   vector<TString> regions = {"FR", "DY", "Wjet"};
 
@@ -365,7 +365,6 @@ void HNtypeI_QCDFakeRate::executeEventFromParameter(AnalyzerParameter param){
 
 
   Event ev = GetEvent();
-  //ev.SetMET(pfMET_Type1_pt, pfMET_Type1_phi);
 
   //========================================================
   //==== No Cut
@@ -565,46 +564,6 @@ void HNtypeI_QCDFakeRate::executeEventFromParameter(AnalyzerParameter param){
   TString PtConeRange = "";
   Particle ZCand, METv;
 
-  // Track Iso vs PF Iso (Use DoubleMuon w/o skim)
-  if(RunMuIso){
-
-    if(muons_POGLoose.size() == 1){
-
-      FillHist("Muon_MiniAODPt", muons_POGLoose.at(0).MiniAODPt(), weight, 500, 0., 500.);
-
-      relTrkIso_MiniAODPt = muons_POGLoose.at(0).TrkIso()/muons_POGLoose.at(0).MiniAODPt();
-      FillHist("Muon_TrkIso", relTrkIso_MiniAODPt, weight, 100, 0., 1.);
-      FillHist("Muon_PFIso", muons_POGLoose.at(0).RelIso(), weight, 100, 0., 1.);
-      FillHist("Muon_PFIsoTrkIso2D", muons_POGLoose.at(0).RelIso(), relTrkIso_MiniAODPt, weight, 1000, 0., 1., 1000, 0., 1.);
-
-      if(ev.PassTrigger(MuonTrig1)){
-        if(muons_POGLoose.at(0).Pt() > 5.){
-          FillHist("Muon_TrkIso_Mu3", relTrkIso_MiniAODPt, weight, 100, 0., 1.);
-          FillHist("Muon_PFIso_Mu3", muons_POGLoose.at(0).RelIso(), weight, 100, 0., 1.);
-          FillHist("Muon_PFIsoTrkIso2D_Mu3", muons_POGLoose.at(0).RelIso(), relTrkIso_MiniAODPt, weight, 1000, 0., 1., 1000, 0., 1.);
-        }
-      }
- 
-      if(ev.PassTrigger(MuonTrig2)){
-        if(muons_POGLoose.at(0).Pt() > 10.){
-          FillHist("Muon_TrkIso_Mu8", relTrkIso_MiniAODPt, weight, 100, 0., 1.);
-          FillHist("Muon_PFIso_Mu8", muons_POGLoose.at(0).RelIso(), weight, 100, 0., 1.);
-          FillHist("Muon_PFIsoTrkIso2D_Mu8", muons_POGLoose.at(0).RelIso(), relTrkIso_MiniAODPt, weight, 1000, 0., 1., 1000, 0., 1.);
-        }
-      }
-
-      if(ev.PassTrigger(MuonTrig3)){
-        if(muons_POGLoose.at(0).Pt() > 20.){
-          FillHist("Muon_TrkIso_Mu17", relTrkIso_MiniAODPt, weight, 100, 0., 1.);
-          FillHist("Muon_PFIso_Mu17", muons_POGLoose.at(0).RelIso(), weight, 100, 0., 1.);
-          FillHist("Muon_PFIsoTrkIso2D_Mu17", muons_POGLoose.at(0).RelIso(), relTrkIso_MiniAODPt, weight, 1000, 0., 1., 1000, 0., 1.);
-        }
-      }
-
-    }
-
-  }
-
   /*Gen gen_test;
   FillHist("gen_mother", gen_test.MotherIndex(), weight, 4, -2, 2);
   FillHist("gen_pid", gen_test.PID(), weight, 4, -2, 2);
@@ -616,7 +575,7 @@ void HNtypeI_QCDFakeRate::executeEventFromParameter(AnalyzerParameter param){
 
   for(unsigned int it_rg=0; it_rg<regions.size(); it_rg++){
     weight = 1., muonIDSF = 1., muonIsoSF = 1.;
-    if(!RunMuon && !RunLooseMuon) break;
+    if(!(muons_loose.size()>0)) break;
 
     // Fake rate measurement region
     if(it_rg == 0){
@@ -1211,11 +1170,7 @@ void HNtypeI_QCDFakeRate::executeEventFromParameter(AnalyzerParameter param){
  
   for(unsigned int it_rg2=0; it_rg2<regions.size(); it_rg2++){
     weight = 1.;
-    if(!RunElectron) break;
-
-    if(IsData){
-      if(DataStream.Contains("Muon")) continue;
-    }
+    if(!(electrons_loose.size()>0)) break;
 
     // Fake rate measurement region 
     if(it_rg2 == 0){
