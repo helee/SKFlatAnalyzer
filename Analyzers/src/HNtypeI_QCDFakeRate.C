@@ -252,6 +252,11 @@ void HNtypeI_QCDFakeRate::executeEventFromParameter(AnalyzerParameter param){
 
   vector<TString> regions = {"FR", "DY", "Wjet"};
 
+  // Boolean : QCD MC
+  bool isMuon = false, isElectron = false;
+  if(MCSample.Contains("MuEnriched")) isMuon = true;
+  if(MCSample.Contains("EMEnriched") || MCSample.Contains("bcToE")) isElectron = true;
+
   // ID version
   /*vector<TString> regions = {"muonFR_2016", "muonDY_2016", "muonWJ_2016"};                               // 2016 ID
   if(param.Muon_Tight_ID.Contains("ISR")) regions = {"muonFR_ISR", "muonDY_ISR", "muonWJ_ISR"};          // ISR ID
@@ -576,6 +581,7 @@ void HNtypeI_QCDFakeRate::executeEventFromParameter(AnalyzerParameter param){
   for(unsigned int it_rg=0; it_rg<regions.size(); it_rg++){
     weight = 1., muonIDSF = 1., muonIsoSF = 1.;
     if(!(muons_loose.size()>0)) break;
+    if(!isMuon) break;
 
     // Fake rate measurement region
     if(it_rg == 0){
@@ -1171,6 +1177,7 @@ void HNtypeI_QCDFakeRate::executeEventFromParameter(AnalyzerParameter param){
   for(unsigned int it_rg2=0; it_rg2<regions.size(); it_rg2++){
     weight = 1.;
     if(!(electrons_loose.size()>0)) break;
+    if(!isElectron) break;
 
     // Fake rate measurement region 
     if(it_rg2 == 0){

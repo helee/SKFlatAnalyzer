@@ -260,7 +260,7 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
   bool isMuon = false, isElectron = false;
   if(IsDATA){
     if(DataStream.Contains("SingleMuon") || DataStream.Contains("DoubleMuon")) isMuon = true;
-    if(DataStream.Contains("DoubleEG") || (DataStream.Contains("SingleElectron")) || DataStream.Contains("EGamma")) isElectron = true;
+    if(DataStream.Contains("DoubleEG") || DataStream.Contains("SingleElectron") || DataStream.Contains("EGamma")) isElectron = true;
   }
 
   // ID version
