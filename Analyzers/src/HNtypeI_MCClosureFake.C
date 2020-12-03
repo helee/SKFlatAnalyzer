@@ -1,19 +1,19 @@
-#include "HNtypeI_SR_2016H.h"
+#include "HNtypeI_MCClosureFake.h"
 
-HNtypeI_SR_2016H::HNtypeI_SR_2016H(){
+HNtypeI_MCClosureFake::HNtypeI_MCClosureFake(){
 
 }
 
-void HNtypeI_SR_2016H::initializeAnalyzer(){
+void HNtypeI_MCClosureFake::initializeAnalyzer(){
 
   //==== if you use "--userflags RunSyst" with SKFlat.py, HasFlag("RunSyst") will return "true"
   RunSyst     = HasFlag("RunSyst");
   RunFake     = HasFlag("RunFake");
   RunCF       = HasFlag("RunCF");
 
-  cout << "[HNtypeI_SR_2016H::initializeAnalyzer] RunSyst = " << RunSyst << endl;
-  cout << "[HNtypeI_SR_2016H::initializeAnalyzer] RunFake = " << RunFake << endl;
-  cout << "[HNtypeI_SR_2016H::initializeAnalyzer] RunCF = " << RunCF << endl;
+  cout << "[HNtypeI_MCClosureFake::initializeAnalyzer] RunSyst = " << RunSyst << endl;
+  cout << "[HNtypeI_MCClosureFake::initializeAnalyzer] RunFake = " << RunFake << endl;
+  cout << "[HNtypeI_MCClosureFake::initializeAnalyzer] RunCF = " << RunCF << endl;
 
   /*if(RunMuon){
     MuonTightIDs     = {"ISRTightV1", "ISRTightV2", "HNTightV1", "HNTightV2"};
@@ -76,13 +76,13 @@ void HNtypeI_SR_2016H::initializeAnalyzer(){
   ElectronTightIDs = {"HNTightV1"};
   ElectronLooseIDs = {"HNLooseV1"};
   ElectronVetoIDs  = {"ISRVeto"};
-  MuonFRNames      = {"HNV13"};
-  ElectronFRNames  = {"HNV11"};
+  MuonFRNames      = {"HNV13QCD"};
+  ElectronFRNames  = {"HNV11QCD"};
 
   //==== At this point, sample informations (e.g., IsDATA, DataStream, MCSample, or DataYear) are all set
   //==== You can define sample-dependent or year-dependent variables here
   //==== (Example) Year-dependent variables
-  //==== I defined "TString IsoMuTriggerName;" and "double TriggerSafePtCut;" in Analyzers/include/HNtypeI_SR_2016H.h 
+  //==== I defined "TString IsoMuTriggerName;" and "double TriggerSafePtCut;" in Analyzers/include/HNtypeI_MCClosureFake.h 
   //==== IsoMuTriggerName is a year-dependent variable, and you don't want to do "if(Dataer==~~)" for every event (let's save cpu time).
   //==== Then, do it here, which only ran once for each macro
 
@@ -155,8 +155,8 @@ void HNtypeI_SR_2016H::initializeAnalyzer(){
     EMuPtCut1 = 25., EMuPtCut2 = 15.;
   }
 
-  //cout << "[HNtypeI_SR_2016H::initializeAnalyzer] IsoMuTriggerName = " << IsoMuTriggerName << endl;
-  //cout << "[HNtypeI_SR_2016H::initializeAnalyzer TriggerSafePtCut = " << TriggerSafePtCut << endl;
+  //cout << "[HNtypeI_MCClosureFake::initializeAnalyzer] IsoMuTriggerName = " << IsoMuTriggerName << endl;
+  //cout << "[HNtypeI_MCClosureFake::initializeAnalyzer TriggerSafePtCut = " << TriggerSafePtCut << endl;
 
   //==== B-Tagging
   //==== add taggers and WP that you want to use in analysis
@@ -169,13 +169,13 @@ void HNtypeI_SR_2016H::initializeAnalyzer(){
 
 }
 
-HNtypeI_SR_2016H::~HNtypeI_SR_2016H(){
+HNtypeI_MCClosureFake::~HNtypeI_MCClosureFake(){
 
   //==== Destructor of this Analyzer
 
 }
 
-void HNtypeI_SR_2016H::executeEvent(){
+void HNtypeI_MCClosureFake::executeEvent(){
 
   //================================================================
   //====  Example 1
@@ -187,7 +187,7 @@ void HNtypeI_SR_2016H::executeEvent(){
   //==== and then check ID booleans.
   //==== GetAllMuons not only loops over all MINIAOD muons, but also actually CONSTRUCT muon objects for each muons.
   //==== We are now running systematics, and you don't want to do this for every systematic sources
-  //==== So, I defined "vector<Muon> AllMuons;" in Analyzers/include/HNtypeI_SR_2016H.h,
+  //==== So, I defined "vector<Muon> AllMuons;" in Analyzers/include/HNtypeI_MCClosureFake.h,
   //==== and save muons objects at the very beginning of executeEvent().
   //==== Later, do "SelectMuons(AllMuons, ID, pt, eta)" to get muons with ID cuts
   AllMuons = GetAllMuons();
@@ -200,7 +200,7 @@ void HNtypeI_SR_2016H::executeEvent(){
   //==== If data, 1.;
   //==== If MC && DataYear > 2017, 1.;
   //==== If MC && DataYear <= 2017, we have to reweight the event with this value
-  //==== I defined "double weight_Prefire;" in Analyzers/include/HNtypeI_SR_2016H.h
+  //==== I defined "double weight_Prefire;" in Analyzers/include/HNtypeI_MCClosureFake.h
   //weight_Prefire = GetPrefireWeight(0);
 
   AnalyzerParameter param;
@@ -265,7 +265,7 @@ void HNtypeI_SR_2016H::executeEvent(){
   }
 }
 
-void HNtypeI_SR_2016H::executeEventFromParameter(AnalyzerParameter param){
+void HNtypeI_MCClosureFake::executeEventFromParameter(AnalyzerParameter param){
 
   TString IDsuffix = "HNRun2";
   /*if(RunMuon){
@@ -325,11 +325,11 @@ void HNtypeI_SR_2016H::executeEventFromParameter(AnalyzerParameter param){
   }
 
   // Boolean : passTrigger
-  bool passMuMu  = ev.PassTrigger(MuonTriggersH);      // NOTE : Change for 2016H
+  bool passMuMu  = ev.PassTrigger(MuonTriggers);
   bool passEE    = ev.PassTrigger(ElectronTriggers);
-  bool passEMu   = ev.PassTrigger(EMuTriggersH);       // NOTE : Change for 2016H
-  bool passE23Mu = ev.PassTrigger(Mu8Ele23TriggersH);  // NOTE : Change for 2016H
-  bool passEMu23 = ev.PassTrigger(Mu23Ele12TriggersH); // NOTE : Change for 2016H
+  bool passEMu   = ev.PassTrigger(EMuTriggers);
+  bool passE23Mu = ev.PassTrigger(Mu8Ele23Triggers);
+  bool passEMu23 = ev.PassTrigger(Mu23Ele12Triggers);
 
   //========================================================
   //==== No Cut
@@ -467,7 +467,7 @@ void HNtypeI_SR_2016H::executeEventFromParameter(AnalyzerParameter param){
     //this_AllElectrons = ScaleElectrons( this_AllElectrons, -1 );
   }
   else{
-    cout << "[HNtypeI_SR_2016H::executeEventFromParameter] Wrong syst" << endl;
+    cout << "[HNtypeI_MCClosureFake::executeEventFromParameter] Wrong syst" << endl;
     exit(EXIT_FAILURE);
   }*/
 
@@ -489,10 +489,10 @@ void HNtypeI_SR_2016H::executeEventFromParameter(AnalyzerParameter param){
   vector<Electron> electrons_veto = SelectElectrons(this_AllElectrons, param.Electron_Veto_ID, 10., 2.5);
 
   // Truth matching
-  vector<Muon> muons_prompt;
-  vector<Electron> electrons_prompt;
-  muons_prompt.clear();
-  electrons_prompt.clear();
+  vector<Muon> muons_fake;
+  vector<Electron> electrons_fake;
+  muons_fake.clear();
+  electrons_fake.clear();
 
   // For charge flip
   vector<Electron> electrons_beforeShift;
@@ -793,19 +793,19 @@ void HNtypeI_SR_2016H::executeEventFromParameter(AnalyzerParameter param){
     if(!passPtCut) return;
 
     // Truth matching
-    muons_prompt.clear();
-    electrons_prompt.clear();
-    muons_prompt = MuonPromptOnlyHNtypeI(muons, gens);
-    electrons_prompt = ElectronPromptOnlyHNtypeI(electrons, gens);
+    muons_fake.clear();
+    electrons_fake.clear();
+    muons_fake = MuonFakeOnly(muons, gens);
+    electrons_fake = ElectronFakeOnly(electrons, gens);
 
     if(channel=="dimu"){
-      if(!(muons_prompt.size()==2 && electrons_prompt.size()==0)) return;
+      if(!(muons_fake.size()>=1)) return;
     }
     if(channel=="diel"){
-      if(!(muons_prompt.size()==0 && electrons_prompt.size()==2)) return;
+      if(!(electrons_fake.size()>=1)) return;
     }
     if(channel=="emu"){
-      if(!(muons_prompt.size()==1 && electrons_prompt.size()==1)) return;
+      if(!(muons_fake.size()>=1 || electrons_fake.size()>=1)) return;
     }
 
     // Event weights for MC

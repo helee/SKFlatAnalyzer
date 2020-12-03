@@ -568,6 +568,7 @@ void HNtypeI_SR::executeEventFromParameter(AnalyzerParameter param){
   }
 
   double MET = METv.Pt();
+  double METPhi = METv.Phi();
 
   //========================================================
   //==== Define particles, variables
@@ -666,6 +667,7 @@ void HNtypeI_SR::executeEventFromParameter(AnalyzerParameter param){
 
   // Define ST, MET^2/ST
   MET = METv.Pt();
+  METPhi = METv.Phi();
 
   for(unsigned int i=0; i<jets.size(); i++) ST += jets.at(i).Pt();
   for(unsigned int i=0; i<fatjets.size(); i++) ST += fatjets.at(i).Pt();
@@ -906,6 +908,7 @@ void HNtypeI_SR::executeEventFromParameter(AnalyzerParameter param){
     FillHist(systName+"/"+channel+"/"+"PreNoJetCut/Lep1_Eta_"+IDsuffix, leptons.at(0)->Eta(), weight, 50, -2.5, 2.5);
     FillHist(systName+"/"+channel+"/"+"PreNoJetCut/Lep2_Eta_"+IDsuffix, leptons.at(1)->Eta(), weight, 50, -2.5, 2.5);
     FillHist(systName+"/"+channel+"/"+"PreNoJetCut/MET_"+IDsuffix, MET, weight, 1000, 0., 1000.);
+    FillHist(systName+"/"+channel+"/"+"PreNoJetCut/METPhi_"+IDsuffix, METPhi, weight, 64, -3.2, 3.2);
     FillHist(systName+"/"+channel+"/"+"PreNoJetCut/MET2ST_"+IDsuffix, MET2ST, weight, 1000, 0., 1000.);
 
     // non-prompt CR2 : no jets && same-sign back-to-back 2 leptons
@@ -928,6 +931,7 @@ void HNtypeI_SR::executeEventFromParameter(AnalyzerParameter param){
         FillHist(systName+"/"+channel+"/fakeCR2/Lep1_Eta_"+IDsuffix, leptons.at(0)->Eta(), weight, 50, -2.5, 2.5);
         FillHist(systName+"/"+channel+"/fakeCR2/Lep2_Eta_"+IDsuffix, leptons.at(1)->Eta(), weight, 50, -2.5, 2.5);
         FillHist(systName+"/"+channel+"/fakeCR2/MET_"+IDsuffix, MET, weight, 1000, 0., 1000.);
+        FillHist(systName+"/"+channel+"/fakeCR2/METPhi_"+IDsuffix, METPhi, weight, 64, -3.2, 3.2);
         FillHist(systName+"/"+channel+"/fakeCR2/MET2ST_"+IDsuffix, MET2ST, weight, 1000, 0., 1000.);
       }
 
@@ -948,6 +952,7 @@ void HNtypeI_SR::executeEventFromParameter(AnalyzerParameter param){
     FillHist(systName+"/"+channel+"/Pre/Lep1_Eta_"+IDsuffix, leptons.at(0)->Eta(), weight, 50, -2.5, 2.5);
     FillHist(systName+"/"+channel+"/Pre/Lep2_Eta_"+IDsuffix, leptons.at(1)->Eta(), weight, 50, -2.5, 2.5);
     FillHist(systName+"/"+channel+"/Pre/MET_"+IDsuffix, MET, weight, 1000, 0., 1000.);
+    FillHist(systName+"/"+channel+"/Pre/METPhi_"+IDsuffix, METPhi, weight, 64, -3.2, 3.2);
     FillHist(systName+"/"+channel+"/Pre/MET2ST_"+IDsuffix, MET2ST, weight, 1000, 0., 1000.);
 
     /*if(muons.at(0).Charge() > 0){
@@ -983,6 +988,7 @@ void HNtypeI_SR::executeEventFromParameter(AnalyzerParameter param){
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/Lep1_Eta_"+IDsuffix, leptons.at(0)->Eta(), weight, 50, -2.5, 2.5);
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/Lep2_Eta_"+IDsuffix, leptons.at(1)->Eta(), weight, 50, -2.5, 2.5);
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/MET_"+IDsuffix, MET, weight, 1000, 0., 1000.);
+        FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/METPhi_"+IDsuffix, METPhi, weight, 64, -3.2, 3.2);
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/MET2ST_"+IDsuffix, MET2ST, weight, 1000, 0., 1000.);
 
       }
@@ -1021,6 +1027,7 @@ void HNtypeI_SR::executeEventFromParameter(AnalyzerParameter param){
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/Lep1_Eta_nocut_"+IDsuffix, leptons.at(0)->Eta(), weight, 50, -2.5, 2.5);
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/Lep2_Eta_nocut_"+IDsuffix, leptons.at(1)->Eta(), weight, 50, -2.5, 2.5);
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/MET_nocut_"+IDsuffix, MET, weight, 1000, 0., 1000.);
+        FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/METPhi_nocut_"+IDsuffix, METPhi, weight, 64, -3.2, 3.2);
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/MET2ST_nocut_"+IDsuffix, MET2ST, weight, 1000, 0., 1000.);
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/lljjLow_Mass_nocut_"+IDsuffix, lljjLow.M(), weight, 2000, 0., 2000.);
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/l1jjLow_Mass_nocut_"+IDsuffix, l1jjLow.M(), weight, 2000, 0., 2000.);
@@ -1073,6 +1080,7 @@ void HNtypeI_SR::executeEventFromParameter(AnalyzerParameter param){
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/Lep1_Eta_"+IDsuffix, leptons.at(0)->Eta(), weight, 50, -2.5, 2.5);
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/Lep2_Eta_"+IDsuffix, leptons.at(1)->Eta(), weight, 50, -2.5, 2.5);
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/MET_"+IDsuffix, MET, weight, 1000, 0., 1000.);
+        FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/METPhi_"+IDsuffix, METPhi, weight, 64, -3.2, 3.2);
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/MET2ST_"+IDsuffix, MET2ST, weight, 1000, 0., 1000.);
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/lljjLow_Mass_"+IDsuffix, lljjLow.M(), weight, 2000, 0., 2000.);
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/l1jjLow_Mass_"+IDsuffix, l1jjLow.M(), weight, 2000, 0., 2000.);
@@ -1142,6 +1150,7 @@ void HNtypeI_SR::executeEventFromParameter(AnalyzerParameter param){
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/Lep1_Eta_nocut_"+IDsuffix, leptons.at(0)->Eta(), weight, 50, -2.5, 2.5);
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/Lep2_Eta_nocut_"+IDsuffix, leptons.at(1)->Eta(), weight, 50, -2.5, 2.5);
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/MET_nocut_"+IDsuffix, MET, weight, 1000, 0., 1000.);
+        FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/METPhi_nocut_"+IDsuffix, METPhi, weight, 64, -3.2, 3.2);
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/MET2ST_nocut_"+IDsuffix, MET2ST, weight, 1000, 0., 1000.);
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/llj_Mass_nocut_"+IDsuffix, llj.M(), weight, 2000, 0., 2000.);
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/l1j_Mass_nocut_"+IDsuffix, l1j.M(), weight, 2000, 0., 2000.);
@@ -1174,6 +1183,7 @@ void HNtypeI_SR::executeEventFromParameter(AnalyzerParameter param){
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/Lep1_Eta_"+IDsuffix, leptons.at(0)->Eta(), weight, 50, -2.5, 2.5);
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/Lep2_Eta_"+IDsuffix, leptons.at(1)->Eta(), weight, 50, -2.5, 2.5);
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/MET_"+IDsuffix, MET, weight, 1000, 0., 1000.);
+        FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/METPhi_"+IDsuffix, METPhi, weight, 64, -3.2, 3.2);
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/MET2ST_"+IDsuffix, MET2ST, weight, 1000, 0., 1000.);
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/llj_Mass_"+IDsuffix, llj.M(), weight, 2000, 0., 2000.);
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/l1j_Mass_"+IDsuffix, l1j.M(), weight, 2000, 0., 2000.);
@@ -1206,6 +1216,7 @@ void HNtypeI_SR::executeEventFromParameter(AnalyzerParameter param){
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/Lep1_Eta_nocut_"+IDsuffix, leptons.at(0)->Eta(), weight, 50, -2.5, 2.5);
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/Lep2_Eta_nocut_"+IDsuffix, leptons.at(1)->Eta(), weight, 50, -2.5, 2.5);
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/MET_nocut_"+IDsuffix, MET, weight, 1000, 0., 1000.);
+        FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/METPhi_nocut_"+IDsuffix, METPhi, weight, 64, -3.2, 3.2);
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/MET2ST_nocut_"+IDsuffix, MET2ST, weight, 1000, 0., 1000.);
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/Fatjet_Pt_nocut_"+IDsuffix, fatjets_WCand.Pt(), weight, 1000, 0., 1000.);
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/Fatjet_Mass_nocut_"+IDsuffix, fatjets_WCand.SDMass(), weight, 2000, 0., 2000.);
@@ -1238,6 +1249,7 @@ void HNtypeI_SR::executeEventFromParameter(AnalyzerParameter param){
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/Lep1_Eta_"+IDsuffix, leptons.at(0)->Eta(), weight, 50, -2.5, 2.5);
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/Lep2_Eta_"+IDsuffix, leptons.at(1)->Eta(), weight, 50, -2.5, 2.5);
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/MET_"+IDsuffix, MET, weight, 1000, 0., 1000.);
+        FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/METPhi_"+IDsuffix, METPhi, weight, 64, -3.2, 3.2);
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/MET2ST_"+IDsuffix, MET2ST, weight, 1000, 0., 1000.);
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/Fatjet_Pt_"+IDsuffix, fatjets_WCand.Pt(), weight, 1000, 0., 1000.);
         FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/Fatjet_Mass_"+IDsuffix, fatjets_WCand.SDMass(), weight, 2000, 0., 2000.);
