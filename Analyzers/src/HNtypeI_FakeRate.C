@@ -622,6 +622,7 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
   for(unsigned int it_rg=0; it_rg<regions.size(); it_rg++){
     weight = 1., muonIDSF = 1., muonIsoSF = 1.;
     if(!(muons_loose.size()>0)) break;
+    if(!ev.PassTrigger(MuonTriggers)) break;
     if(IsDATA){ if(!isMuon) break; }
 
     // Fake rate measurement region
@@ -1214,6 +1215,7 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
   for(unsigned int it_rg2=0; it_rg2<regions.size(); it_rg2++){
     weight = 1.;
     if(!(electrons_loose.size()>0)) break;
+    if(!ev.PassTrigger(ElectronTriggers)) break;
     if(IsDATA){ if(!isElectron) break; }
 
     // Fake rate measurement region 
