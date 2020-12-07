@@ -76,8 +76,8 @@ void HNtypeI_SR::initializeAnalyzer(){
   ElectronTightIDs = {"HNTightV1"};
   ElectronLooseIDs = {"HNLooseV1"};
   ElectronVetoIDs  = {"ISRVeto"};
-  MuonFRNames      = {"HNV13"};
-  ElectronFRNames  = {"HNV11"};
+  MuonFRNames      = {"HNRun2"};
+  ElectronFRNames  = {"HNRun2"};
 
   //==== At this point, sample informations (e.g., IsDATA, DataStream, MCSample, or DataYear) are all set
   //==== You can define sample-dependent or year-dependent variables here

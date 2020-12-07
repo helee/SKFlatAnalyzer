@@ -49,8 +49,8 @@ void HNtypeI_VV_CR::initializeAnalyzer(){
   ElectronTightIDs = {"HNTightV1"};
   ElectronLooseIDs = {"HNLooseV1"};
   ElectronVetoIDs  = {"ISRVeto"};
-  MuonFRNames      = {"HNV13"};
-  ElectronFRNames  = {"HNV11"};
+  MuonFRNames      = {"HNRun2"};
+  ElectronFRNames  = {"HNRun2"};
 
   //==== At this point, sample informations (e.g., IsDATA, DataStream, MCSample, or DataYear) are all set
   //==== You can define sample-dependent or year-dependent variables here
@@ -932,7 +932,37 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
         FillHist(systName+"/"+regions.at(it_rg)+"/MET2ST_NoLooseBJet_"+IDsuffix, MET2ST, weight, 1000, 0., 1000.);
       }
 
+      if(GammaCand.M() < 3.){
+        FillHist(systName+"/"+regions.at(it_rg)+"/Number_Events_"+IDsuffix, 9.5, weight, cutflow_bin, 0., cutflow_max);
+        FillHist(systName+"/"+regions.at(it_rg)+"/Number_Events_unweighted_"+IDsuffix, 9.5, 1., cutflow_bin, 0., cutflow_max);
+        FillHist(systName+"/"+regions.at(it_rg)+"/Number_Jets_GammaMass3_"+IDsuffix, jets_Pt20.size(), weight, 10, 0., 10.);
+        FillHist(systName+"/"+regions.at(it_rg)+"/Number_BJets_Loose_GammaMass3_"+IDsuffix, Nbjet_loose, weight, 10, 0., 10.);
+        FillHist(systName+"/"+regions.at(it_rg)+"/Number_BJets_Medium_GammaMass3_"+IDsuffix, Nbjet_medium, weight, 10, 0., 10.);
+        FillHist(systName+"/"+regions.at(it_rg)+"/Number_FatJets_GammaMass3_"+IDsuffix, fatjets.size(), weight, 10, 0., 10.);
+        FillHist(systName+"/"+regions.at(it_rg)+"/ZCand_Mass_GammaMass3_"+IDsuffix, ZCand.M(), weight, 80, 50., 130.);
+        FillHist(systName+"/"+regions.at(it_rg)+"/TriLep_Mass_GammaMass3_"+IDsuffix, TriLep.M(), weight, 80, 50., 130.);
+        FillHist(systName+"/"+regions.at(it_rg)+"/GammaCand_Mass_GammaMass3_"+IDsuffix, GammaCand.M(), weight, 50, 0., 5.);
+        FillHist(systName+"/"+regions.at(it_rg)+"/ZCand_Pt_GammaMass3_"+IDsuffix, ZCand.Pt(), weight, 1000, 0., 1000.);
+        FillHist(systName+"/"+regions.at(it_rg)+"/GammaCand_Pt_GammaMass3_"+IDsuffix, GammaCand.Pt(), weight, 1000, 0., 1000.);
+        FillHist(systName+"/"+regions.at(it_rg)+"/WtagLep_Pt_GammaMass3_"+IDsuffix, WtagLep.Pt(), weight, 1000, 0., 1000.);
+        FillHist(systName+"/"+regions.at(it_rg)+"/ZtagLep1_Pt_GammaMass3_"+IDsuffix, ZtagLep1.Pt(), weight, 1000, 0., 1000.);
+        FillHist(systName+"/"+regions.at(it_rg)+"/ZtagLep2_Pt_GammaMass3_"+IDsuffix, ZtagLep2.Pt(), weight, 1000, 0., 1000.);
+        FillHist(systName+"/"+regions.at(it_rg)+"/GammaLep1_Pt_GammaMass3_"+IDsuffix, GammaLep1.Pt(), weight, 1000, 0., 1000.);
+        FillHist(systName+"/"+regions.at(it_rg)+"/GammaLep2_Pt_GammaMass3_"+IDsuffix, GammaLep2.Pt(), weight, 1000, 0., 1000.);
+        FillHist(systName+"/"+regions.at(it_rg)+"/Lep1_Pt_GammaMass3_"+IDsuffix, leptons.at(0)->Pt(), weight, 1000, 0., 1000.);
+        FillHist(systName+"/"+regions.at(it_rg)+"/Lep2_Pt_GammaMass3_"+IDsuffix, leptons.at(1)->Pt(), weight, 1000, 0., 1000.);
+        FillHist(systName+"/"+regions.at(it_rg)+"/Lep3_Pt_GammaMass3_"+IDsuffix, leptons.at(2)->Pt(), weight, 1000, 0., 1000.);
+        FillHist(systName+"/"+regions.at(it_rg)+"/Lep1_Eta_GammaMass3_"+IDsuffix, leptons.at(0)->Eta(), weight, 50, -2.5, 2.5);
+        FillHist(systName+"/"+regions.at(it_rg)+"/Lep2_Eta_GammaMass3_"+IDsuffix, leptons.at(1)->Eta(), weight, 50, -2.5, 2.5);
+        FillHist(systName+"/"+regions.at(it_rg)+"/Lep3_Eta_GammaMass3_"+IDsuffix, leptons.at(2)->Eta(), weight, 50, -2.5, 2.5);
+        FillHist(systName+"/"+regions.at(it_rg)+"/Mt_GammaMass3_"+IDsuffix, Mt, weight, 1000, 0., 1000.);
+        FillHist(systName+"/"+regions.at(it_rg)+"/MET_GammaMass3_"+IDsuffix, MET, weight, 1000, 0., 1000.);
+        FillHist(systName+"/"+regions.at(it_rg)+"/METPhi_GammaMass3_"+IDsuffix, METPhi, weight, 64, -3.2, 3.2);
+        FillHist(systName+"/"+regions.at(it_rg)+"/MET2ST_GammaMass3_"+IDsuffix, MET2ST, weight, 1000, 0., 1000.);
+      }
+
       for(unsigned int it_ch=0; it_ch<channels3L.size(); it_ch++){
+
         if(it_ch == electrons.size()){
           FillHist(systName+"/"+regions.at(it_rg)+"/"+channels3L.at(it_ch)+"/Number_Events_"+IDsuffix, 7.5, weight, cutflow_bin, 0., cutflow_max);
           FillHist(systName+"/"+regions.at(it_rg)+"/"+channels3L.at(it_ch)+"/Number_Events_unweighted_"+IDsuffix, 7.5, 1., cutflow_bin, 0., cutflow_max);
@@ -989,7 +1019,38 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
             FillHist(systName+"/"+regions.at(it_rg)+"/"+channels3L.at(it_ch)+"/METPhi_NoLooseBJet_"+IDsuffix, METPhi, weight, 64, -3.2, 3.2);
             FillHist(systName+"/"+regions.at(it_rg)+"/"+channels3L.at(it_ch)+"/MET2ST_NoLooseBJet_"+IDsuffix, MET2ST, weight, 1000, 0., 1000.);
           }
+
+          if(GammaCand.M() < 3.){
+            FillHist(systName+"/"+regions.at(it_rg)+"/"+channels3L.at(it_ch)+"/Number_Events_"+IDsuffix, 9.5, weight, cutflow_bin, 0., cutflow_max);
+            FillHist(systName+"/"+regions.at(it_rg)+"/"+channels3L.at(it_ch)+"/Number_Events_unweighted_"+IDsuffix, 9.5, 1., cutflow_bin, 0., cutflow_max);
+            FillHist(systName+"/"+regions.at(it_rg)+"/"+channels3L.at(it_ch)+"/Number_Jets_GammaMass3_"+IDsuffix, jets_Pt20.size(), weight, 10, 0., 10.);
+            FillHist(systName+"/"+regions.at(it_rg)+"/"+channels3L.at(it_ch)+"/Number_BJets_Loose_GammaMass3_"+IDsuffix, Nbjet_loose, weight, 10, 0., 10.);
+            FillHist(systName+"/"+regions.at(it_rg)+"/"+channels3L.at(it_ch)+"/Number_BJets_Medium_GammaMass3_"+IDsuffix, Nbjet_medium, weight, 10, 0., 10.);
+            FillHist(systName+"/"+regions.at(it_rg)+"/"+channels3L.at(it_ch)+"/Number_FatJets_GammaMass3_"+IDsuffix, fatjets.size(), weight, 10, 0., 10.);
+            FillHist(systName+"/"+regions.at(it_rg)+"/"+channels3L.at(it_ch)+"/ZCand_Mass_GammaMass3_"+IDsuffix, ZCand.M(), weight, 80, 50., 130.);
+            FillHist(systName+"/"+regions.at(it_rg)+"/"+channels3L.at(it_ch)+"/TriLep_Mass_GammaMass3_"+IDsuffix, TriLep.M(), weight, 80, 50., 130.);
+            FillHist(systName+"/"+regions.at(it_rg)+"/"+channels3L.at(it_ch)+"/GammaCand_Mass_GammaMass3_"+IDsuffix, GammaCand.M(), weight, 50, 0., 5.);
+            FillHist(systName+"/"+regions.at(it_rg)+"/"+channels3L.at(it_ch)+"/ZCand_Pt_GammaMass3_"+IDsuffix, ZCand.Pt(), weight, 1000, 0., 1000.);
+            FillHist(systName+"/"+regions.at(it_rg)+"/"+channels3L.at(it_ch)+"/GammaCand_Pt_GammaMass3_"+IDsuffix, GammaCand.Pt(), weight, 1000, 0., 1000.);
+            FillHist(systName+"/"+regions.at(it_rg)+"/"+channels3L.at(it_ch)+"/WtagLep_Pt_GammaMass3_"+IDsuffix, WtagLep.Pt(), weight, 1000, 0., 1000.);
+            FillHist(systName+"/"+regions.at(it_rg)+"/"+channels3L.at(it_ch)+"/ZtagLep1_Pt_GammaMass3_"+IDsuffix, ZtagLep1.Pt(), weight, 1000, 0., 1000.);
+            FillHist(systName+"/"+regions.at(it_rg)+"/"+channels3L.at(it_ch)+"/ZtagLep2_Pt_GammaMass3_"+IDsuffix, ZtagLep2.Pt(), weight, 1000, 0., 1000.);
+            FillHist(systName+"/"+regions.at(it_rg)+"/"+channels3L.at(it_ch)+"/GammaLep1_Pt_GammaMass3_"+IDsuffix, GammaLep1.Pt(), weight, 1000, 0., 1000.);
+            FillHist(systName+"/"+regions.at(it_rg)+"/"+channels3L.at(it_ch)+"/GammaLep2_Pt_GammaMass3_"+IDsuffix, GammaLep2.Pt(), weight, 1000, 0., 1000.);
+            FillHist(systName+"/"+regions.at(it_rg)+"/"+channels3L.at(it_ch)+"/Lep1_Pt_GammaMass3_"+IDsuffix, leptons.at(0)->Pt(), weight, 1000, 0., 1000.);
+            FillHist(systName+"/"+regions.at(it_rg)+"/"+channels3L.at(it_ch)+"/Lep2_Pt_GammaMass3_"+IDsuffix, leptons.at(1)->Pt(), weight, 1000, 0., 1000.);
+            FillHist(systName+"/"+regions.at(it_rg)+"/"+channels3L.at(it_ch)+"/Lep3_Pt_GammaMass3_"+IDsuffix, leptons.at(2)->Pt(), weight, 1000, 0., 1000.);
+            FillHist(systName+"/"+regions.at(it_rg)+"/"+channels3L.at(it_ch)+"/Lep1_Eta_GammaMass3_"+IDsuffix, leptons.at(0)->Eta(), weight, 50, -2.5, 2.5);
+            FillHist(systName+"/"+regions.at(it_rg)+"/"+channels3L.at(it_ch)+"/Lep2_Eta_GammaMass3_"+IDsuffix, leptons.at(1)->Eta(), weight, 50, -2.5, 2.5);
+            FillHist(systName+"/"+regions.at(it_rg)+"/"+channels3L.at(it_ch)+"/Lep3_Eta_GammaMass3_"+IDsuffix, leptons.at(2)->Eta(), weight, 50, -2.5, 2.5);
+            FillHist(systName+"/"+regions.at(it_rg)+"/"+channels3L.at(it_ch)+"/Mt_GammaMass3_"+IDsuffix, Mt, weight, 1000, 0., 1000.);
+            FillHist(systName+"/"+regions.at(it_rg)+"/"+channels3L.at(it_ch)+"/MET_GammaMass3_"+IDsuffix, MET, weight, 1000, 0., 1000.);
+            FillHist(systName+"/"+regions.at(it_rg)+"/"+channels3L.at(it_ch)+"/METPhi_GammaMass3_"+IDsuffix, METPhi, weight, 64, -3.2, 3.2);
+            FillHist(systName+"/"+regions.at(it_rg)+"/"+channels3L.at(it_ch)+"/MET2ST_GammaMass3_"+IDsuffix, MET2ST, weight, 1000, 0., 1000.);
+          }
+
         }
+
       } 
 
     }

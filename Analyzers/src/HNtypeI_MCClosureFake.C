@@ -76,8 +76,8 @@ void HNtypeI_MCClosureFake::initializeAnalyzer(){
   ElectronTightIDs = {"HNTightV1"};
   ElectronLooseIDs = {"HNLooseV1"};
   ElectronVetoIDs  = {"ISRVeto"};
-  MuonFRNames      = {"HNV13QCD"};
-  ElectronFRNames  = {"HNV11QCD"};
+  MuonFRNames      = {"HNRun2QCD"};
+  ElectronFRNames  = {"HNRun2QCD"};
 
   //==== At this point, sample informations (e.g., IsDATA, DataStream, MCSample, or DataYear) are all set
   //==== You can define sample-dependent or year-dependent variables here

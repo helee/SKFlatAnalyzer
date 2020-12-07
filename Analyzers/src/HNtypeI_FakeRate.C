@@ -615,6 +615,9 @@ void HNtypeI_FakeRate::executeEventFromParameter(AnalyzerParameter param){
   FillHist("gen_pid", gen_test.PID(), weight, 4, -2, 2);
   FillHist("gen_status", gen_test.Status(), weight, 4, -2, 2);*/
 
+  FillHist("MET_NoCut", MET, weight, 500, 0., 500.);
+  FillHist("METPhi_NoCut", METPhi, weight, 64, -3.2, 3.2);
+
   //========================================================
   //==== Muon Fake Rate Measurement
   //========================================================
