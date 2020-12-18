@@ -180,7 +180,7 @@ bool Electron::PassID(TString ID) const{
   //if(ID=="HNLooseV2") return Pass_HNLoose(0.6, 0.2, 0.2, 4., false);
   //if(ID=="HNLooseV3") return Pass_HNLoose(0.6, 0.2, 0.2, 10., false);
   if(ID=="HNTightV1") return Pass_HNTight(0.05, 0.1, 4., 250., true);
-  if(ID=="HNTightV2") return Pass_HNTight(0.01, 0.04, 4., 250., false);
+  if(ID=="HNTightV2") return Pass_HNTight(0.05, 0.1, 4., true);
 
   if(ID=="ISRVeto") return Pass_ISRVeto(0.6);
   if(ID=="ISRLoose") return Pass_ISRLoose(0.6);
@@ -473,6 +473,26 @@ bool Electron::Pass_HNTight(double dxyCut, double dzCut, double sipCut, double p
   return true;
 }
 
+bool Electron::Pass_HNTight(double dxyCut, double dzCut, double sipCut, bool isPOGIP) const{
+  if(! (passTightID()) ) return false;
+  //if(! (RelIso()<relisoCut) ) return false;
+  if( fabs(scEta()) <= 1.479 ){
+    if(! (fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
+  }
+  else{
+    if(isPOGIP){
+      if(! (fabs(dXY())<0.1 && fabs(dZ())<0.2) ) return false;
+    }
+    else{
+      if(! (fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
+    }
+  }
+  if(! (fabs(IP3D()/IP3Derr())<sipCut) ) return false;
+  if(! (IsGsfCtfScPixChargeConsistent()) ) return false;
+  if(! (Pass_TriggerEmulation()) ) return false;
+  return true;
+}
+
 bool Electron::Pass_ISRVeto(double relisoCut) const{
   if(! (Pass_CutBasedVetoNoIso()) ) return false;
   if(! (RelIso()<relisoCut) ) return false;
@@ -488,7 +508,7 @@ bool Electron::Pass_ISRLoose(double relisoCut) const{
 
 bool Electron::Pass_ISRTight() const{
   if(! (passMediumID()) ) return false;
-  if(! (Pass_TriggerEmulation()) ) return false;
+  //if(! (Pass_TriggerEmulation()) ) return false;
   return true;
 }
 
