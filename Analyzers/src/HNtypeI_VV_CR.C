@@ -43,14 +43,16 @@ void HNtypeI_VV_CR::initializeAnalyzer(){
   MuonFRNames      = {"HNV11", "HNV12", "HNV13"};
   ElectronFRNames  = {"HNV11", "HNV11", "HNV11"};*/
 
-  MuonTightIDs     = {"HNTightV1"};
+  MuonTightIDs     = {"HNTightV2"};
   MuonLooseIDs     = {"HNLooseV3"};
   MuonVetoIDs      = {"ISRVeto"};
-  ElectronTightIDs = {"HNTightV1"};
+  ElectronTightIDs = {"HNTightV2"};
   ElectronLooseIDs = {"HNLooseV1"};
   ElectronVetoIDs  = {"ISRVeto"};
   MuonFRNames      = {"HNRun2"};
   ElectronFRNames  = {"HNRun2"};
+  //MuonFRNames      = {"HNRun2METPhi"};
+  //ElectronFRNames  = {"HNRun2METPhi"};
 
   //==== At this point, sample informations (e.g., IsDATA, DataStream, MCSample, or DataYear) are all set
   //==== You can define sample-dependent or year-dependent variables here
@@ -244,7 +246,7 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
   if(param.Muon_Tight_ID.Contains("V1") && param.Muon_Loose_ID.Contains("V3")) IDsuffix = "HNV13";
   if(param.Muon_Tight_ID.Contains("V2") && param.Muon_Loose_ID.Contains("V2")) IDsuffix = "HNV22";*/
 
-  vector<TString> regions = {"WZ", "ZG", "WG", "ZZ"}; 
+  vector<TString> regions = {"WZ", "ZG", "Fake", "WG", "ZZ"}; 
   vector<TString> channels3L = {"mmm", "mme", "mee", "eee"};
   vector<TString> channels4L = {"mmmm", "mmee", "eeee"};
 
@@ -653,7 +655,7 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
     //==== WZ, ZG, WG control region
     //========================================================
 
-    if(it_rg < 3){
+    if(it_rg < 4){
       if(leptons.size() != 3) continue;
 
       // Passing triggers
@@ -720,32 +722,48 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
         weight *= GetPileUpWeight(nPileUp,0);
 
         for(unsigned int i=0; i<muons.size(); i++){
+
           if(param.Muon_Tight_ID.Contains("HighPt")){
             muon_miniaodP = sqrt( muons.at(i).MiniAODPt()*muons.at(i).MiniAODPt() + muons.at(i).Pz()*muons.at(i).Pz() );
-            muonRecoSF    *= mcCorr->MuonReco_SF("HighPtMuonRecoSF", muons.at(i).Eta(), muon_miniaodP, 0);
-            muonIDSF      *= mcCorr->MuonID_SF("NUM_HighPtID_DEN_genTracks",  muons.at(i).Eta(), muons.at(i).MiniAODPt(), 0);
-            muonIsoSF     *= mcCorr->MuonISO_SF("NUM_LooseRelTkIso_DEN_HighPtIDandIPCut", muons.at(i).Eta(), muons.at(i).MiniAODPt(), 0);
+            muonRecoSF    = mcCorr->MuonReco_SF("HighPtMuonRecoSF", muons.at(i).Eta(), muon_miniaodP, 0);
+            muonIDSF      = mcCorr->MuonID_SF("NUM_HighPtID_DEN_genTracks",  muons.at(i).Eta(), muons.at(i).MiniAODPt(), 0);
+            muonIsoSF     = mcCorr->MuonISO_SF("NUM_LooseRelTkIso_DEN_HighPtIDandIPCut", muons.at(i).Eta(), muons.at(i).MiniAODPt(), 0);
           }
-          else if(param.Muon_Tight_ID.Contains("ISRTight")){
-            muonRecoSF *= 1.;
-            muonIDSF   *= mcCorr->MuonID_SF("NUM_TightID_DEN_genTracks", muons.at(i).Eta(), muons.at(i).MiniAODPt(), 0);;
-            muonIsoSF  *= 1.;
+          else if(param.Muon_Tight_ID.Contains("HNTight")){
+            muonRecoSF = 1.;
+            muonIDSF   = mcCorr->MuonID_SF_HNtypeI(param.Muon_Tight_ID, muons.at(i).Eta(), muons.at(i).MiniAODPt(), 0);
+            muonIsoSF  = 1.;  // HNTight ID contains both ID and Iso. For POG ID muons, ID/Iso SFs are measured separately.
+            if(RunFake){  // When subtracting prompt contribution from fake contribution, we apply ID SF only for muons passing the tight ID
+              if(!muons.at(i).PassID(param.Muon_Tight_ID)) muonIDSF = 1.;
+            }
           }
           else{
-            muonRecoSF *= 1.;
-            muonIDSF   *= 1.;
-            muonIsoSF  *= 1.;
+            muonRecoSF = 1.;
+            muonIDSF   = 1.;
+            muonIsoSF  = 1.;
           }
+    
           weight *= muonRecoSF*muonIDSF*muonIsoSF;
+    
         }
-
+      
         for(unsigned int i=0; i<electrons.size(); i++){
-          electronRecoSF *= mcCorr->ElectronReco_SF(electrons.at(i).scEta(), electrons.at(i).UncorrPt(), 0);
+      
+          electronRecoSF = mcCorr->ElectronReco_SF(electrons.at(i).scEta(), electrons.at(i).UncorrPt(), 0);
+
           if(param.Electron_Tight_ID.Contains("HEEP")){
-            electronIDSF *= mcCorr->ElectronID_SF("HEEP", electrons.at(i).scEta(), electrons.at(i).UncorrPt(), 0);
+            electronIDSF = mcCorr->ElectronID_SF("HEEP", electrons.at(i).scEta(), electrons.at(i).UncorrPt(), 0);
           }
-          else electronIDSF *= 1.;
+          else if(param.Electron_Tight_ID.Contains("HNTight")){
+            electronIDSF = mcCorr->ElectronID_SF(param.Electron_Tight_ID, electrons.at(i).scEta(), electrons.at(i).UncorrPt(), 0);
+            if(RunFake){  // When subtracting prompt contribution from fake contribution, we apply ID SF only for electrons passing the tight ID
+              if(!electrons.at(i).PassID(param.Electron_Tight_ID)) electronIDSF = 1.;
+            }
+          }
+          else electronIDSF = 1.;
+
           weight *= electronRecoSF*electronIDSF;
+
         }
 
       }
@@ -830,8 +848,8 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
       Mt = MT(WtagLep, METv);
       Mt3l = MT(TriLep, METv);
 
-      // WZ, ZG control region
-      if(it_rg < 2){
+      // WZ, ZG, Fake control region
+      if(it_rg < 3){
         if(!(ossf_mass10 == 0)) continue;
       
         // Cutflow : m(ll) > 10 GeV
@@ -855,10 +873,16 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
           if(!(MET < 50.)) continue;
           if(!IsOnZ(TriLep.M(), 15.)) continue;
         }
+        if(it_rg == 2){
+          if(!IsOnZ(ZCand.M(), 15.)) continue;
+          if(!(MET < 30.)) continue;
+          if(!(Mt < 30.)) continue;
+          //if(!(TriLep.M() > MZ + 15.)) continue;
+        }
       }
 
       // WG control region 
-      if(it_rg == 2){
+      if(it_rg == 3){
         if(!(GammaCand.M() < 4.)) continue;
 
         // Cutflow : m(ll) < 4 GeV
@@ -932,7 +956,7 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
         FillHist(systName+"/"+regions.at(it_rg)+"/MET2ST_NoLooseBJet_"+IDsuffix, MET2ST, weight, 1000, 0., 1000.);
       }
 
-      if(GammaCand.M() < 3.){
+      if(it_rg==3 && GammaCand.M()<3.){
         FillHist(systName+"/"+regions.at(it_rg)+"/Number_Events_"+IDsuffix, 9.5, weight, cutflow_bin, 0., cutflow_max);
         FillHist(systName+"/"+regions.at(it_rg)+"/Number_Events_unweighted_"+IDsuffix, 9.5, 1., cutflow_bin, 0., cutflow_max);
         FillHist(systName+"/"+regions.at(it_rg)+"/Number_Jets_GammaMass3_"+IDsuffix, jets_Pt20.size(), weight, 10, 0., 10.);
@@ -1020,7 +1044,7 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
             FillHist(systName+"/"+regions.at(it_rg)+"/"+channels3L.at(it_ch)+"/MET2ST_NoLooseBJet_"+IDsuffix, MET2ST, weight, 1000, 0., 1000.);
           }
 
-          if(GammaCand.M() < 3.){
+          if(it_rg==3 && GammaCand.M()<3.){
             FillHist(systName+"/"+regions.at(it_rg)+"/"+channels3L.at(it_ch)+"/Number_Events_"+IDsuffix, 9.5, weight, cutflow_bin, 0., cutflow_max);
             FillHist(systName+"/"+regions.at(it_rg)+"/"+channels3L.at(it_ch)+"/Number_Events_unweighted_"+IDsuffix, 9.5, 1., cutflow_bin, 0., cutflow_max);
             FillHist(systName+"/"+regions.at(it_rg)+"/"+channels3L.at(it_ch)+"/Number_Jets_GammaMass3_"+IDsuffix, jets_Pt20.size(), weight, 10, 0., 10.);
@@ -1059,7 +1083,7 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
     //==== ZZ control region
     //========================================================
 
-    if(it_rg == 3){
+    if(it_rg == 4){
       if(leptons.size() != 4) continue;
       if((muons.size()==1 && electrons.size()==3) || (muons.size()==3 && electrons.size()==1)) continue;
 
@@ -1124,32 +1148,48 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
         weight *= GetPileUpWeight(nPileUp,0);
 
         for(unsigned int i=0; i<muons.size(); i++){
+
           if(param.Muon_Tight_ID.Contains("HighPt")){
             muon_miniaodP = sqrt( muons.at(i).MiniAODPt()*muons.at(i).MiniAODPt() + muons.at(i).Pz()*muons.at(i).Pz() );
-            muonRecoSF    *= mcCorr->MuonReco_SF("HighPtMuonRecoSF", muons.at(i).Eta(), muon_miniaodP, 0);
-            muonIDSF      *= mcCorr->MuonID_SF("NUM_HighPtID_DEN_genTracks",  muons.at(i).Eta(), muons.at(i).MiniAODPt(), 0);
-            muonIsoSF     *= mcCorr->MuonISO_SF("NUM_LooseRelTkIso_DEN_HighPtIDandIPCut", muons.at(i).Eta(), muons.at(i).MiniAODPt(), 0);
+            muonRecoSF    = mcCorr->MuonReco_SF("HighPtMuonRecoSF", muons.at(i).Eta(), muon_miniaodP, 0);
+            muonIDSF      = mcCorr->MuonID_SF("NUM_HighPtID_DEN_genTracks",  muons.at(i).Eta(), muons.at(i).MiniAODPt(), 0);
+            muonIsoSF     = mcCorr->MuonISO_SF("NUM_LooseRelTkIso_DEN_HighPtIDandIPCut", muons.at(i).Eta(), muons.at(i).MiniAODPt(), 0);
           }
-          else if(param.Muon_Tight_ID.Contains("ISRTight")){
-            muonRecoSF *= 1.;
-            muonIDSF   *= mcCorr->MuonID_SF("NUM_TightID_DEN_genTracks", muons.at(i).Eta(), muons.at(i).MiniAODPt(), 0);;
-            muonIsoSF  *= 1.;
+          else if(param.Muon_Tight_ID.Contains("HNTight")){
+            if(RunFake){
+              if(!muons.at(i).PassID(param.Muon_Tight_ID)) continue;
+            }
+            muonRecoSF = 1.;
+            muonIDSF   = mcCorr->MuonID_SF_HNtypeI(param.Muon_Tight_ID, muons.at(i).Eta(), muons.at(i).MiniAODPt(), 0);
+            muonIsoSF  = 1.;
           }
           else{
-            muonRecoSF *= 1.;
-            muonIDSF   *= 1.;
-            muonIsoSF  *= 1.;
+            muonRecoSF = 1.;
+            muonIDSF   = 1.;
+            muonIsoSF  = 1.;
           }
+
           weight *= muonRecoSF*muonIDSF*muonIsoSF;
+
         }
 
         for(unsigned int i=0; i<electrons.size(); i++){
-          electronRecoSF *= mcCorr->ElectronReco_SF(electrons.at(i).scEta(), electrons.at(i).UncorrPt(), 0);
+
+          electronRecoSF = mcCorr->ElectronReco_SF(electrons.at(i).scEta(), electrons.at(i).UncorrPt(), 0);
+
           if(param.Electron_Tight_ID.Contains("HEEP")){
-            electronIDSF *= mcCorr->ElectronID_SF("HEEP", electrons.at(i).scEta(), electrons.at(i).UncorrPt(), 0);
+            electronIDSF = mcCorr->ElectronID_SF("HEEP", electrons.at(i).scEta(), electrons.at(i).UncorrPt(), 0);
+          }
+          else if(param.Electron_Tight_ID.Contains("HNTight")){
+            if(RunFake){
+              if(!electrons.at(i).PassID(param.Electron_Tight_ID)) continue;
+            }
+            electronIDSF = mcCorr->ElectronID_SF(param.Electron_Tight_ID, electrons.at(i).scEta(), electrons.at(i).UncorrPt(), 0);
           }
           else electronIDSF = 1.;
+
           weight *= electronRecoSF*electronIDSF;
+
         }
 
       }
@@ -1303,6 +1343,3 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
   } // Control Region Loop
 
 }
-
-
-

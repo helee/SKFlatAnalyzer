@@ -48,14 +48,16 @@ void HNtypeI_DY_CR_2016H::initializeAnalyzer(){
     ElectronFRNames  = {"POGCB", "POGMVA"};
   }*/
 
-  MuonTightIDs     = {"HNTightV1"};
+  MuonTightIDs     = {"HNTightV2"};
   MuonLooseIDs     = {"HNLooseV3"};
   MuonVetoIDs      = {"ISRVeto"};
-  ElectronTightIDs = {"HNTightV1"};
+  ElectronTightIDs = {"HNTightV2"};
   ElectronLooseIDs = {"HNLooseV1"};
   ElectronVetoIDs  = {"ISRVeto"};
   MuonFRNames      = {"HNRun2"};
   ElectronFRNames  = {"HNRun2"};
+  //MuonFRNames      = {"HNRun2METPhi"};
+  //ElectronFRNames  = {"HNRun2METPhi"};
 
   //==== At this point, sample informations (e.g., IsDATA, DataStream, MCSample, or DataYear) are all set
   //==== You can define sample-dependent or year-dependent variables here
@@ -272,11 +274,11 @@ void HNtypeI_DY_CR_2016H::executeEventFromParameter(AnalyzerParameter param){
   }
 
   // Boolean : passTrigger
-  bool passMuMu  = ev.PassTrigger(MuonTriggersH);      // NOTE : Change for 2016H 
+  bool passMuMu  = ev.PassTrigger(MuonTriggersH);      // NOTE : Change for 2016H
   bool passEE    = ev.PassTrigger(ElectronTriggers);
-  bool passEMu   = ev.PassTrigger(EMuTriggersH);       // NOTE : Change for 2016H 
-  bool passE23Mu = ev.PassTrigger(Mu8Ele23TriggersH);  // NOTE : Change for 2016H 
-  bool passEMu23 = ev.PassTrigger(Mu23Ele12TriggersH); // NOTE : Change for 2016H 
+  bool passEMu   = ev.PassTrigger(EMuTriggersH);       // NOTE : Change for 2016H
+  bool passE23Mu = ev.PassTrigger(Mu8Ele23TriggersH);  // NOTE : Change for 2016H
+  bool passEMu23 = ev.PassTrigger(Mu23Ele12TriggersH); // NOTE : Change for 2016H
 
   //========================================================
   //==== No Cut
@@ -787,32 +789,51 @@ void HNtypeI_DY_CR_2016H::executeEventFromParameter(AnalyzerParameter param){
       PUweight_down = GetPileUpWeight(nPileUp,-1);
 
       for(unsigned int i=0; i<muons.size(); i++){
+
         if(param.Muon_Tight_ID.Contains("HighPt")){
           muon_miniaodP = sqrt( muons.at(i).MiniAODPt()*muons.at(i).MiniAODPt() + muons.at(i).Pz()*muons.at(i).Pz() );
-          muonRecoSF    *= mcCorr->MuonReco_SF("HighPtMuonRecoSF", muons.at(i).Eta(), muon_miniaodP, 0);
-          muonIDSF      *= mcCorr->MuonID_SF("NUM_HighPtID_DEN_genTracks",  muons.at(i).Eta(), muons.at(i).MiniAODPt(), 0);
-          muonIsoSF     *= mcCorr->MuonISO_SF("NUM_LooseRelTkIso_DEN_HighPtIDandIPCut", muons.at(i).Eta(), muons.at(i).MiniAODPt(), 0);
+          muonRecoSF    = mcCorr->MuonReco_SF("HighPtMuonRecoSF", muons.at(i).Eta(), muon_miniaodP, 0);
+          muonIDSF      = mcCorr->MuonID_SF("NUM_HighPtID_DEN_genTracks",  muons.at(i).Eta(), muons.at(i).MiniAODPt(), 0);
+          muonIsoSF     = mcCorr->MuonISO_SF("NUM_LooseRelTkIso_DEN_HighPtIDandIPCut", muons.at(i).Eta(), muons.at(i).MiniAODPt(), 0);
         }
-        else if(param.Muon_Tight_ID.Contains("ISRTight")){
-          muonRecoSF *= 1.;
-          muonIDSF   *= mcCorr->MuonID_SF("NUM_TightID_DEN_genTracks", muons.at(i).Eta(), muons.at(i).MiniAODPt(), 0);;
-          muonIsoSF  *= 1.;
+        else if(param.Muon_Tight_ID.Contains("HNTight")){
+          if(RunFake){
+            if(!muons.at(i).PassID(param.Muon_Tight_ID)) continue;
+          }
+          muonRecoSF = 1.;
+          muonIDSF   = mcCorr->MuonID_SF_HNtypeI(param.Muon_Tight_ID, muons.at(i).Eta(), muons.at(i).MiniAODPt(), 0);
+          muonIsoSF  = 1.;  // HNTight ID contains both ID and Iso. For POG ID muons, ID/Iso SFs are measured separately.
+          if(RunFake){  // When subtracting prompt contribution from fake contribution, we apply ID SF only for muons passing the tight ID
+            if(!muons.at(i).PassID(param.Muon_Tight_ID)) muonIDSF = 1.;
+          }
         }
         else{
-          muonRecoSF *= 1.;
-          muonIDSF   *= 1.;
-          muonIsoSF  *= 1.;
+          muonRecoSF = 1.;
+          muonIDSF   = 1.;
+          muonIsoSF  = 1.;
         }
+
         weight *= muonRecoSF*muonIDSF*muonIsoSF;
+
       }
 
       for(unsigned int i=0; i<electrons.size(); i++){
-        electronRecoSF *= mcCorr->ElectronReco_SF(electrons.at(i).scEta(), electrons.at(i).UncorrPt(), 0);
+
+        electronRecoSF = mcCorr->ElectronReco_SF(electrons.at(i).scEta(), electrons.at(i).UncorrPt(), 0);
+
         if(param.Electron_Tight_ID.Contains("HEEP")){
-          electronIDSF *= mcCorr->ElectronID_SF("HEEP", electrons.at(i).scEta(), electrons.at(i).UncorrPt(), 0);
+          electronIDSF = mcCorr->ElectronID_SF("HEEP", electrons.at(i).scEta(), electrons.at(i).UncorrPt(), 0);
         }
-        else electronIDSF *= 1.;
+        else if(param.Electron_Tight_ID.Contains("HNTight")){
+          electronIDSF = mcCorr->ElectronID_SF(param.Electron_Tight_ID, electrons.at(i).scEta(), electrons.at(i).UncorrPt(), 0);
+          if(RunFake){  // When subtracting prompt contribution from fake contribution, we apply ID SF only for electrons passing the tight ID
+            if(!electrons.at(i).PassID(param.Electron_Tight_ID)) electronIDSF = 1.;
+          }
+        }
+        else electronIDSF = 1.;
+
         weight *= electronRecoSF*electronIDSF;
+
       }
 
     }
