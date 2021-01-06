@@ -177,12 +177,14 @@ bool Electron::PassID(TString ID) const{
   if(ID=="HNLooseV1") return Pass_HNLoose(0.6, 0.05, 0.1, 4., true);
   if(ID=="HNLooseV1IsoUp") return Pass_HNLoose(0.7, 0.05, 0.1, 4., true);
   if(ID=="HNLooseV1IsoDown") return Pass_HNLoose(0.5, 0.05, 0.1, 4., true);
+  if(ID=="HNLooseV1NoEmulation") return Pass_HNLooseNoEmulation(0.6, 0.05, 0.1, 4., true);
   //if(ID=="HNLooseV2") return Pass_HNLoose(0.6, 0.2, 0.2, 4., false);
   //if(ID=="HNLooseV3") return Pass_HNLoose(0.6, 0.2, 0.2, 10., false);
   if(ID=="HNTightV1") return Pass_HNTight(0.05, 0.1, 4., 250., true);
   if(ID=="HNTightV2") return Pass_HNTight(0.05, 0.1, 4., true);
 
   if(ID=="ISRVeto") return Pass_ISRVeto(0.6);
+  if(ID=="ISRVetoIsoUp") return Pass_ISRVeto(0.7);
   if(ID=="ISRLoose") return Pass_ISRLoose(0.6);
   if(ID=="ISRLooseIsoUp") return Pass_ISRLoose(0.7);
   if(ID=="ISRLooseIsoDown") return Pass_ISRLoose(0.5);
@@ -444,9 +446,7 @@ bool Electron::Pass_HNLoose(double relisoCut, double dxyCut, double dzCut, doubl
     }
   }
   if(! (fabs(IP3D()/IP3Derr())<sipCut) ) return false;
-  if(UncorrPt() < 300.){
-    if(! (IsGsfCtfScPixChargeConsistent()) ) return false;
-  }
+  if(! (IsGsfCtfScPixChargeConsistent()) ) return false;
   if(! (Pass_TriggerEmulation()) ) return false;
   return true;
 }
@@ -490,6 +490,26 @@ bool Electron::Pass_HNTight(double dxyCut, double dzCut, double sipCut, bool isP
   if(! (fabs(IP3D()/IP3Derr())<sipCut) ) return false;
   if(! (IsGsfCtfScPixChargeConsistent()) ) return false;
   if(! (Pass_TriggerEmulation()) ) return false;
+  return true;
+}
+
+bool Electron::Pass_HNLooseNoEmulation(double relisoCut, double dxyCut, double dzCut, double sipCut, bool isPOGIP) const{
+  if(! (Pass_CutBasedLooseNoIso()) ) return false;
+  if(! (RelIso()<relisoCut) ) return false;
+  if( fabs(scEta()) <= 1.479 ){
+    if(! (fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
+  }
+  else{
+    if(isPOGIP){
+      if(! (fabs(dXY())<0.1 && fabs(dZ())<0.2) ) return false;
+    }
+    else{
+      if(! (fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
+    }
+  }
+  if(! (fabs(IP3D()/IP3Derr())<sipCut) ) return false;
+  if(! (IsGsfCtfScPixChargeConsistent()) ) return false;
+  //if(! (Pass_TriggerEmulation()) ) return false;
   return true;
 }
 

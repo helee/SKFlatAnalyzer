@@ -54,6 +54,8 @@ public:
   bool IgnoreNoHist;
 
   double MuonReco_SF(TString key, double eta, double p, int sys=0);
+  double MuonID_Eff_Period(TString ID, TString period, TString DataMC, double eta, double pt, int sys=0);  // For HNtypeI
+  double MuonID_SF_HNtypeI(TString ID, double eta, double pt, int sys=0);  // For HNtypeI
   double MuonID_SF(TString ID, double eta, double pt, int sys=0);
   double MuonISO_SF(TString ID, double eta, double pt, int sys=0);
   double MuonTrigger_Eff(TString ID, TString trig, int DataOrMC, double eta, double pt, int sys=0);
@@ -70,18 +72,20 @@ public:
   std::map< TString, TH2F* > map_hist_Electron;
   std::map< TString, TGraphAsymmErrors* > map_graph_Electron;
 
+  double FatJetWtagSF(TString ID, int sys=0);  // For HNtypeI
+
   std::map< TString, TH2F* > map_hist_prefire;
   double GetPrefireWeight(const std::vector<Photon>& photons, const std::vector<Jet>& jets, int sys);
 
   std::map< TString, TH1D* > map_hist_pileup;
   double GetPileUpWeightBySampleName(int N_pileup, int syst);
   double GetPileUpWeight(int N_pileup, int syst);
-  double GetPileUpWeight2017(int N_pileup, int syst);
+  double GetPileUpWeight2017(int N_pileup, int syst); // For HNtypeI
 
-  std::map< TString, TH1D* > map_hist_vertex;
+  std::map< TString, TH1D* > map_hist_vertex;  // For HNtypeI
   double GetVertexWeight(int Nvtx, TString channel);
 
-  std::map< TString, TH1D* > map_hist_rho;
+  std::map< TString, TH1D* > map_hist_rho;  // For HNtypeI
   double GetRhoWeight(double rho, TString channel);
 
   double GetTopPtReweight(const std::vector<Gen>& gens);

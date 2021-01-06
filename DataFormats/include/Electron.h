@@ -139,6 +139,7 @@ public:
   bool Pass_HNLoose(double relisoCut, double dxyCut, double dzCut, double sipCut, bool isPOGIP) const;
   bool Pass_HNTight(double dxyCut, double dzCut, double sipCut, double ptCut, bool isPOGIP) const;
   bool Pass_HNTight(double dxyCut, double dzCut, double sipCut, bool isPOGIP) const;
+  bool Pass_HNLooseNoEmulation(double relisoCut, double dxyCut, double dzCut, double sipCut, bool isPOGIP) const;
 
   bool Pass_ISRVeto(double relisoCut) const;
   bool Pass_ISRLoose(double relisoCut) const;

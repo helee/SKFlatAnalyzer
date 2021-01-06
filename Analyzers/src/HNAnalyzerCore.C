@@ -81,6 +81,7 @@ Event HNAnalyzerCore::GetEvent(){
   if(!IsDATA) ev.SetMCweight(gen_weight);
   ev.SetTrigger(*HLT_TriggerName);
   ev.SetMET(pfMET_Type1_pt,pfMET_Type1_phi);
+  //ev.SetMET(pfMET_Type1_PhiCor_pt, pfMET_Type1_PhiCor_phi); // xy-correction
   ev.SetnPV(nPV);
   ev.SetDataYear(DataYear);
 
@@ -1733,7 +1734,7 @@ double HNAnalyzerCore::GetCFrates(TString id, double pt, double eta){
   double ivt_pt = 1./pt;
   double a = 999., b = 999.;  // fit function = a + b/pT
 
-  if(id == "HNTight"){
+  /*if(id == "HNTight"){
     if(eta < 0.8){
       if(ivt_pt < 0.005){ a = 9.58505e-04; b = -0.159759; }
       else if(ivt_pt>=0.005 && ivt_pt<0.0155){ a = 2.07325e-04; b = -0.0086346; }
@@ -1766,8 +1767,8 @@ double HNAnalyzerCore::GetCFrates(TString id, double pt, double eta){
       else if(ivt_pt>=0.0105 && ivt_pt<0.0205){ a = 0.00409673; b = -0.164067; }
       else{ a = 0.00135968; b = -0.0270099; }
     }
-  }
-  else{
+  }*/
+  if(id == "HNTight2016"){
     if(eta < 0.8){
       if(ivt_pt < 0.0075){ a = 4.12045e-04; b = -0.0445416; }
       else if(ivt_pt>=0.0075 && ivt_pt<0.0155){ a = 1.1869e-04; b = -0.00448807; }
