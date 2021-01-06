@@ -555,7 +555,7 @@ void HNtypeI_DY_CR_2016H::executeEventFromParameter(AnalyzerParameter param){
   Particle WtagLep, TriLep, ZtagLep1, ZtagLep2, Ztemp, Ztemp1, Ztemp2, Ztemp3, Ztemp4, ZCand1, ZCand2, GammaCand, GammaLep1, GammaLep2;
   
   // Set up pTcone if RunFake=true
-  double mu_tight_iso = 0.05, el_tight_iso = 0.;
+  double mu_tight_iso = 0.07, el_tight_iso = 0.;
   double this_ptcone_muon = 0., this_ptcone_electron = 0.;
 
   if(RunFake){
