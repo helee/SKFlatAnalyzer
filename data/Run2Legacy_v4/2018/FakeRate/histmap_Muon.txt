@@ -1,0 +1,2 @@
+HNRun2	Muon_HNtypeI_FakeRates_HNTightV2_2018.root
+HNRun2QCD	Muon_HNtypeI_QCDFakeRates_HNTightV2_2018.root
