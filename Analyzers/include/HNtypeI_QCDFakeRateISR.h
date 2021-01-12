@@ -1,9 +1,9 @@
-#ifndef HNtypeI_QCDFakeRate_h
-#define HNtypeI_QCDFakeRate_h
+#ifndef HNtypeI_QCDFakeRateISR_h
+#define HNtypeI_QCDFakeRateISR_h
 
 #include "HNAnalyzerCore.h"
 
-class HNtypeI_QCDFakeRate : public HNAnalyzerCore {
+class HNtypeI_QCDFakeRateISR : public HNAnalyzerCore {
 
 public:
 
@@ -39,9 +39,9 @@ public:
 
   // Luminosity
   double MuonLumi1, MuonLumi2, MuonLumi3;
-  double ElectronLumi1, ElectronLumi2, ElectronLumi3, ElectronLumi4, ElectronLumi17L;
+  double ElectronLumi1, ElectronLumi2, ElectronLumi3, ElectronLumi4;
   double SFMuonLumi1, SFMuonLumi2, SFMuonLumi3;
-  double SFElectronLumi1, SFElectronLumi2, SFElectronLumi3, SFElectronLumi4, SFElectronLumi17L;
+  double SFElectronLumi1, SFElectronLumi2, SFElectronLumi3, SFElectronLumi4;
 
   //vector<TString> EleIDs, EleIDSFKeys, MuonIDs, MuonIDSFKeys;
   vector<Electron> AllElectrons;
@@ -50,8 +50,8 @@ public:
 
   //double weight_Prefire;
 
-  HNtypeI_QCDFakeRate();
-  ~HNtypeI_QCDFakeRate();
+  HNtypeI_QCDFakeRateISR();
+  ~HNtypeI_QCDFakeRateISR();
 
 };
 

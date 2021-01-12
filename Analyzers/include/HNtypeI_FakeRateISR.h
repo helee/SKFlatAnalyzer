@@ -1,9 +1,9 @@
-#ifndef HNtypeI_QCDFakeRate_h
-#define HNtypeI_QCDFakeRate_h
+#ifndef HNtypeI_FakeRateISR_h
+#define HNtypeI_FakeRateISR_h
 
 #include "HNAnalyzerCore.h"
 
-class HNtypeI_QCDFakeRate : public HNAnalyzerCore {
+class HNtypeI_FakeRateISR : public HNAnalyzerCore {
 
 public:
 
@@ -15,6 +15,7 @@ public:
   bool RunSyst;
   bool RunNewPDF;
   bool RunXSecSyst;
+  bool RunIso, RunNorm, RunSF;
 
   // Trigger  
   vector<TString> MuonTriggers;
@@ -39,9 +40,9 @@ public:
 
   // Luminosity
   double MuonLumi1, MuonLumi2, MuonLumi3;
-  double ElectronLumi1, ElectronLumi2, ElectronLumi3, ElectronLumi4, ElectronLumi17L;
+  double ElectronLumi1, ElectronLumi2, ElectronLumi3, ElectronLumi4;
   double SFMuonLumi1, SFMuonLumi2, SFMuonLumi3;
-  double SFElectronLumi1, SFElectronLumi2, SFElectronLumi3, SFElectronLumi4, SFElectronLumi17L;
+  double SFElectronLumi1, SFElectronLumi2, SFElectronLumi3, SFElectronLumi4;
 
   //vector<TString> EleIDs, EleIDSFKeys, MuonIDs, MuonIDSFKeys;
   vector<Electron> AllElectrons;
@@ -50,8 +51,8 @@ public:
 
   //double weight_Prefire;
 
-  HNtypeI_QCDFakeRate();
-  ~HNtypeI_QCDFakeRate();
+  HNtypeI_FakeRateISR();
+  ~HNtypeI_FakeRateISR();
 
 };
 
