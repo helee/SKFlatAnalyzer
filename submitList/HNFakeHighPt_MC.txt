@@ -1,0 +1,8 @@
+DYJets
+WJets_MG
+TTLL_powheg
+TTLJ_powheg
+SingleTop_tch_antitop_Incl
+SingleTop_tch_top_Incl
+WZTo3LNu_powheg
+ZZTo4L_powheg

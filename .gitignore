@@ -5,8 +5,6 @@
 *_Dict.cxx
 lib/*.tar.gz
 */obj
-*_submit.sh
-submitList
 lib
 python/UserInfo_helee.py
 data/Run2Legacy_v3/2016/FakeRate
