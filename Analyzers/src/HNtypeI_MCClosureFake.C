@@ -9,75 +9,22 @@ void HNtypeI_MCClosureFake::initializeAnalyzer(){
   //==== if you use "--userflags RunSyst" with SKFlat.py, HasFlag("RunSyst") will return "true"
   RunSyst     = HasFlag("RunSyst");
   RunFake     = HasFlag("RunFake");
-  RunCF       = HasFlag("RunCF");
+  RunLepType  = HasFlag("RunLepType");
 
   cout << "[HNtypeI_MCClosureFake::initializeAnalyzer] RunSyst = " << RunSyst << endl;
   cout << "[HNtypeI_MCClosureFake::initializeAnalyzer] RunFake = " << RunFake << endl;
-  cout << "[HNtypeI_MCClosureFake::initializeAnalyzer] RunCF = " << RunCF << endl;
+  cout << "[HNtypeI_MCClosureFake::initializeAnalyzer] RunLepType = " << RunLepType << endl;
 
-  /*if(RunMuon){
-    MuonTightIDs     = {"ISRTightV1", "ISRTightV2", "HNTightV1", "HNTightV2"};
-    MuonLooseIDs     = {"ISRLoose", "ISRLoose", "HNLooseV1", "HNLooseV1"};
-    MuonVetoIDs      = {"ISRVeto", "ISRVeto", "ISRVeto", "ISRVeto"};
-    ElectronTightIDs = {"HNTightV1", "HNTightV1", "HNTightV1", "HNTightV1"};  // Not used
-    ElectronLooseIDs = {"HNLooseV1", "HNLooseV1", "HNLooseV1", "HNLooseV1"};  // Not used
-    ElectronVetoIDs  = {"ISRVeto", "ISRVeto", "ISRVeto", "ISRVeto"};
-    MuonFRNames      = {"POGCBV1", "POGCBV2", "POGCBV3", "POGCBV4"};
-    ElectronFRNames  = {"POGCB", "POGCB", "POGCB", "POGCB"};
-  }
-
-  if(RunTightIP){
-    MuonTightIDs     = {"HNTightV3", "HNTightV4", "HNTightV5", "HNTightV6"};
-    MuonLooseIDs     = {"HNLooseV2", "HNLooseV2", "HNLooseV2", "HNLooseV2"};
-    MuonVetoIDs      = {"ISRVeto", "ISRVeto", "ISRVeto", "ISRVeto"};
-    ElectronTightIDs = {"HNTightV1", "HNTightV1", "HNTightV1", "HNTightV1"};  // Not used
-    ElectronLooseIDs = {"HNLooseV1", "HNLooseV1", "HNLooseV1", "HNLooseV1"};  // Not used
-    ElectronVetoIDs  = {"ISRVeto", "ISRVeto", "ISRVeto", "ISRVeto"};
-    MuonFRNames      = {"POGCBV5", "POGCBV6", "POGCBV7", "POGCBV8"};
-    ElectronFRNames  = {"POGCB", "POGCB", "POGCB", "POGCB"};
-  }
-
-  if(RunElectron){
-    MuonTightIDs     = {"ISRTightV1", "ISRTightV1"};  // Not used
-    MuonLooseIDs     = {"ISRLoose", "ISRLoose"};      // Not used
-    MuonVetoIDs      = {"ISRVeto", "ISRVeto"};
-    ElectronTightIDs = {"HNTightV1", "HNMVATight"};
-    ElectronLooseIDs = {"HNLooseV1", "HNMVALoose"};
-    ElectronVetoIDs  = {"ISRVeto", "HNMVAVeto"};
-    MuonFRNames      = {"POGCBV1", "POGCBV1"};
-    ElectronFRNames  = {"POGCB", "POGMVA"};
-  }
-
-  if(RunTightEMu){
-    MuonTightIDs     = {"HNTightV5", "HNTightV5", "HNTightV6", "HNTightV6"};
-    MuonLooseIDs     = {"HNLooseV2", "HNLooseV2", "HNLooseV2", "HNLooseV2"};
-    MuonVetoIDs      = {"ISRVeto", "ISRVeto", "ISRVeto", "ISRVeto"};
-    ElectronTightIDs = {"HNTightV1", "HNMVATight", "HNTightV1", "HNMVATight"};
-    ElectronLooseIDs = {"HNLooseV1", "HNMVALoose", "HNLooseV1", "HNMVALoose"};
-    ElectronVetoIDs  = {"ISRVeto", "HNMVAVeto", "ISRVeto", "HNMVAVeto"};
-    MuonFRNames      = {"POGCBV7", "POGCBV7", "POGCBV8", "POGCBV8"};
-    ElectronFRNames  = {"POGCB", "POGMVA", "POGCB", "POGMVA"};
-  }
-
-  if(RunMuon || RunEMu){
-    MuonTightIDs     = {"HNTightV1", "HNTightV1", "HNTightV1"};
-    MuonLooseIDs     = {"HNLooseV1", "HNLooseV2", "HNLooseV3"};
-    MuonVetoIDs      = {"ISRVeto", "ISRVeto", "ISRVeto"};
-    ElectronTightIDs = {"HNTightV1", "HNTightV1", "HNTightV1"};
-    ElectronLooseIDs = {"HNLooseV1", "HNLooseV1", "HNLooseV1"};
-    ElectronVetoIDs  = {"ISRVeto", "ISRVeto", "ISRVeto"};
-    MuonFRNames      = {"HNV11", "HNV12", "HNV13"};
-    ElectronFRNames  = {"HNV11", "HNV11", "HNV11"};
-  }*/
-
-  MuonTightIDs     = {"HNTightV1"};
+  MuonTightIDs     = {"HNTightV2"};
   MuonLooseIDs     = {"HNLooseV3"};
   MuonVetoIDs      = {"ISRVeto"};
-  ElectronTightIDs = {"HNTightV1"};
+  ElectronTightIDs = {"HNTightV2"};
   ElectronLooseIDs = {"HNLooseV1"};
   ElectronVetoIDs  = {"ISRVeto"};
   MuonFRNames      = {"HNRun2QCD"};
   ElectronFRNames  = {"HNRun2QCD"};
+  //MuonFRNames      = {"HNRun2QCDMETPhi"};
+  //ElectronFRNames  = {"HNRun2QCDMETPhi"};
 
   //==== At this point, sample informations (e.g., IsDATA, DataStream, MCSample, or DataYear) are all set
   //==== You can define sample-dependent or year-dependent variables here
@@ -158,13 +105,13 @@ void HNtypeI_MCClosureFake::initializeAnalyzer(){
   //cout << "[HNtypeI_MCClosureFake::initializeAnalyzer] IsoMuTriggerName = " << IsoMuTriggerName << endl;
   //cout << "[HNtypeI_MCClosureFake::initializeAnalyzer TriggerSafePtCut = " << TriggerSafePtCut << endl;
 
-  //==== B-Tagging
-  //==== add taggers and WP that you want to use in analysis
+  //==== b tagging
+  //==== Add taggers and WP that you want to use in analysis
   std::vector<JetTagging::Parameters> jtps;
   //==== If you want to use 1a or 2a method,
   jtps.push_back( JetTagging::Parameters(JetTagging::DeepCSV, JetTagging::Loose, JetTagging::incl, JetTagging::comb) );
   jtps.push_back( JetTagging::Parameters(JetTagging::DeepCSV, JetTagging::Medium, JetTagging::incl, JetTagging::comb) );
-  //==== set
+  //==== Set
   mcCorr->SetJetTaggingParameters(jtps);
 
 }
@@ -220,7 +167,7 @@ void HNtypeI_MCClosureFake::executeEvent(){
     param.syst_ = AnalyzerParameter::Central;
 
     //param.Name = MuonID+"_"+"Central";
-    param.Name = "Central";
+    param.Name = "FakeCentral";
 
     //==== Muon ID
     param.Muon_Tight_ID       = MuonTightID;
@@ -255,14 +202,18 @@ void HNtypeI_MCClosureFake::executeEvent(){
 
     executeEventFromParameter(param);
 
-    /*if(RunSyst){
-      for(int it_syst=1; it_syst<AnalyzerParameter::NSyst; it_syst++){
-        param.syst_ = AnalyzerParameter::Syst(it_syst);
-        param.Name = MuonID+"_"+"Syst_"+param.GetSystType();
+    if(RunSyst){
+      //for(int it_syst=1; it_syst<AnalyzerParameter::NFakeSyst; it_syst++){
+      for(int it_syst=1; it_syst<3; it_syst++){
+        param.fakesyst_ = AnalyzerParameter::FakeSyst(it_syst);
+        //param.Name = MuonID+"_"+"Syst_"+param.GetSystType();
+        param.Name  = "FakeSyst_"+param.GetFakeSystType();
         executeEventFromParameter(param);
       }
-    }*/
+    }
+
   }
+
 }
 
 void HNtypeI_MCClosureFake::executeEventFromParameter(AnalyzerParameter param){
@@ -429,6 +380,22 @@ void HNtypeI_MCClosureFake::executeEventFromParameter(AnalyzerParameter param){
   //==== This order should be explicitly followed
   //==== Below are all variables for available systematic sources
 
+  if(param.fakesyst_ == AnalyzerParameter::FakeCentral){
+
+  }
+  else if(param.fakesyst_ == AnalyzerParameter::NoBJet){
+    param.Muon_FR_Key = "Dijet_NoBJet";
+    param.Electron_FR_Key = "Dijet_NoBJet";
+  }
+  else if(param.fakesyst_ == AnalyzerParameter::WithBJet){
+    param.Muon_FR_Key = "Dijet_1or2BJet";
+    param.Electron_FR_Key = "Dijet_1or2BJet";
+  }
+  else{
+    cout << "[HNtypeI_FakeRate::executeEventFromParameter] Wrong syst" << endl;
+    exit(EXIT_FAILURE);
+  }
+
   /*if(param.syst_ == AnalyzerParameter::Central){
 
   }
@@ -536,7 +503,7 @@ void HNtypeI_MCClosureFake::executeEventFromParameter(AnalyzerParameter param){
   std::sort(fatjets.begin(), fatjets.end(), PtComparing);
 
   //========================================================
-  //==== B-Tagging 
+  //==== b tagging 
   //========================================================
 
   int Nbjet_loose = 0, Nbjet_medium = 0;
@@ -603,7 +570,7 @@ void HNtypeI_MCClosureFake::executeEventFromParameter(AnalyzerParameter param){
   if(electrons.size() > 0) cout << electrons.at(0).PtCone() << endl;*/
 
   // Set up pTcone if RunFake=true
-  double mu_tight_iso = 0.05, el_tight_iso = 0.;
+  double mu_tight_iso = 0.07, el_tight_iso = 0.;
   double this_ptcone_muon = 0., this_ptcone_electron = 0.;
 
   if(RunFake){
@@ -640,7 +607,7 @@ void HNtypeI_MCClosureFake::executeEventFromParameter(AnalyzerParameter param){
   }
 
   // Shift electron energy and MET if RunCF=true
-  if(RunCF){
+  /*if(RunCF){
     if(muons.size()==0 && electrons.size()==2){
 
       electrons_beforeShift.push_back(electrons.at(0));
@@ -651,7 +618,7 @@ void HNtypeI_MCClosureFake::executeEventFromParameter(AnalyzerParameter param){
       METv = UpdateMETElectronCF(METv, electrons_beforeShift, electrons_afterShift);
 
     }
-  }
+  }*/
 
   // Define leptons
   for(unsigned int i=0; i<muons.size(); i++) leptons.push_back(&muons.at(i));
@@ -795,8 +762,14 @@ void HNtypeI_MCClosureFake::executeEventFromParameter(AnalyzerParameter param){
     // Truth matching
     muons_fake.clear();
     electrons_fake.clear();
-    muons_fake = MuonFakeOnly(muons, gens);
-    electrons_fake = ElectronFakeOnly(electrons, gens);
+    if(RunLepType){
+      muons_fake = MuonFakeOnly(muons, gens);
+      electrons_fake = ElectronFakeOnly(electrons, gens);
+    }
+    else{
+      muons_fake = MuonFakeOnlyHNtypeI(muons, gens);
+      electrons_fake = ElectronFakeOnlyHNtypeI(electrons, gens);
+    }
 
     if(channel=="dimu"){
       if(!(muons_fake.size()>=1)) return;
@@ -847,7 +820,7 @@ void HNtypeI_MCClosureFake::executeEventFromParameter(AnalyzerParameter param){
     // Event weights for fake, charge flip
     if(RunFake) weight *= fakeEst->GetWeight(leptons, param);
     //if(RunCF) weight *= GetCFweight(leptons, param, true, 0);
-    if(RunCF) weight *= GetCFWeightElectron(leptons, param.Electron_Tight_ID);
+    //if(RunCF) weight *= GetCFWeightElectron(leptons, param.Electron_Tight_ID);
 
     for(unsigned int it_rg=0; it_rg<regions.size(); it_rg++){
       FillHist(systName+"/"+channel+"/"+regions.at(it_rg)+"/Number_Events_"+IDsuffix, 3.5, weight, cutflow_bin, 0., cutflow_max);
@@ -861,8 +834,9 @@ void HNtypeI_MCClosureFake::executeEventFromParameter(AnalyzerParameter param){
 
     // Cutflow : same-sign (oppsite-sign when RunCF=true) 
 
-    if(!RunCF){ if(leptons.at(0)->Charge()*leptons.at(1)->Charge()<0) return; }
-    if(RunCF){ if(leptons.at(0)->Charge()*leptons.at(1)->Charge()>0) return; }
+    if(leptons.at(0)->Charge()*leptons.at(1)->Charge()<0) return;
+    //if(!RunCF){ if(leptons.at(0)->Charge()*leptons.at(1)->Charge()<0) return; }
+    //if(RunCF){ if(leptons.at(0)->Charge()*leptons.at(1)->Charge()>0) return; }
     /*if(MCSample.Contains("M1500")){
       if(muons.at(0).Charge() < 0) continue;
     }*/
@@ -938,7 +912,7 @@ void HNtypeI_MCClosureFake::executeEventFromParameter(AnalyzerParameter param){
     }
 
     // Cutflow : jet requirement
-    if(!(jets.size()>0 || fatjets.size()>0)) return; 
+    if(!(jets.size()>1 || fatjets.size()>0)) return; 
     //if(!(fatjets.size()>0) && !(jets.size()>1 && fatjets.size()==0) && !(jets.size()==1 && fatjets.size()==0 && ZCand.M()<80.)) continue;
     
     FillHist(systName+"/"+channel+"/Pre/Number_Jets_"+IDsuffix, jets.size(), weight, 10, 0., 10.);

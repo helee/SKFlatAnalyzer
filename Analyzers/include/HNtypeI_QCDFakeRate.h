@@ -15,6 +15,7 @@ public:
   bool RunSyst;
   bool RunNewPDF;
   bool RunXSecSyst;
+  bool RunPt;
 
   // Trigger  
   vector<TString> MuonTriggers;

@@ -82,17 +82,41 @@ TString AnalyzerParameter::GetSystType(){
   if(syst_==Syst::Central){
     return "Central";
   }
+  else if(syst_==Syst::JetEnUp){
+    return "JetEnUp";
+  }
+  else if(syst_==Syst::JetEnDown){
+    return "JetEnDown";
+  }
   else if(syst_==Syst::JetResUp){
     return "JetResUp";
   }
   else if(syst_==Syst::JetResDown){
     return "JetResDown";
   }
-  else if(syst_==Syst::JetEnUp){
-    return "JetEnUp";
+  else if(syst_==Syst::UnclusteredEnUp){
+    return "UnclusteredEnUp";
   }
-  else if(syst_==Syst::JetEnDown){
-    return "JetEnDown";
+  else if(syst_==Syst::UnclusteredEnDown){
+    return "UnclusteredEnDown";
+  }
+   else if(syst_==Syst::BtagSFUp){
+    return "BtagSFUp";
+  }
+  else if(syst_==Syst::BtagSFDown){
+    return "BtagSFDown";
+  }
+  else if(syst_==Syst::L1PrefireUp){
+    return "L1PrefireUp";
+  }
+  else if(syst_==Syst::L1PrefireDown){
+    return "L1PrefireDown";
+  }
+  else if(syst_==Syst::PileupUp){
+    return "PileupUp";
+  }
+  else if(syst_==Syst::PileupDown){
+    return "PileupDown";
   }
   else if(syst_==Syst::MuonEnUp){
     return "MuonEnUp";
@@ -100,20 +124,74 @@ TString AnalyzerParameter::GetSystType(){
   else if(syst_==Syst::MuonEnDown){
     return "MuonEnDown";
   }
-  else if(syst_==Syst::ElectronResUp){
-    return "ElectronResUp";
-  }
-  else if(syst_==Syst::ElectronResDown){
-    return "ElectronResDown";
-  }
   else if(syst_==Syst::ElectronEnUp){
     return "ElectronEnUp";
   }
   else if(syst_==Syst::ElectronEnDown){
     return "ElectronEnDown";
   }
+  else if(syst_==Syst::ElectronResUp){
+    return "ElectronResUp";
+  }
+  else if(syst_==Syst::ElectronResDown){
+    return "ElectronResDown";
+  }
+  else if(syst_==Syst::MuonIDSFUp){
+    return "MuonIDSFUp";
+  }
+  else if(syst_==Syst::MuonIDSFDown){
+    return "MuonIDSFDown";
+  }
+  else if(syst_==Syst::ElectronRecoSFUp){
+    return "ElectronRecoSFUp";
+  }
+  else if(syst_==Syst::ElectronRecoSFDown){
+    return "ElectronRecoSFDown";
+  }
+  else if(syst_==Syst::ElectronIDSFUp){
+    return "ElectronIDSFUp";
+  }
+  else if(syst_==Syst::ElectronIDSFDown){
+    return "ElectronIDSFDown";
+  }
+  else if(syst_==Syst::MuonTriggerSFUp){
+    return "MuonTriggerSFUp";
+  }
+  else if(syst_==Syst::MuonTriggerSFDown){
+    return "MuonTriggerSFDown";
+  }
+  else if(syst_==Syst::ElectronTriggerSFUp){
+    return "ElectronTriggerSFUp";
+  }
+  else if(syst_==Syst::ElectronTriggerSFDown){
+    return "ElectronTriggerSFDown";
+  }
+  else if(syst_==Syst::EMuTriggerSFUp){
+    return "EMuTriggerSFUp";
+  }
+  else if(syst_==Syst::EMuTriggerSFDown){
+    return "EMuTriggerSFDown";
+  }
+  else if(syst_==Syst::SDMassScaleUp){
+    return "SDMassScaleUp";
+  }
+  else if(syst_==Syst::SDMassScaleDown){
+    return "SDMassScaleDown";
+  }
+  else if(syst_==Syst::SDMassResUp){
+    return "SDMassResUp";
+  }
+  else if(syst_==Syst::SDMassResDown){
+    return "SDMassResDown";
+  }
+  else if(syst_==Syst::Tau21SFUp){
+    return "Tau21SFUp";
+  }
+  else if(syst_==Syst::Tau21SFDown){
+    return "Tau21SFDown";
+  }
   else{
-//    cout << "[AnalyzerParameter::GetSystType] Wrong Syst" << endl;
+    //cout << "[AnalyzerParameter::GetSystType] Wrong Syst" << endl;
     cerr << "[AnalyzerParameter::GetSystType] Wrong Syst" << endl;
     exit(EXIT_FAILURE);
     return "ERROR";
@@ -126,29 +204,35 @@ TString AnalyzerParameter::GetFakeSystType(){
   if(fakesyst_==FakeSyst::FakeCentral){
     return "FakeCentral";
   }
-  else if(fakesyst_==FakeSyst::IsoUp){
-    return "IsoUp";
+  else if(fakesyst_==FakeSyst::NoBJet){
+    return "NoBJet";
   }
-  else if(fakesyst_==FakeSyst::IsoDown){
-    return "IsoDown";
+  else if(fakesyst_==FakeSyst::WithBJet){
+    return "WithBJet";
   }
-  else if(fakesyst_==FakeSyst::dphiVar1){
-    return "dphiVar1";
+  else if(fakesyst_==FakeSyst::AwayJetPt20){
+    return "AwayJetPt20";
   }
-  else if(fakesyst_==FakeSyst::dphiVar2){
-    return "dphiVar2";
+  else if(fakesyst_==FakeSyst::AwayJetPt30){
+    return "AwayJetPt30";
   }
-  else if(fakesyst_==FakeSyst::dphiVar3){
-    return "dphiVar3";
+  else if(fakesyst_==FakeSyst::AwayJetPt60){
+    return "AwayJetPt60";
   }
-  else if(fakesyst_==FakeSyst::PtVar1){
-    return "PtVar1";
+  else if(fakesyst_==FakeSyst::AwayJetPt100){
+    return "AwayJetPt100";
   }
-  else if(fakesyst_==FakeSyst::PtVar2){
-    return "PtVar2";
+  else if(fakesyst_==FakeSyst::AwayJetPt200){
+    return "AwayJetPt200";
   }
-  else if(fakesyst_==FakeSyst::PtVar3){
-    return "PtVar3";
+  else if(fakesyst_==FakeSyst::dPhi1){
+    return "dPhi1";
+  }
+  else if(fakesyst_==FakeSyst::dPhi2){
+    return "dPhi2";
+  }
+  else if(fakesyst_==FakeSyst::dPhi3){
+    return "dPhi3";
   }
   else if(fakesyst_==FakeSyst::PtRatioUp){
     return "PtRatioUp";
@@ -156,14 +240,20 @@ TString AnalyzerParameter::GetFakeSystType(){
   else if(fakesyst_==FakeSyst::PtRatioDown){
     return "PtRatioDown";
   }
-  /*else if(fakesyst_==FakeSyst::dxyVar1){
-    return "dxyVar1";
+  /*else if(fakesyst_==FakeSyst::MuonIsoUp){
+    return "MuonIsoUp";
   }
-  else if(fakesyst_==FakeSyst::dxyVar2){
-    return "dxyVar2";
+  else if(fakesyst_==FakeSyst::ElectronIsoUp){
+    return "ElectronIsoUp";
   }
-  else if(fakesyst_==FakeSyst::dxyVar3){
-    return "dxyVar3";
+  else if(fakesyst_==FakeSyst::dxy1){
+    return "dxy1";
+  }
+  else if(fakesyst_==FakeSyst::dxy2){
+    return "dxy2";
+  }
+  else if(fakesyst_==FakeSyst::dxy3){
+    return "dxy3";
   } 
   else if(fakesyst_==FakeSyst::dzUp){
     return "dzUp";
@@ -171,14 +261,14 @@ TString AnalyzerParameter::GetFakeSystType(){
   else if(fakesyst_==FakeSyst::dzDown){
     return "dzDown";
   }
-  else if(fakesyst_==FakeSyst::SIPVar1){
-    return "SIPVar1";
+  else if(fakesyst_==FakeSyst::SIP1){
+    return "SIP1";
   }
-  else if(fakesyst_==FakeSyst::SIPVar2){
-    return "SIPVar2";
+  else if(fakesyst_==FakeSyst::SIP2){
+    return "SIP2";
   } 
-  else if(fakesyst_==FakeSyst::SIPVar3){
-    return "SIPVar3";
+  else if(fakesyst_==FakeSyst::SIP3){
+    return "SIP3";
   }*/
   else{
     cerr << "[AnalyzerParameter::GetFakeSystType] Wrong Syst" << endl;

@@ -118,13 +118,13 @@ void HNtypeI_Cutflow::initializeAnalyzer(){
   //cout << "[HNtypeI_Cutflow::initializeAnalyzer] IsoMuTriggerName = " << IsoMuTriggerName << endl;
   //cout << "[HNtypeI_Cutflow::initializeAnalyzer TriggerSafePtCut = " << TriggerSafePtCut << endl;
 
-  //==== B-Tagging
-  //==== add taggers and WP that you want to use in analysis
+  //==== b tagging
+  //==== Add taggers and WP that you want to use in analysis
   std::vector<JetTagging::Parameters> jtps;
   //==== If you want to use 1a or 2a method,
   jtps.push_back( JetTagging::Parameters(JetTagging::DeepCSV, JetTagging::Loose, JetTagging::incl, JetTagging::comb) );
   jtps.push_back( JetTagging::Parameters(JetTagging::DeepCSV, JetTagging::Medium, JetTagging::incl, JetTagging::comb) );
-  //==== set
+  //==== Set
   mcCorr->SetJetTaggingParameters(jtps);
 
 }
@@ -433,7 +433,7 @@ void HNtypeI_Cutflow::executeEventFromParameter(AnalyzerParameter param){
   std::sort(fatjets.begin(), fatjets.end(), PtComparing);
 
   //========================================================
-  //==== B-Tagging 
+  //==== b tagging 
   //========================================================
 
   int Nbjet_loose = 0, Nbjet_medium = 0;
@@ -471,7 +471,7 @@ void HNtypeI_Cutflow::executeEventFromParameter(AnalyzerParameter param){
   //========================================================
 
   double ST = 0., MET2ST = 0.;
-  double dRll = 0., dRl2WCand = 0.;
+  //double dRll = 0., dRl2WCand = 0.;
   //double MZ = 91.1876;
   double MW = 80.379;
   double muonRecoSF = 1., muonIDSF = 1., muonIsoSF = 1., electronRecoSF = 1., electronIDSF = 1.;
@@ -522,7 +522,7 @@ void HNtypeI_Cutflow::executeEventFromParameter(AnalyzerParameter param){
 
       electrons_beforeShift.push_back(electrons.at(0));
       electrons_beforeShift.push_back(electrons.at(1));
-      electrons = ShiftElectronEnergy(electrons, param, true);
+      electrons = ShiftElectronEnergy(param.Muon_Tight_ID, electrons, true);
       electrons_afterShift.push_back(electrons.at(0));
       electrons_afterShift.push_back(electrons.at(1));
       METv = UpdateMETElectronCF(METv, electrons_beforeShift, electrons_afterShift);
@@ -704,7 +704,7 @@ void HNtypeI_Cutflow::executeEventFromParameter(AnalyzerParameter param){
 
       // weights for fake, CF
       if(RunFake) weight *= fakeEst->GetWeight(leptons, param);
-      if(RunCF) weight *= GetCFweight(leptons, param, true, 0);
+      if(RunCF) weight *= GetCFWeight(param.Muon_Tight_ID, leptons, true, 0);
 
       for(unsigned int it_rg=0; it_rg<regions.size(); it_rg++){
         FillHist(systName+"/"+channels.at(it_ch)+"/"+regions.at(it_rg)+"/Number_Events_"+IDsuffix, 3.5, weight, cutflow_bin, 0., cutflow_max);
@@ -714,7 +714,7 @@ void HNtypeI_Cutflow::executeEventFromParameter(AnalyzerParameter param){
       FillHist(systName+"/"+channels.at(it_ch)+"/fakeCR2/Number_Events_unweighted_"+IDsuffix, 3.5, 1., cutflow_bin, 0., cutflow_max);
 
       ZCand = *leptons.at(0) + *leptons.at(1);
-      dRll  = leptons.at(0)->DeltaR(*leptons.at(1));
+      //dRll  = leptons.at(0)->DeltaR(*leptons.at(1));
 
       // Cutflow : same-sign (oppsite-sign when RunCF=true) 
 
@@ -808,7 +808,7 @@ void HNtypeI_Cutflow::executeEventFromParameter(AnalyzerParameter param){
           lljjHigh  = *leptons.at(0) + *leptons.at(1) + jets_WCandHighMass.at(0) + jets_WCandHighMass.at(1);
           l1jjHigh  = *leptons.at(0) + jets_WCandHighMass.at(0) + jets_WCandHighMass.at(1);
           l2jjHigh  = *leptons.at(1) + jets_WCandHighMass.at(0) + jets_WCandHighMass.at(1);
-          dRl2WCand = leptons.at(0)->DeltaR(WCand);
+          //dRl2WCand = leptons.at(0)->DeltaR(WCand);
 
           FillHist(systName+"/"+channels.at(it_ch)+"/"+regions.at(it_rg)+"/Number_Events_nocut_"+IDsuffix, 8.5, weight, cutflow_bin, 0., cutflow_max);
           FillHist(systName+"/"+channels.at(it_ch)+"/"+regions.at(it_rg)+"/Number_Events_unweighted_nocut_"+IDsuffix, 8.5, 1., cutflow_bin, 0., cutflow_max); 

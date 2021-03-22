@@ -81,12 +81,12 @@ void HNtypeI_QCDFakeRateISR::initializeAnalyzer(){
   //cout << "[HNtypeI_QCDFakeRateISR::initializeAnalyzer] IsoMuTriggerName = " << IsoMuTriggerName << endl;
   //cout << "[HNtypeI_QCDFakeRateISR::initializeAnalyzer TriggerSafePtCut = " << TriggerSafePtCut << endl;
 
-  //==== B-Tagging
-  //==== add taggers and WP that you want to use in analysis
+  //==== b tagging
+  //==== Add taggers and WP that you want to use in analysis
   std::vector<JetTagging::Parameters> jtps;
   //==== If you want to use 1a or 2a method,
   jtps.push_back( JetTagging::Parameters(JetTagging::DeepCSV, JetTagging::Medium, JetTagging::incl, JetTagging::comb) );
-  //==== set
+  //==== Set
   mcCorr->SetJetTaggingParameters(jtps);
 
 }
@@ -211,7 +211,7 @@ void HNtypeI_QCDFakeRateISR::executeEventFromParameter(AnalyzerParameter param){
   // Muon : ISR
   if(param.Muon_Tight_ID.Contains("ISRTight")){
     if(DataYear==2016){
-      SFMuonLumi1 = 0.727537, SFMuonLumi2 = 130377., SFMuonLumi3 = 0.96938;
+      SFMuonLumi1 = 0.727537, SFMuonLumi2 = 1.30377, SFMuonLumi3 = 0.96938;
     }
     if(DataYear==2017){
       SFMuonLumi1 = 1.13727, SFMuonLumi2 = 1.34793, SFMuonLumi3 = 0.999073;
@@ -381,7 +381,7 @@ void HNtypeI_QCDFakeRateISR::executeEventFromParameter(AnalyzerParameter param){
   std::sort(jets_nolepveto.begin(), jets_nolepveto.end(), PtComparing);
 
   //========================================================
-  //==== B-Tagging
+  //==== b tagging
   //========================================================
 
   int Nbjet_medium = 0, Nbjet_lepveto_medium = 0;
@@ -493,7 +493,7 @@ void HNtypeI_QCDFakeRateISR::executeEventFromParameter(AnalyzerParameter param){
       muons_fake = MuonFakeOnly(muons_loose, gens);
       if(!(muons_fake.size() == 1)) continue;
 
-      // Weights except trigger luminosity
+      // Event weights except trigger luminosity
       if(!IsDATA){
 
         weight *= weight_norm_1invpb;
@@ -880,7 +880,7 @@ void HNtypeI_QCDFakeRateISR::executeEventFromParameter(AnalyzerParameter param){
       electrons_fake = ElectronFakeOnly(electrons_loose, gens);
       if(!(electrons_fake.size() == 1)) continue;
 
-      // Weights except trigger luminosity
+      // Event weights except trigger luminosity
       if(!IsDATA){
 
         weight *= weight_norm_1invpb;

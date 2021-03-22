@@ -139,7 +139,7 @@ public:
   double GetPrefireWeight(int sys);
 
   //==== PU Reweight
-  double GetPileUpWeight(int N_pileup, int syst);
+  double GetPileUpWeight(int N_pileup, int sys);
 
   //==== Nvtx, rho reweight
   double GetVertexWeight(int Nvtx, TString channel);
@@ -188,8 +188,10 @@ public:
 
   std::vector<Muon> MuonPromptOnlyHNtypeI(const std::vector<Muon>& muons, const std::vector<Gen>& gens);
   std::vector<Muon> MuonFakeOnly(const std::vector<Muon>& muons, const std::vector<Gen>& gens);
+  std::vector<Muon> MuonFakeOnlyHNtypeI(const std::vector<Muon>& muons, const std::vector<Gen>& gens);
   std::vector<Electron> ElectronPromptOnlyHNtypeI(const std::vector<Electron>& electrons, const std::vector<Gen>& gens);
   std::vector<Electron> ElectronFakeOnly(const std::vector<Electron>& electrons, const std::vector<Gen>& gens);
+  std::vector<Electron> ElectronFakeOnlyHNtypeI(const std::vector<Electron>& electrons, const std::vector<Gen>& gens);
   std::vector<Jet> JetsInsideFatJet(const std::vector<Jet>& jets, const std::vector<FatJet>& fatjets, double mindr=0.8);
   std::vector<Jet> JetsAwayFromLepton(const std::vector<Jet>& jets, const Muon& muon, double mindphi=2.5);
   std::vector<Jet> JetsAwayFromLepton(const std::vector<Jet>& jets, const Electron& electron, double mindphi=2.5);
@@ -206,13 +208,14 @@ public:
   Particle UpdateMETFake(const Particle& METv, const std::vector<Electron>& electrons);
   Particle UpdateMETFake(const Particle& METv, const std::vector<Electron>& electrons, const std::vector<Muon>& muons);
   Particle UpdateMETElectronCF(const Particle& METv, const std::vector<Electron>& electrons1, const std::vector<Electron>& electrons2);
+  Particle UpdateMETJet(const Particle METv, const std::vector<Jet>& jets, int sys);
 
   //==== Electron charge flip for HNtypeI
 
-  std::vector<Electron> ShiftElectronEnergy(const std::vector<Electron>& beforeshift, AnalyzerParameter param, bool applyshift);
-  double GetCFrates(TString id, double pt, double eta);
-  double GetCFweight(const std::vector<Lepton *> leptons, AnalyzerParameter param, bool applySF, int syst);
-  double GetCFWeightElectron(const std::vector<Lepton *> leptons, TString tight_id);
+  std::vector<Electron> ShiftElectronEnergy(TString ID, const std::vector<Electron>& beforeshift, bool applyshift);
+  double GetCFRate(TString ID, double pt, double eta);
+  double GetCFWeight(TString ID, const std::vector<Lepton *> leptons, bool applySF, int sys);
+  double GetCFWeight2D(TString ID, const std::vector<Lepton *> leptons);
 
   //==== GenMatching
 

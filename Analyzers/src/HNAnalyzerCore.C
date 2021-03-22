@@ -955,26 +955,26 @@ double HNAnalyzerCore::GetPrefireWeight(int sys){
 
 }
 
-double HNAnalyzerCore::GetPileUpWeight(int N_pileup, int syst){
+double HNAnalyzerCore::GetPileUpWeight(int N_pileup, int sys){
 
   if(IsDATA) return 1.;
   else{
 
     if(DataYear==2016){
-      return mcCorr->GetPileUpWeight(N_pileup, syst);
+      return mcCorr->GetPileUpWeight(N_pileup, sys);
     }
     else if(DataYear==2017){
       if(MCSample.Contains("WZZ")){   // wrongPU
-        return mcCorr->GetPileUpWeightBySampleName(N_pileup, syst);
+        return mcCorr->GetPileUpWeightBySampleName(N_pileup, sys);
       }
       else{   // correctPU
-        return mcCorr->GetPileUpWeight2017(N_pileup, syst);
+        return mcCorr->GetPileUpWeight2017(N_pileup, sys);
       }
     }
     else if(DataYear==2018){
       //==== TODO 2018 not yet added
       //return 1.;
-      return mcCorr->GetPileUpWeight(N_pileup, syst); // The same method which is applied for 2016 MC
+      return mcCorr->GetPileUpWeight(N_pileup, sys); // The same method which is applied for 2016 MC
     }
     else{
       //cout << "[HNAnalyzerCore::GetPileUpWeight] Wrong year : " << DataYear << endl;
@@ -1365,6 +1365,21 @@ std::vector<Muon> HNAnalyzerCore::MuonFakeOnly(const std::vector<Muon>& muons, c
   std::vector<Muon> out;
 
   for(unsigned int i=0; i<muons.size(); i++){
+    if(GetLeptonType(muons.at(i), gens) >= 0) continue;
+    out.push_back( muons.at(i) );
+  }
+
+  return out;
+
+}
+
+std::vector<Muon> HNAnalyzerCore::MuonFakeOnlyHNtypeI(const std::vector<Muon>& muons, const std::vector<Gen>& gens){
+
+  if(IsDATA) return muons;
+
+  std::vector<Muon> out;
+
+  for(unsigned int i=0; i<muons.size(); i++){
     if(GetLeptonType(muons.at(i), gens)>=0 || GetLeptonType(muons.at(i), gens)<-4) continue;
     out.push_back( muons.at(i) );
   }
@@ -1389,6 +1404,21 @@ std::vector<Electron> HNAnalyzerCore::ElectronPromptOnlyHNtypeI(const std::vecto
 }
 
 std::vector<Electron> HNAnalyzerCore::ElectronFakeOnly(const std::vector<Electron>& electrons, const std::vector<Gen>& gens){
+
+  if(IsDATA) return electrons;
+
+  std::vector<Electron> out;
+
+  for(unsigned int i=0; i<electrons.size(); i++){
+    if(GetLeptonType(electrons.at(i), gens) >= 0) continue;
+    out.push_back( electrons.at(i) );
+  }
+
+  return out;
+
+}
+
+std::vector<Electron> HNAnalyzerCore::ElectronFakeOnlyHNtypeI(const std::vector<Electron>& electrons, const std::vector<Gen>& gens){
 
   if(IsDATA) return electrons;
 
@@ -1699,76 +1729,185 @@ Particle HNAnalyzerCore::UpdateMETElectronCF(const Particle& METv, const std::ve
 
 }
 
+Particle HNAnalyzerCore::UpdateMETJet(const Particle METv, const std::vector<Jet>& jets, int sys){
+
+  double met_x = METv.Px();
+  double met_y = METv.Py();
+
+  double px_orig(0.), py_orig(0.), px_corrected(0.), py_corrected(0.);
+  for(unsigned int i=0; i<jets.size(); i++){
+
+    px_orig += jets.at(i).Px();
+    py_orig += jets.at(i).Py();
+
+    // Unsmeared jet pT
+    px_corrected += jets.at(i).Px()/jets.at(i).ResShift(sys);
+    py_corrected += jets.at(i).Py()/jets.at(i).ResShift(sys);
+
+  }
+
+  met_x = met_x + px_orig - px_corrected;
+  met_y = met_y + py_orig - py_corrected;
+
+  Particle METout;
+  METout.SetPxPyPzE(met_x,met_y,0,sqrt(met_x*met_x+met_y*met_y));
+  return METout;
+
+}
+
+
 //=========================================================
 //==== Electron charge flip for HNtypeI
 //=========================================================
 
-std::vector<Electron> HNAnalyzerCore::ShiftElectronEnergy(const std::vector<Electron>& electrons, AnalyzerParameter param, bool applyshift){
+std::vector<Electron> HNAnalyzerCore::ShiftElectronEnergy(TString ID, const std::vector<Electron>& electrons, bool applyShift){
 
   std::vector<Electron> out;
 
   for(unsigned int i=0; i<electrons.size(); i++){
-    Electron this_electron = electrons.at(i);
-    if(!param.Electron_Tight_ID.Contains("Tight")){ out.push_back(this_electron); continue; }
-    if(!applyshift){ out.push_back(this_electron); continue; }
 
-    double shiftrate = 1.;
+    Electron this_electron = electrons.at(i);
+    if(!ID.Contains("HNTight")){ out.push_back(this_electron); continue; }
+    if(!applyShift){ out.push_back(this_electron); continue; }
+
+    double shiftRate = 1.;
+
     if(electrons.size() == 2){
-      if(param.Electron_Tight_ID == "HNTight") shiftrate = 0.987;       // 1.3%
-      else if(param.Electron_Tight_ID == "HNTightV2") shiftrate = 0.99; // 1.0%
-      else shiftrate = 0.988;                                           // 1.2%
+
+      if(ID.Contains("HNTightV2")){
+        if(DataYear==2016) shiftRate = 0.99;
+        if(DataYear==2017) shiftRate = 0.99;
+        if(DataYear==2018) shiftRate = 0.992;
+      }
+      else shiftRate = 1.;
+
     }
 
-    this_electron.SetPtEtaPhiM( electrons.at(i).Pt()*shiftrate, electrons.at(i).Eta(), electrons.at(i).Phi(), electrons.at(i).M() ); // M = 0.511e-03
+    this_electron.SetPtEtaPhiM( electrons.at(i).Pt()*shiftRate, electrons.at(i).Eta(), electrons.at(i).Phi(), electrons.at(i).M() ); // M = 0.511e-03
     out.push_back(this_electron);
+
   }
 
   return out;
 
 }
 
-double HNAnalyzerCore::GetCFrates(TString id, double pt, double eta){
-  if(!id.Contains("Tight")) return 0.;
+double HNAnalyzerCore::GetCFRate(TString ID, double pt, double eta){
+
+  if(!ID.Contains("HNTight")) return 0.;
 
   eta = fabs(eta);
-  double ivt_pt = 1./pt;
-  double a = 999., b = 999.;  // fit function = a + b/pT
+  double x = 1./pt;
+  double a = 0., b = 0., c = 0.;  // fit function = a + b/pT
+  double cfRate = 0.;
 
-  /*if(id == "HNTight"){
-    if(eta < 0.8){
-      if(ivt_pt < 0.005){ a = 9.58505e-04; b = -0.159759; }
-      else if(ivt_pt>=0.005 && ivt_pt<0.0155){ a = 2.07325e-04; b = -0.0086346; }
-      else{ a = 9.37334e-05; b = -9.81244e-04; }
+  if(ID == "HNTightV2"){
+
+    if(DataYear==2016){
+      if(eta < 0.8){
+        if(x < 0.003){
+          a = -5.36862e+00, b = -1.11415e+03;
+          cfRate = TMath::Exp(a + b*x);
+        }
+        else if(x>=0.003 && x<0.013){
+          a = 8.08592e-07, b = 1.42417e-03, c = -1.78244e-05;
+          cfRate = a/(x+b)+c;
+        }
+        else{
+          a = 5.2938e-05, b = -0.00105457;
+          cfRate = a + b*x;
+        }
+      }
+      else if(eta>= 0.8 && eta<1.479){
+        if(x < 0.003){
+          a = -4.21012e+00, b = -7.62790e+02;
+          cfRate = TMath::Exp(a + b*x);
+        }
+        else if(x>=0.003 && x<0.014){
+          a = 5.11499e-06, b = 3.33130e-04, c = 2.38459e-05;
+          cfRate = a/(x+b)+c;
+        }
+        else{
+          a = 0.000497532, b = -0.0109166;
+          cfRate = a + b*x;
+        }
+      }
+      else{
+        a = 3.90494e-05, b = 6.00814e-04, c = 3.38818e-04;
+        cfRate = a/(x+b)+c;
+      }
     }
-    else if(eta>=0.8 && eta<1.479){
-      if(ivt_pt < 0.0055){ a = 0.00382245; b = -0.455401; }
-      else if(ivt_pt>=0.0055 && ivt_pt<0.0155){ a = 0.00165421; b = -0.0732609; }
-      else{ a = 6.57784e-04; b = -0.00653361; }
+    if(DataYear==2017){
+      if(eta < 0.8){
+        if(x < 0.002){
+          a = -5.51192e+00, b = -1.30329e+03;
+          cfRate = TMath::Exp(a + b*x);
+        }
+        else if(x>=0.002 && x<0.016){
+          a = 2.25880e-07, b = -1.24821e-03, c = 5.86034e-06;
+          cfRate = a/(x+b)+c;
+        }
+        else{
+          a = 2.90937e-05, b = -0.000565804;
+          cfRate = a + b*x;
+        }
+      }
+      else if(eta>=0.8 && eta<1.479){
+        if(x < 0.002){
+          a = -3.89174e+00, b = -1.31915e+03;
+          cfRate = TMath::Exp(a + b*x);
+        }
+        else if(x>=0.002 && x<0.033){
+          a = 2.02602e-06, b = -6.43873e-04, c = -7.49608e-06;
+          cfRate = a/(x+b)+c;
+        }
+        else{
+          a = 0.000131226; b = -0.00245131;
+          cfRate = a + b*x;
+        }
+      }
+      else{
+        a = 1.97099e-05, b = 4.12182e-04, c = 4.66663e-05;
+        cfRate = a/(x+b)+c;
+      }
     }
-    else{
-      if(ivt_pt < 0.01){ a = 0.0127778; b = -0.744197; }
-      else if(ivt_pt>=0.01 && ivt_pt<0.0205){ a = 0.00725863; b = -0.18864; }
-      else{ a = 0.00417112; b = -0.0371866; }
+    if(DataYear==2018){
+      if(eta < 0.8){
+        if(x < 0.002){
+          a = -5.54403e+00, b = -1.36409e+03;
+          cfRate = TMath::Exp(a + b*x);
+        }
+        else if(x>=0.002 && x<0.008){
+          a = 3.14164e-07, b = -9.31246e-04, c = -1.06387e-05;
+          cfRate = a/(x+b)+c;
+        }
+        else{
+          a = 3.7463e-05, b = -0.000733036;
+          cfRate = a + b*x;
+        }
+      }
+      else if(eta>=0.8 && eta<1.479){
+        if(x < 0.002){
+          a = -4.12209e+00, b = -1.18386e+03;
+          cfRate = TMath::Exp(a + b*x);
+        }
+        else if(x>=0.002 && x<0.013){
+          a = 2.00453e-06, b = -7.98888e-04, c = 1.55959e-05;
+          cfRate = a/(x+b)+c;
+        }
+        else{
+          a = 0.000213673, b = -0.00443169;
+          cfRate = a + b*x;
+        }
+      }
+      else{
+        a = 2.21433e-05, b = 5.64423e-04, c = -3.17389e-06;
+        cfRate = a/(x+b)+c;
+      }
     }
+
   }
-  else if(id == "HNTightV2"){
-    if(eta < 0.8){
-      if(ivt_pt < 0.0075){ a = 2.91353e-04; b = -0.0296481; }
-      else if(ivt_pt>=0.0075 && ivt_pt<0.0155){ a = 1.25648e-04; b = -0.00616739; }
-      else{ a = 3.75795e-05; b = -7.1692e-04; }
-    }
-    else if(eta>=0.8 && eta<1.479){
-      if(ivt_pt < 0.0055){ a = 0.00293283; b = -0.385095; }
-      else if(ivt_pt>=0.0055 && ivt_pt<0.0155){ a = 0.00101466; b = -0.0496765; }
-      else{ a = 3.4362e-04; b = -0.00840559; }
-    }
-    else{
-      if(ivt_pt < 0.0105){ a = 0.00920799; b = -0.66068; }
-      else if(ivt_pt>=0.0105 && ivt_pt<0.0205){ a = 0.00409673; b = -0.164067; }
-      else{ a = 0.00135968; b = -0.0270099; }
-    }
-  }*/
-  if(id == "HNTight2016"){
+  /*if(id == "HNTight2016"){
     if(eta < 0.8){
       if(ivt_pt < 0.0075){ a = 4.12045e-04; b = -0.0445416; }
       else if(ivt_pt>=0.0075 && ivt_pt<0.0155){ a = 1.1869e-04; b = -0.00448807; }
@@ -1784,16 +1923,17 @@ double HNAnalyzerCore::GetCFrates(TString id, double pt, double eta){
       else if(ivt_pt>=0.01 && ivt_pt<0.019){ a = 0.00440033; b = -0.178011; }
       else{ a = 0.00159123; b = -0.0318552; }
     }
-  }
+  }*/
 
-  double rate = a + b*ivt_pt;
-  if(rate < 0.) rate = 0.;
-  return rate;
+  if(cfRate < 0.) cfRate = 0.;
+
+  return cfRate;
 
 }
 
-double HNAnalyzerCore::GetCFweight(const std::vector<Lepton *> leptons, AnalyzerParameter param, bool applySF, int syst){
-  if(!param.Electron_Tight_ID.Contains("Tight")) return 0.;
+double HNAnalyzerCore::GetCFWeight(TString ID, const std::vector<Lepton *> leptons, bool applySF, int sys){
+
+  if(!ID.Contains("HNTight")) return 0.;
   if(leptons.size() > 2) return 0.;
 
   std::vector<Electron> el;
@@ -1806,33 +1946,39 @@ double HNAnalyzerCore::GetCFweight(const std::vector<Lepton *> leptons, Analyzer
   if(el.size()==2 && el.at(0).Charge()*el.at(1).Charge()>0) return 0.;
 
   std::vector<double> CFrate, CFweight, sf;
-  double cfweight = 0.;
+  CFrate.clear();
+  CFweight.clear();
+  sf.clear();
+  double cfWeight = 0.;
+
   for(unsigned int i=0; i<el.size(); i++){
-    CFrate.push_back(GetCFrates(param.Electron_Tight_ID, el.at(i).Pt(), el.at(i).scEta()));
+    CFrate.push_back(GetCFRate(ID, el.at(i).Pt(), el.at(i).scEta()));
     CFweight.push_back(CFrate.at(i)/(1.-CFrate.at(i)));
 
     if(applySF){
-      if(fabs(el.at(i).scEta()) < 1.479){
-        if(param.Electron_Tight_ID == "HNTight") sf.push_back(0.585533 + syst*0.);
-        else if(param.Electron_Tight_ID == "HNTightV2") sf.push_back(0.4584 + syst*0.);
-        else sf.push_back(0.49666 + syst*0.);
+      if(DataYear==2016){
+        if(fabs(el.at(i).scEta()) < 1.479) sf.push_back(0.68164 + sys*0.);
+        else sf.push_back(0.83324 + sys*0.);
       }
-      else{
-        if(param.Electron_Tight_ID == "HNTight") sf.push_back(0.831019 + syst*0.);
-        else if(param.Electron_Tight_ID == "HNTightV2") sf.push_back(0.66078 + syst*0.);
-        else sf.push_back(0.652357 + syst*0.);
+      if(DataYear==2017){
+        if(fabs(el.at(i).scEta()) < 1.479) sf.push_back(0.97395 + sys*0.);
+        else sf.push_back(1.0706 + sys*0.);
+      }
+      if(DataYear==2018){
+        if(fabs(el.at(i).scEta()) < 1.479) sf.push_back(0.85626 + sys*0.);
+        else sf.push_back(1.09372 + sys*0.);
       }
     }
     else sf.push_back(1.);
 
-    cfweight += sf.at(i)*CFweight.at(i);
+    cfWeight += sf.at(i)*CFweight.at(i);
   }
 
-  return cfweight;
+  return cfWeight;
 
 }
 
-double HNAnalyzerCore::GetCFWeightElectron(std::vector<Lepton *> leptons, TString tight_id){
+double HNAnalyzerCore::GetCFWeight2D(TString ID, std::vector<Lepton *> leptons){
 
   if(leptons.size() > 2) return 0.;
 
@@ -1845,18 +1991,18 @@ double HNAnalyzerCore::GetCFWeightElectron(std::vector<Lepton *> leptons, TStrin
   }
   if(electrons.size()==2 && electrons.at(0).Charge()*electrons.at(1).Charge()>0) return 0.;
 
-  TString tight_id_tmp = tight_id;
-  double el1_cf_rate   = cfEst->GetElectronCFRateJA(tight_id_tmp, "HNCF", electrons.at(0).scEta(), electrons.at(0).Pt(), 0);
-  double el2_cf_rate   = cfEst->GetElectronCFRateJA(tight_id_tmp, "HNCF", electrons.at(1).scEta(), electrons.at(1).Pt(), 0);
+  //TString tight_id_tmp = tight_id;
+  double el1_cfRate = cfEst->GetElectronCFRateJA(ID, "HNCF", electrons.at(0).scEta(), electrons.at(0).Pt(), 0);
+  double el2_cfRate = cfEst->GetElectronCFRateJA(ID, "HNCF", electrons.at(1).scEta(), electrons.at(1).Pt(), 0);
 
-  if((electrons[0].scEta()) < 1.5) el1_cf_rate *= 0.95;
-  else el1_cf_rate *= 0.95;
-  if((electrons[1].scEta()) < 1.5) el2_cf_rate *= 0.95;
-  else el2_cf_rate *= 0.95;
+  if((electrons[0].scEta()) < 1.5) el1_cfRate *= 0.95;
+  else el1_cfRate *= 0.95;
+  if((electrons[1].scEta()) < 1.5) el2_cfRate *= 0.95;
+  else el2_cfRate *= 0.95;
 
-  double cf_weight = (el1_cf_rate / (1.-el1_cf_rate))  + (el2_cf_rate/(1.-el2_cf_rate));
+  double cfWeight = el1_cfRate/(1.-el1_cfRate) + el2_cfRate/(1.-el2_cfRate);
 
-  return cf_weight;
+  return cfWeight;
 
 }
 

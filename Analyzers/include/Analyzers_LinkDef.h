@@ -20,7 +20,10 @@
 #pragma link C++ class HNAnalyzerCore+;
 #pragma link C++ class HNtypeI_FakeRate+;
 #pragma link C++ class HNtypeI_QCDFakeRate+;
+#pragma link C++ class HNtypeI_FakeRateISR+;
+#pragma link C++ class HNtypeI_QCDFakeRateISR+;
 #pragma link C++ class HNtypeI_HighPt_FakeRate+;
+#pragma link C++ class HNtypeI_Emulation+;
 #pragma link C++ class HNtypeI_DY_CR+;
 #pragma link C++ class HNtypeI_DY_CR_2016H+;
 #pragma link C++ class HNtypeI_VV_CR+;
@@ -28,7 +31,6 @@
 #pragma link C++ class HNtypeI_SR+;
 #pragma link C++ class HNtypeI_SR_2016H+;
 #pragma link C++ class HNtypeI_Cutflow+;
-#pragma link C++ class HNtypeI_Muon_SR+;
 #pragma link C++ class HNtypeI_MCClosureFake+;
 
 #endif

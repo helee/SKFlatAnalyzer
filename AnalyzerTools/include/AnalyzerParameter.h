@@ -34,11 +34,24 @@ public:
 
   enum Syst{
     Central,
-    JetResUp, JetResDown,
     JetEnUp, JetEnDown,
+    JetResUp, JetResDown,
+    UnclusteredEnUp, UnclusteredEnDown,
+    BtagSFUp, BtagSFDown,
+    L1PrefireUp, L1PrefireDown,
+    PileupUp, PileupDown,
     MuonEnUp, MuonEnDown,
-    ElectronResUp, ElectronResDown,
     ElectronEnUp, ElectronEnDown,
+    ElectronResUp, ElectronResDown,
+    MuonIDSFUp, MuonIDSFDown,
+    ElectronRecoSFUp, ElectronRecoSFDown,
+    ElectronIDSFUp, ElectronIDSFDown,
+    MuonTriggerSFUp, MuonTriggerSFDown,
+    ElectronTriggerSFUp, ElectronTriggerSFDown,
+    EMuTriggerSFUp, EMuTriggerSFDown,
+    SDMassScaleUp, SDMassScaleDown,
+    SDMassResUp, SDMassResDown,
+    Tau21SFUp, Tau21SFDown,
     NSyst
   };
   Syst syst_;
@@ -46,9 +59,11 @@ public:
 
   enum FakeSyst{
     FakeCentral,
-    IsoUp, IsoDown,
-    dphiVar1, dphiVar2, dphiVar3, PtVar1, PtVar2, PtVar3, PtRatioUp, PtRatioDown,
-    //dxyVar1, dxyVar2, dxyVar3, dzUp, dzDown, SIPVar1, SIPVar2, SIPVar3,
+    NoBJet, WithBJet,
+    AwayJetPt20, AwayJetPt30, AwayJetPt60, AwayJetPt100, AwayJetPt200,
+    dPhi1, dPhi2, dPhi3, PtRatioUp, PtRatioDown,
+    //MuonIsoUp, ElectronIsoUp,
+    //dxy1, dxy2, dxy3, dzUp, dzDown, SIP1, SIP2, SIP3,
     NFakeSyst
   };
   FakeSyst fakesyst_;
