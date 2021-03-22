@@ -522,7 +522,7 @@ bool Electron::Pass_ISRVeto(double relisoCut) const{
 bool Electron::Pass_ISRLoose(double relisoCut) const{
   if(! (Pass_CutBasedLooseNoIso()) ) return false;
   if(! (RelIso()<relisoCut) ) return false;
-  if(! (Pass_TriggerEmulation()) ) return false;
+  //if(! (Pass_TriggerEmulation()) ) return false;
   return true;
 }
 
