@@ -600,6 +600,7 @@ void HNtypeI_SR::executeEventFromParameter(AnalyzerParameter param){
   double dRll = 0., dPhill = 0., dRl1jj = 0., dRl2jj = 0., dRl1J = 0., dRl2J = 0., PtDiff = 0., dRjj = 0.;
   //double MZ = 91.1876;
   double MW = 80.379;
+  double mllCut1 = 12., mllCut2 = 55.;  // mllCut1 : 10 GeV cut in EXO-17-028, mllCut2 : No DY10to50 MC samples
   double muonRecoSF = 1., muonIDSF = 1., muonIsoSF = 1., electronRecoSF = 1., electronIDSF = 1., triggerSF = 1., fatjetTau21SF = 1.;
   int lepton_veto_size = 0;
   double lepton1_eta = 0., lepton2_eta = 0.;
@@ -970,9 +971,9 @@ void HNtypeI_SR::executeEventFromParameter(AnalyzerParameter param){
 
     //==== Cutflow : m(ll) > 10 GeV (|m(ll)-m(Z)| > 10 GeV in OS/SS(only ee) channel)
 
-    if(!(ZCand.M() > 12.)) return; // To avoid upsilon resonances (10 GeV cut in EXO-17-028)
+    if(!(ZCand.M() > mllCut1)) return;
     if(RunOS){
-      if(IsOnZ(ZCand.M(), 50.)) return; // No DY10to50 MC samples
+      if(IsOnZ(ZCand.M(), mllCut2)) return;
     }
     else{
       if(!RunOS && channel=="diel" && IsOnZ(ZCand.M(), 10.)) return;

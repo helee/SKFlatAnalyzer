@@ -570,6 +570,7 @@ void HNtypeI_DY_CR_2016H::executeEventFromParameter(AnalyzerParameter param){
   double dRll = 0., dPhill = 0., PtDiff = 0.;
   double MZ = 91.1876;
   //double MW = 80.379;
+  double mllCut = 55.;
   double muonRecoSF = 1., muonIDSF = 1., muonIsoSF = 1., electronRecoSF = 1., electronIDSF = 1., triggerSF = 1.;
   int lepton_veto_size = 0;
   double lepton1_eta = 0., lepton2_eta = 0.;
@@ -906,7 +907,7 @@ void HNtypeI_DY_CR_2016H::executeEventFromParameter(AnalyzerParameter param){
     }
 
     //==== Cutflow : m(ll) > 55 GeV (Because we don't use DY10to50 samples)
-    if(!(ZCand.M() > 55.)) return;
+    if(!(ZCand.M() > mllCut)) return;
 
     for(unsigned int it_rg=0; it_rg<regions.size(); it_rg++){
       FillHist(systName+"/"+channel+"_"+regions.at(it_rg)+"_Number_Events_"+IDsuffix, 6.5, weight, cutflow_bin, 0., cutflow_max);

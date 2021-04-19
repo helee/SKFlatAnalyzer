@@ -520,6 +520,7 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
   double Mt = 0., Mt3l = 0.;
   double MZ = 91.1876;
   //double MW = 80.379;
+  double mllCut = 12.;  // 10 GeV cut in EXO-17-028
   double muonRecoSF = 1., muonIDSF = 1., muonIsoSF = 1., electronRecoSF = 1., electronIDSF = 1., triggerSF = 1.;
   int lepton_veto_size = 0;
   double lepton1_eta = 0., lepton2_eta = 0., lepton3_eta = 0., lepton4_eta = 0.;
@@ -528,7 +529,7 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
   Particle ZCand, Wtemp1, Wtemp2, WCand1, WCand2;
   //Particle llj, l1j, l2j,  lljj, l1jj, l2jj, l1J, l2J;
   Particle WtagLep, TriLep, ZtagLep1, ZtagLep2, Ztemp, Ztemp1, Ztemp2, Ztemp3, Ztemp4, ZCand1, ZCand2, GammaCand, GammaLep1, GammaLep2;
-  int ossf_mass10 = 0;
+  int ossfLowMass = 0;
   
   //==== Set up pTcone if RunFake=true
   double mu_tight_iso = 0.07, el_tight_iso = 0.;
@@ -641,7 +642,7 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
 
   for(unsigned int it_rg=0; it_rg<regions.size(); it_rg++){
     weight = 1., muonRecoSF = 1., muonIDSF = 1., muonIsoSF = 1., electronRecoSF = 1., electronIDSF = 1., triggerSF = 1.;
-    ossf_mass10 = 0;
+    ossfLowMass = 0;
 
     if(!IsDATA){
       weight *= weight_norm_1invpb;
@@ -850,7 +851,7 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
               if(leptons.at(ilep1)->Charge()*leptons.at(ilep2)->Charge() > 0) continue;
               Ztemp = *leptons.at(ilep1) + *leptons.at(ilep2);
               //==== For WZ, ZG
-              if(!(Ztemp.M() > 10.)) ossf_mass10++;
+              if(!(Ztemp.M() > mllCut)) ossfLowMass++;
               if(fabs(Ztemp.M() - MZ) < tmpMassDiff){
                 tmpMassDiff = fabs(Ztemp.M() - MZ);
                 ZCand = Ztemp; l1 = ilep1; l2 = ilep2;
@@ -899,7 +900,7 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
 
       //==== WZ, ZG, Fake control region
       if(it_rg < 3){
-        if(!(ossf_mass10 == 0)) continue;
+        if(!(ossfLowMass == 0)) continue;
       
         //==== Cutflow : m(ll) > 10 GeV
         FillHist(systName+"/"+regions.at(it_rg)+"_Number_Events_"+IDsuffix, 5.5, weight, cutflow_bin, 0., cutflow_max);
@@ -1290,7 +1291,7 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
           Ztemp3 = *leptons_minus.at(0) + *leptons_plus.at(1);
           Ztemp4 = *leptons_minus.at(1) + *leptons_plus.at(0);
 
-          if(!(Ztemp1.M()>10. && Ztemp2.M()>10. && Ztemp3.M()>10. && Ztemp4.M()>10.)) ossf_mass10++;
+          if(!(Ztemp1.M()>mllCut && Ztemp2.M()>mllCut && Ztemp3.M()>mllCut && Ztemp4.M()>mllCut)) ossfLowMass++;
           ZCand1 = Ztemp1; ZCand2 = Ztemp2;
 
           if(!(IsOnZ(ZCand1.M(), 15.) && IsOnZ(ZCand2.M(), 15.))){
@@ -1314,7 +1315,7 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
 
       }
 
-      if(!(ossf_mass10 == 0)) continue;
+      if(!(ossfLowMass == 0)) continue;
 
       //==== Cutflow : m(ll) > 10 GeV
       FillHist(systName+"/"+regions.at(it_rg)+"_Number_Events_"+IDsuffix, 5.5, weight, cutflow_bin, 0., cutflow_max);
