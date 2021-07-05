@@ -1,2 +1,2 @@
-HNRun2	Electron_HNtypeI_FakeRate_HNTightV2_2016.root
+HNTightV2	Electron_HNtypeI_FakeRate_HNTightV2_2016.root
 HNRun2QCD	Electron_HNtypeI_QCDFakeRate_HNTightV2_2016.root

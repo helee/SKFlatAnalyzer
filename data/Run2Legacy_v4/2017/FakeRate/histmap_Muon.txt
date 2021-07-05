@@ -1,2 +1,2 @@
-HNRun2	Muon_HNtypeI_FakeRate_HNTightV2_2017.root
+HNTightV2	Muon_HNtypeI_FakeRate_HNTightV2_2017.root
 HNRun2QCD	Muon_HNtypeI_QCDFakeRate_HNTightV2_2017.root
