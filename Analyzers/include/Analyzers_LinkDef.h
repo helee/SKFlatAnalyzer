@@ -18,6 +18,8 @@
 #pragma link C++ class SkimTree_HNFakeHighPt+;
 #pragma link C++ class MeasureJetTaggingEfficiency+;
 #pragma link C++ class HNAnalyzerCore+;
+#pragma link C++ class HNtypeI_PromptRate+;
+#pragma link C++ class HNtypeI_PromptRate_2016H+;
 #pragma link C++ class HNtypeI_FakeRate+;
 #pragma link C++ class HNtypeI_QCDFakeRate+;
 #pragma link C++ class HNtypeI_FakeRateISR+;
