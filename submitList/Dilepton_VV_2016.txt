@@ -1,0 +1,10 @@
+WZTo3LNu_powheg
+ZZTo4L_powheg
+WGToLNuG
+ZGTo2LG
+ggZZTo2e2mu
+ggZZTo2e2tau
+ggZZTo2mu2tau
+ggZZTo4e
+ggZZTo4mu
+ggZZTo4tau
