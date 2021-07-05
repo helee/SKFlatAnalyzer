@@ -1,9 +1,9 @@
 #ifndef SkimTree_HNFake_h
 #define SkimTree_HNFake_h
 
-#include "AnalyzerCore.h"
+#include "HNAnalyzerCore.h"
 
-class SkimTree_HNFake : public AnalyzerCore {
+class SkimTree_HNFake : public HNAnalyzerCore {
 
 public:
 
@@ -16,7 +16,7 @@ public:
 
   TTree *newtree;
 
-  vector<TString> triggers;
+  vector<TString> triggers, triggers_mu, triggers_el;
   void WriteHist();
 
 };
