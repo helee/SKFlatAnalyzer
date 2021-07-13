@@ -1001,7 +1001,7 @@ void HNtypeI_SR_2016H::executeEventFromParameter(AnalyzerParameter param){
 
     if(!(ZCand.M() > mllCut1)) return;
     if(RunOS){
-      if(IsOnZ(ZCand.M(), mllCut2)) return;
+      if(!(ZCand.M() > mllCut2)) return;
     }
     else{
       if(!RunOS && channel=="diel" && IsOnZ(ZCand.M(), 10.)) return;
