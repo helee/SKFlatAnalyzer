@@ -222,9 +222,9 @@ TString AnalyzerParameter::GetFakeSystType(){
   else if(fakesyst_==FakeSyst::AwayJetPt100){
     return "AwayJetPt100";
   }
-  else if(fakesyst_==FakeSyst::AwayJetPt200){
+  /*else if(fakesyst_==FakeSyst::AwayJetPt200){
     return "AwayJetPt200";
-  }
+  }*/
   else if(fakesyst_==FakeSyst::dPhi1){
     return "dPhi1";
   }
