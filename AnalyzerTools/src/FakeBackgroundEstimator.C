@@ -29,11 +29,13 @@ void FakeBackgroundEstimator::ReadHistograms(){
       TString this_frname = histlist->At(i)->GetName();
       histDir->cd();
       map_hist_Electron[a+"_"+this_frname] = (TH2D *)file->Get(this_frname)->Clone();
-      file->Close();
-      delete file;
+      //file->Close();
+      //delete file;
       origDir->cd();
       //cout << "[FakeBackgroundEstimator::FakeBackgroundEstimator] map_hist_Electron : " << a+"_"+this_frname << endl;
     }
+    file->Close();
+    delete file;
   }
 
   string elline2;
@@ -49,11 +51,13 @@ void FakeBackgroundEstimator::ReadHistograms(){
       TString this_frname = histlist->At(i)->GetName();
       histDir->cd();
       map_hist_Muon[a+"_"+this_frname] = (TH2D *)file->Get(this_frname)->Clone();
-      file->Close();
-      delete file;
+      //file->Close();
+      //delete file;
       origDir->cd();
       //cout << "[FakeBackgroundEstimator::FakeBackgroundEstimator] map_hist_Muon : " << a+"_"+this_frname << endl;
     }
+    file->Close();
+    delete file;
   }
 
 }
@@ -72,10 +76,17 @@ double FakeBackgroundEstimator::GetElectronFakeRate(TString ID, TString key, dou
 
   eta = fabs(eta);
 
-  if(pt>=200) pt = 199;
+  /*if(pt>=200) pt = 199;
   if(eta>=2.5) eta = 2.49;
   //==== HOTFIX FIXME
-  if(eta>=1.479 && pt>=150) pt = 149.;
+  if(eta>=1.479 && pt>=150) pt = 149.;*/
+
+  if(DataYear==2017){
+    if(pt >= 80.) pt = 79.;
+  }
+  else{
+    if(pt >= 100.) pt = 99.;
+  }
 
   std::map< TString, TH2D* >::const_iterator mapit;
   mapit = map_hist_Electron.find(ID+"_"+key);
@@ -83,7 +94,8 @@ double FakeBackgroundEstimator::GetElectronFakeRate(TString ID, TString key, dou
   if(mapit==map_hist_Electron.end()){
     if(IgnoreNoHist) return 1.;
     else{
-      cout << "[FakeBackgroundEstimator::GetElectronFakeRate] No"<< ID+"_"+key <<endl;
+      //cout << "[FakeBackgroundEstimator::GetElectronFakeRate] No"<< ID+"_"+key <<endl;
+      cerr << "[FakeBackgroundEstimator::GetElectronFakeRate] No"<< ID+"_"+key <<endl;
       exit(ENODATA);
     }
   }
@@ -108,10 +120,17 @@ double FakeBackgroundEstimator::GetMuonFakeRate(TString ID, TString key, double 
 
   eta = fabs(eta);
 
-  if(pt>=200) pt = 199;
+  /*if(pt>=200) pt = 199;
   if(eta>=2.5) eta = 2.49;
   //==== HOTFIX FIXME
-  if(eta<0.8 && pt>=150) pt = 149.;
+  if(eta<0.8 && pt>=150) pt = 149.;*/
+
+  if(DataYear==2018){
+    if(pt >= 60.) pt = 59.;
+  }
+  else{
+    if(pt >= 80.) pt = 79.;
+  }
 
   std::map< TString, TH2D* >::const_iterator mapit;
   mapit = map_hist_Muon.find(ID+"_"+key);
@@ -119,7 +138,8 @@ double FakeBackgroundEstimator::GetMuonFakeRate(TString ID, TString key, double 
   if(mapit==map_hist_Muon.end()){
     if(IgnoreNoHist) return 1.;
     else{
-      cout << "[FakeBackgroundEstimator::GetMuonFakeRate] No"<< ID+"_"+key <<endl;
+      //cout << "[FakeBackgroundEstimator::GetMuonFakeRate] No"<< ID+"_"+key <<endl;
+      cerr << "[FakeBackgroundEstimator::GetMuonFakeRate] No"<< ID+"_"+key <<endl;
       exit(ENODATA);
     }
   }

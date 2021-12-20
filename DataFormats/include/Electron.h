@@ -130,6 +130,23 @@ public:
   bool PassID(TString ID) const;
   bool Pass_TESTID() const;
 
+  //==== HNtypeI
+  bool Pass_TriggerEmulation() const;
+
+  bool Pass_HNVeto2016() const;
+  bool Pass_HNLoose2016(double relisoCut, double dxyCut, double dzCut, double sipCut) const;
+  bool Pass_HNTight2016() const;
+
+  bool Pass_HNVeto(double relisoCut, double dxyCut, double dzCut, bool isPOGIP) const;
+  bool Pass_HNLoose(double relisoCut, double dxyCut, double dzCut, double sipCut, bool isPOGIP) const;
+  bool Pass_HNTight(double dxyCut, double dzCut, double sipCut, double ptCut, bool isPOGIP) const;
+  bool Pass_HNTight(double dxyCut, double dzCut, double sipCut, bool isPOGIP) const;
+
+  //==== ISR
+  bool Pass_ISRVeto(double relisoCut) const;
+  bool Pass_ISRLoose(double relisoCut) const;
+  bool Pass_ISRTight() const;
+
   bool Pass_CutBasedLooseNoIso() const;
   bool Pass_CutBasedVetoNoIso() const;
   bool Pass_CutBasedLoose() const;

@@ -110,10 +110,22 @@ bool FatJet::PassID(TString ID) const {
   if(ID=="tight") return Pass_tightJetID();
   if(ID=="tightLepVeto") return Pass_tightLepVetoJetID();
 
-  cout << "[FatJet::PassID] No id : " << ID << endl;
+  //cout << "[FatJet::PassID] No id : " << ID << endl;
+  cerr << "[FatJet::PassID] No id : " << ID << endl;
   exit(ENODATA);
 
   return false;
+
+}
+
+bool FatJet::Pass_HNTight(double tau21Cut) const{
+
+  //if(!Pass_tightLepVetoJetID()) return false;
+  if(!Pass_tightJetID()) return false;
+  if(!(PuppiTau2()/PuppiTau1() < tau21Cut)) return false;  // 0.6 in EXO-17-028
+  if(!(SDMass()>65. && SDMass()<105.)) return false;       // 40. < M < 130. in EXO-17-028
+
+  return true;
 
 }
 

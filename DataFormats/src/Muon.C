@@ -18,6 +18,9 @@ Muon::Muon() : Lepton() {
   j_lowptMVA = -999.;
   j_softMVA = -999.;
   j_trackerLayers = 0;
+  j_validmuonhits = 0;
+  j_matchedstations = 0;
+  j_pixelHits = 0;
 }
 
 Muon::~Muon(){
@@ -55,8 +58,8 @@ void Muon::CalcPFRelIso(){
   //cout << "[Muon::CalcPFRelIso] j_PFPH04 = " << j_PFPH04 << endl;
   //cout << "[Muon::CalcPFRelIso] j_PU04 = " << j_PU04 << endl;
   //cout << "[Muon::CalcPFRelIso] --> absiso = " << absiso << endl;
-  this->SetRelIso(absiso/this->Pt());
-  //this->SetRelIso(absiso/this->MiniAODPt()); //TODO This is same as IDBit
+  //this->SetRelIso(absiso/this->Pt());
+  this->SetRelIso(absiso/this->MiniAODPt()); //TODO This is same as IDBit -> Same! (checked)
 }
 
 double Muon::EA(){
@@ -107,10 +110,31 @@ bool Muon::PassID(TString ID) const {
   //==== Customized
   if(ID=="TEST") return Pass_TESTID();
 
+  //==== HNtypeI
+  if(ID=="HNVeto2016") return Pass_HNVeto2016();
+  if(ID=="HNLoose2016") return Pass_HNLoose2016(0.4, 0.2, 0.1, 3.);
+  if(ID=="HNTight2016") return Pass_HNTight2016();
+
+  if(ID=="HNVeto") return Pass_HNVeto(0.6, 0.2, 0.5);
+  if(ID=="HNLooseV1") return Pass_HNLoose(0.4, 0.2, 0.5, 10.);
+  if(ID=="HNLooseV2") return Pass_HNLoose(0.4, 0.2, 0.1, 10.);
+  //if(ID=="HNLooseV2IsoUp") return Pass_HNLoose(0.5, 0.05, 0.1, 3.);
+  //if(ID=="HNLooseV2IsoDown") return Pass_HNLoose(0.3, 0.05, 0.1, 3.);
+  if(ID=="HNTightV1") return Pass_HNTight(0.05, 0.05, 0.1, 3.);
+  if(ID=="HNTightV2") return Pass_HNTight(0.07, 0.05, 0.1, 3.);
+
+  //==== ISR
+  if(ID=="ISRVeto") return Pass_ISRVeto(0.6);
+  if(ID=="ISRLoose") return Pass_ISRLoose(0.4);
+  //if(ID=="ISRLooseIsoUp") return Pass_ISRLoose(0.5);
+  //if(ID=="ISRLooseIsoDown") return Pass_ISRLoose(0.3);
+  if(ID=="ISRTight") return Pass_ISRTight(0.15);
+
   //==== No cut
   if(ID=="NOCUT") return true;
 
-  cout << "[Electron::PassID] No id : " << ID << endl;
+  //cout << "[Muon::PassID] No id : " << ID << endl;
+  cerr << "[Muon::PassID] No id : " << ID << endl;
   exit(ENODATA);
 
   return false;
@@ -133,9 +157,127 @@ bool Muon::Pass_TESTID() const {
   return true;
 }
 
+//==== HNtypeI
+
+bool Muon::Pass_HNVeto2016() const {
+
+  if(!( isPOGLoose() )) return false;
+  if(!( fabs(dXY())<0.2 && fabs(dZ())<0.5) ) return false;
+  if(!( RelIso()<0.6 ))  return false;
+  if(!( Chi2()<50. )) return false;
+
+  return true;
+
+}
+
+bool Muon::Pass_HNLoose2016(double relisoCut, double dxyCut, double dzCut, double sipCut) const {
+
+  if(!( isPOGLoose() )) return false;
+  if(!( fabs(dXY())<dxyCut && fabs(dZ())<dzCut && fabs(IP3D()/IP3Derr())<sipCut) ) return false;
+  if(!( RelIso()<relisoCut ))  return false;
+  if(!( Chi2()<50. )) return false;
+
+  return true;
+
+}
+
+bool Muon::Pass_HNTight2016() const {
+
+  if(!( isPOGTight() )) return false;
+  if(!( fabs(dXY())<0.005 && fabs(dZ())<0.04 && fabs(IP3D()/IP3Derr())<3.) ) return false;
+  if(!( RelIso()<0.07 ))  return false;
+  if(!( Chi2()<10. )) return false;
+
+  return true;
+
+}
+
+bool Muon::Pass_HNVeto(double relisoCut, double dxyCut, double dzCut) const {
+
+  if(!( isPOGLoose() )) return false;
+  if(!( RelIso()<relisoCut )) return false;
+  if(!( fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
+
+  return true;
+
+}
+
+bool Muon::Pass_HNLoose(double relisoCut, double dxyCut, double dzCut, double sipCut) const {
+
+  //==== Individual cuts of the POG cut-based tight ID
+  if(!( isPOGLoose() )) return false;
+  if(!( IsType(GlobalMuon) )) return false;
+  if(!( Chi2()<10. )) return false;
+  if(!( ValidMuonHits()>0 )) return false;
+  if(!( MatchedStations()>1 )) return false;
+  if(!( fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
+  if(!( PixelHits()>0 )) return false;
+  if(!( TrackerLayers()>5 )) return false;
+  //==== Iso, SIP
+  if(!( RelIso()<relisoCut )) return false;
+  if(!( fabs(IP3D()/IP3Derr())<sipCut )) return false;
+
+  return true;
+
+}
+
+bool Muon::Pass_HNTight(double relisoCut, double dxyCut, double dzCut, double sipCut) const {
+
+  if(!( isPOGTight() )) return false;
+  if(!( RelIso()<relisoCut )) return false;
+  if(!( fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
+  if(!( fabs(IP3D()/IP3Derr())<sipCut )) return false;
+
+  return true;
+
+}
+
+//==== ISR
+
+bool Muon::Pass_ISRVeto(double relisoCut) const {
+
+  if(!( isPOGLoose() )) return false;
+  if(!( RelIso()<relisoCut )) return false;
+
+  return true;
+
+}
+
+bool Muon::Pass_ISRLoose(double relisoCut) const {
+
+  if(!( isPOGTight() )) return false;
+  if(!( RelIso()<relisoCut )) return false;
+
+  return true;
+
+}
+
+bool Muon::Pass_ISRTight(double relisoCut) const {
+
+  if(!( isPOGTight() )) return false;
+  if(!( RelIso()<relisoCut )) return false;
+
+  return true;
+
+}
+
 void Muon::SetTrackerLayers(int n){
   j_trackerLayers = n;
 }
+
+void Muon::SetValidMuonHits(int n){
+  j_validmuonhits = n;
+}
+
+void Muon::SetMatchedStations(int n){
+  j_matchedstations = n;
+}
+
+void Muon::SetPixelHits(int n){
+  j_pixelHits = n;
+}
+
+//==== HLT filters
 
 bool Muon::PassFilter(TString filter) const{
   if( filter=="hltDiMu9Ele9CaloIdLTrackIdLMuonlegL3Filtered9" && j_filterbits&(ULong64_t(1)<<0) ) return true;

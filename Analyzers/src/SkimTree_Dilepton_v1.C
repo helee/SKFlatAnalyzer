@@ -1,9 +1,9 @@
-#include "SkimTree_Dilepton.h"
+#include "SkimTree_Dilepton_v1.h"
 
-void SkimTree_Dilepton::initializeAnalyzer(){
+void SkimTree_Dilepton_v1::initializeAnalyzer(){
 
   outfile->cd();
-  cout << "[SkimTree_Dilepton::initializeAnalyzer()] gDirectory = " << gDirectory->GetName() << endl;
+  cout << "[SkimTree_Dilepton_v1::initializeAnalyzer()] gDirectory = " << gDirectory->GetName() << endl;
   newtree = fChain->CloneTree(0);
 
   double_triggers.clear();
@@ -17,13 +17,11 @@ void SkimTree_Dilepton::initializeAnalyzer(){
       "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v",
       "HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v",
       "HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v",
-      "HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v",
-      "HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v",              // H
       "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v",
-      "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v",       // B-G
-      "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v",      // B-G
-      "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v",    // H
-      "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"    // H
+      "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v",     // B-G
+      "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v",    // B-G
+      "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v",  // H
+      "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"  // H
     };
     single_muon_triggers = {
       "HLT_IsoMu24_v",
@@ -34,11 +32,8 @@ void SkimTree_Dilepton::initializeAnalyzer(){
     };
   }else if(DataYear==2017){
     double_triggers = {
-      "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v",                  // B
-      "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v",          // C-F
       "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v",
       "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v",
-      "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v",      // C-F
       "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v",
       "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"
     };
@@ -55,7 +50,6 @@ void SkimTree_Dilepton::initializeAnalyzer(){
     double_triggers = {
       "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v",
       "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v",
-      "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v",
       "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v",
       "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"
     };
@@ -68,23 +62,23 @@ void SkimTree_Dilepton::initializeAnalyzer(){
       "HLT_Ele32_WPTight_Gsf_v",
     };
   }else{
-    cout<<"[SkimTree_Dilepton::initializeAnalyzer] DataYear is wrong : " << DataYear << endl;
+    cout<<"[SkimTree_Dilepton_v1::initializeAnalyzer] DataYear is wrong : " << DataYear << endl;
   }
 
-  cout << "[SkimTree_Dilepton::initializeAnalyzer] triggers to skim = " << endl;
+  cout << "[SkimTree_Dilepton_v1::initializeAnalyzer] triggers to skim = " << endl;
   for(unsigned int i=0; i<double_triggers.size(); i++){
-    cout << "[SkimTree_Dilepton::initializeAnalyzer]   " << double_triggers.at(i) << endl;
+    cout << "[SkimTree_Dilepton_v1::initializeAnalyzer]   " << double_triggers.at(i) << endl;
   }
   for(unsigned int i=0; i<single_muon_triggers.size(); i++){
-    cout << "[SkimTree_Dilepton::initializeAnalyzer]   " << single_muon_triggers.at(i) << endl;
+    cout << "[SkimTree_Dilepton_v1::initializeAnalyzer]   " << single_muon_triggers.at(i) << endl;
   }
   for(unsigned int i=0; i<single_electron_triggers.size(); i++){
-    cout << "[SkimTree_Dilepton::initializeAnalyzer]   " << single_electron_triggers.at(i) << endl;
+    cout << "[SkimTree_Dilepton_v1::initializeAnalyzer]   " << single_electron_triggers.at(i) << endl;
   }
 
 }
 
-void SkimTree_Dilepton::executeEvent(){
+void SkimTree_Dilepton_v1::executeEvent(){
 
   Event ev;
   ev.SetTrigger(*HLT_TriggerName);
@@ -144,19 +138,19 @@ void SkimTree_Dilepton::executeEvent(){
   }
 }
 
-void SkimTree_Dilepton::executeEventFromParameter(AnalyzerParameter param){
+void SkimTree_Dilepton_v1::executeEventFromParameter(AnalyzerParameter param){
 
 }
 
-SkimTree_Dilepton::SkimTree_Dilepton(){
+SkimTree_Dilepton_v1::SkimTree_Dilepton_v1(){
   newtree=NULL;
 }
 
-SkimTree_Dilepton::~SkimTree_Dilepton(){
+SkimTree_Dilepton_v1::~SkimTree_Dilepton_v1(){
 
 }
 
-void SkimTree_Dilepton::WriteHist(){
+void SkimTree_Dilepton_v1::WriteHist(){
 
   outfile->mkdir("recoTree");
   outfile->cd("recoTree");

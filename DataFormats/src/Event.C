@@ -50,6 +50,7 @@ bool Event::PassTrigger(std::vector<TString> trigs){
   return false;
 }
 
+//==== Some lumi values from https://github.com/jalmond/SKFlatAnalyzer/blob/HNtypeI_UltraLegacy/DataFormats/src/Event.C
 double Event::GetTriggerLumi(TString trig){
   if(j_DataEra=="2016preVFP"){
     if(trig=="Full") return 19517.523849863;
@@ -71,8 +72,12 @@ double Event::GetTriggerLumi(TString trig){
     else if(trig=="HLT_IsoMu27_v") return 19517.523849863;
     else if(trig=="HLT_Ele8_CaloIdL_TrackIdL_IsoVL_PFJet30_v") return 4.127188014;
     else if(trig=="HLT_Ele12_CaloIdL_TrackIdL_IsoVL_PFJet30_v") return 11.033890219;
+    else if(trig=="HLT_Ele17_CaloIdL_TrackIdL_IsoVL_PFJet30_v") return 11.033890219; // TODO : should be fixed
     else if(trig=="HLT_Ele23_CaloIdL_TrackIdL_IsoVL_PFJet30_v") return 52.790026620;
+    else if(trig=="HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v") return 19517.523849863;
+    else if(trig=="HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v") return 19517.523849863;
     else if(trig=="HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v") return 19517.523849863;
+    else if(trig=="HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v") return 19517.523849863;
   }else if(j_DataEra=="2016postVFP"){
     if(trig=="Full") return 16812.151722482;
     else if(trig=="HLT_Mu3_PFJet40_v") return 3.580526616;
@@ -93,8 +98,12 @@ double Event::GetTriggerLumi(TString trig){
     else if(trig=="HLT_IsoMu27_v") return 16812.151722482;
     else if(trig=="HLT_Ele8_CaloIdL_TrackIdL_IsoVL_PFJet30_v") return 2.938006053;
     else if(trig=="HLT_Ele12_CaloIdL_TrackIdL_IsoVL_PFJet30_v") return 3.980060594;
+    else if(trig=="HLT_Ele17_CaloIdL_TrackIdL_IsoVL_PFJet30_v") return 3.980060594; // TODO : should be fixed
     else if(trig=="HLT_Ele23_CaloIdL_TrackIdL_IsoVL_PFJet30_v") return 10.699483420;
+    else if(trig=="HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v") return 8629.222597;
+    else if(trig=="HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v") return 8629.222597;
     else if(trig=="HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v") return 16812.151722482;
+    else if(trig=="HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v") return 16812.151722482;
   }else if(j_DataEra=="2017"){
     if(trig=="Full") return 41477.877400009;
     else if(trig=="HLT_Mu3_PFJet40_v") return 4.607782551;

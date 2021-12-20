@@ -102,7 +102,7 @@ void MCCorrection::ReadHistograms(){
   }
 
 
-  // == Get Prefiring maps
+  //==== Get Prefiring maps
   TString PrefirePath  = datapath+"/"+GetEra()+"/Prefire/";
 
   string elline3;
@@ -127,7 +127,7 @@ void MCCorrection::ReadHistograms(){
   }
 
 
-  // == Get Pileup Reweight maps
+  //==== Get Pileup Reweight maps
   TString PUReweightPath = datapath+"/"+GetEra()+"/PileUp/";
 
   string elline4;
@@ -164,7 +164,7 @@ void MCCorrection::ReadHistograms(){
   }
 */
   
-  // == Get Official DY Pt reweight maps
+  //==== Get Official DY Pt reweight maps
   TString DYPtReweightPath = datapath+"/"+GetEra()+"/DYPtReweight/Zpt_weights_"+TString::Itoa(DataYear,10)+".root";
   TFile *file_DYPtReweightPath = new TFile(DYPtReweightPath);
   histDir->cd();
@@ -194,6 +194,10 @@ void MCCorrection::SetEventInfo(int r, int l, int e){
 void MCCorrection::SetIsFastSim(bool b){
   IsFastSim = b;
 }
+
+//=========================================================
+//==== Muon
+//=========================================================
 
 double MCCorrection::MuonReco_SF(TString key, double eta, double p, int sys){
 
@@ -488,6 +492,264 @@ double MCCorrection::MuonTrigger_SF(TString ID, TString trig, const std::vector<
 
 }
 
+//==== HNtypeI
+
+double MCCorrection::MuonID_Eff_Period(TString ID, TString period, TString DataMC, double eta, double pt, int sys){
+
+  double value = 1.;
+  double error = 0.;
+
+  eta = fabs(eta);
+
+  if(pt <= 10.) pt = 11.;
+  if(pt >= 500.) pt = 499.;
+  if(eta >= 2.4) eta = 2.39;
+
+  TH2F *this_hist = map_hist_Muon["ID_Eff_"+DataMC+"_"+ID+"_"+period];
+  if(!this_hist){
+    if(IgnoreNoHist) return 1.;
+    else{
+      cerr << "[MCCorrection::MuonID_Eff_Period] No "<<"ID_Eff_"+DataMC+"_"+ID+"_"+period<<endl;
+      exit(EXIT_FAILURE);
+    }
+  }
+
+  int this_bin(-999);
+
+  this_bin = this_hist->FindBin(eta,pt);
+
+  value = this_hist->GetBinContent(this_bin);
+  error = this_hist->GetBinError(this_bin);
+
+  return value+double(sys)*error;
+
+}
+
+double MCCorrection::MuonID_SF_HNtypeI(TString ID, double eta, double pt, int sys){
+
+  double value = 1.;
+  double error = 0.;
+
+  eta = fabs(eta);
+
+  if(DataYear==2016){
+
+    double lumi_periodB = 5750.490644035;
+    double lumi_periodC = 2572.903488748;
+    double lumi_periodD = 4242.291556970;
+    double lumi_periodE = 4025.228136967;
+    double lumi_periodF = 3104.509131800;
+    double lumi_periodG = 7575.824256098;
+    double lumi_periodH = 8650.628380028;
+
+    double total_lumi = (lumi_periodB+lumi_periodC+lumi_periodD+lumi_periodE+lumi_periodF+lumi_periodG+lumi_periodH);
+
+    double WeightBtoF = (lumi_periodB+lumi_periodC+lumi_periodD+lumi_periodE+lumi_periodF)/total_lumi;
+    double WeightGtoH = (lumi_periodG+lumi_periodH)/total_lumi;
+
+    double dataEff = WeightBtoF*MuonID_Eff_Period(ID, "BtoF", "DATA", eta, pt, sys) + WeightGtoH*MuonID_Eff_Period(ID, "GtoH", "DATA", eta, pt, sys);
+    double mcEff = WeightBtoF*MuonID_Eff_Period(ID, "BtoF", "MC", eta, pt, -sys) + WeightGtoH*MuonID_Eff_Period(ID, "GtoH", "MC", eta, pt, -sys);
+
+    value = dataEff/mcEff;
+    error = 0.;
+
+  }
+  else{
+
+    if(pt <= 10.) pt = 11.;
+    if(pt >= 500.) pt = 499.;
+    if(eta >= 2.4) eta = 2.39;
+
+    TH2F *this_hist = map_hist_Muon["ID_SF_"+ID];
+    if(!this_hist){
+      if(IgnoreNoHist) return 1.;
+      else{
+        cerr << "[MCCorrection::MuonID_SF_HNtypeI] No "<<"ID_SF_"+ID<<endl;
+        exit(EXIT_FAILURE);
+      }
+    }
+
+    int this_bin(-999);
+
+    this_bin = this_hist->FindBin(eta,pt);
+
+    value = this_hist->GetBinContent(this_bin);
+    error = this_hist->GetBinError(this_bin);
+
+  }
+
+  return value+double(sys)*error;
+
+}
+
+double MCCorrection::MuonTrigger_Eff_Period(TString leg, TString ID, TString period, TString DataMC, double eta, double pt, double ptcone, bool RunFake, int sys){
+
+  double value = 1.;
+  double error = 0.;
+
+  eta = fabs(eta);
+
+  if(pt >= 500.) pt = 499.;
+  if(eta >= 2.4) eta = 2.39;
+
+  if(RunFake){
+    if(leg == "Mu17"){
+      if(pt>17. && pt<=20. && ptcone>20.) pt = 21.;
+    }
+    if(leg == "Mu8"){
+      if(pt>8. && pt<=10. && ptcone>10.) pt = 11.;
+    }
+    if(leg == "Mu23"){
+      if(pt>23. && pt<=25. && ptcone>25.) pt = 26.;
+    }
+  }
+
+  TH2F *this_hist = map_hist_Muon["Trigger_Eff_"+DataMC+"_"+leg+"_"+ID+"_"+period];
+  if(!this_hist){
+    if(IgnoreNoHist) return 1.;
+    else{
+      cerr << "[MCCorrection::MuonTrigger_Eff_Period] No "<<"Trigger_Eff_"+DataMC+"_"+leg+"_"+ID+"_"+period<<endl;
+      exit(EXIT_FAILURE);
+    }
+  }
+
+  int this_bin(-999);
+
+  this_bin = this_hist->FindBin(eta,pt);
+
+  value = this_hist->GetBinContent(this_bin);
+  error = this_hist->GetBinError(this_bin);
+
+  return value+double(sys)*error;
+
+}
+
+double MCCorrection::MuonTrigger_Eff_HNtypeI(TString leg, TString ID, TString DataMC, double eta, double pt, double ptcone, bool RunFake, int sys){
+
+  double value = 1.;
+  double error = 0.;
+
+  eta = fabs(eta);
+
+  if(pt >= 500.) pt = 499.;
+  if(eta >= 2.4) eta = 2.39;
+
+  if(RunFake){
+    if(leg == "Mu17"){
+      if(pt>17. && pt<=20. && ptcone>20.) pt = 21.;
+    }
+    if(leg == "Mu8"){
+      if(pt>8. && pt<=10. && ptcone>10.) pt = 11.;
+    }
+    if(leg == "Mu23"){
+      if(pt>23. && pt<=25. && ptcone>25.) pt = 26.;
+    }
+  }
+
+  TH2F *this_hist = map_hist_Muon["Trigger_Eff_"+DataMC+"_"+leg+"_"+ID];
+  if(!this_hist){
+    if(IgnoreNoHist) return 1.;
+    else{
+      cerr << "[MCCorrection::MuonTrigger_Eff_HNtypeI] No "<<"Trigger_Eff_"+DataMC+"_"+leg+"_"+ID<<endl;
+      exit(EXIT_FAILURE);
+    }
+  }
+
+  int this_bin(-999);
+
+  this_bin = this_hist->FindBin(eta,pt);
+
+  value = this_hist->GetBinContent(this_bin);
+  error = this_hist->GetBinError(this_bin);
+
+  return value+double(sys)*error;
+
+}
+
+double MCCorrection::MuonTrigger_SF_HNtypeI(TString ID, const std::vector<Muon>& muons, bool RunFake, int sys){
+
+  double value = 1.;
+
+  int nlep = muons.size();
+
+  if(nlep < 2){
+    cout<<"[HNAnalyzerCore::MuonTrigger_SF_HNtypeI] number of muons < 2, return 1."<<endl;
+    return 1.;
+  }
+
+  double dataEff = 1., mcEff = 1.;
+  double dataEffLeg1 = 1., mcEffLeg1 = 1.;
+  double dataEffLeg2 = 1., mcEffLeg2 = 1.;
+
+  double dataEffNoLeg1 = 1., mcEffNoLeg1 = 1.;
+  vector<double> dataEffPassLeg1NoLeg2(nlep, 1.);
+  vector<double> mcEffPassLeg1NoLeg2(nlep, 1.);
+
+  double lumi_periodB = 5750.490644035;
+  double lumi_periodC = 2572.903488748;
+  double lumi_periodD = 4242.291556970;
+  double lumi_periodE = 4025.228136967;
+  double lumi_periodF = 3104.509131800;
+  double lumi_periodG = 7575.824256098;
+  double lumi_periodH = 8650.628380028;
+
+  double total_lumi = (lumi_periodB+lumi_periodC+lumi_periodD+lumi_periodE+lumi_periodF+lumi_periodG+lumi_periodH);
+
+  double WeightBtoF = (lumi_periodB+lumi_periodC+lumi_periodD+lumi_periodE+lumi_periodF)/total_lumi;
+  double WeightGtoH = (lumi_periodG+lumi_periodH)/total_lumi;
+
+  for(int i=0; i<nlep; i++){
+
+    if(DataYear==2016){
+      dataEffLeg1 = WeightBtoF*MuonTrigger_Eff_Period("Mu17", ID, "BtoF", "DATA", muons.at(i).Eta(), muons.at(i).MiniAODPt(), muons.at(i).Pt(), RunFake, sys) + WeightGtoH*MuonTrigger_Eff_Period("Mu17", ID, "GtoH", "DATA", muons.at(i).Eta(), muons.at(i).MiniAODPt(), muons.at(i).Pt(), RunFake, sys);
+      mcEffLeg1   = WeightBtoF*MuonTrigger_Eff_Period("Mu17", ID, "BtoF", "MC", muons.at(i).Eta(), muons.at(i).MiniAODPt(), muons.at(i).Pt(), RunFake, -sys) + WeightGtoH*MuonTrigger_Eff_Period("Mu17", ID, "GtoH", "MC", muons.at(i).Eta(), muons.at(i).MiniAODPt(), muons.at(i).Pt(), RunFake, -sys);
+      dataEffLeg2 = WeightBtoF*MuonTrigger_Eff_Period("Mu8", ID, "BtoF", "DATA", muons.at(i).Eta(), muons.at(i).MiniAODPt(), muons.at(i).Pt(), RunFake, sys) + WeightGtoH*MuonTrigger_Eff_Period("Mu8", ID, "GtoH", "DATA", muons.at(i).Eta(), muons.at(i).MiniAODPt(), muons.at(i).Pt(), RunFake, sys);
+      mcEffLeg2   = WeightBtoF*MuonTrigger_Eff_Period("Mu8", ID, "BtoF", "MC", muons.at(i).Eta(), muons.at(i).MiniAODPt(), muons.at(i).Pt(), RunFake, -sys) + WeightGtoH*MuonTrigger_Eff_Period("Mu8", ID, "GtoH", "MC", muons.at(i).Eta(), muons.at(i).MiniAODPt(), muons.at(i).Pt(), RunFake, -sys);
+    }
+    else{
+      dataEffLeg1 = MuonTrigger_Eff_HNtypeI("Mu17", ID, "DATA", muons.at(i).Eta(), muons.at(i).MiniAODPt(), muons.at(i).Pt(), RunFake, sys);
+      mcEffLeg1   = MuonTrigger_Eff_HNtypeI("Mu17", ID, "MC", muons.at(i).Eta(), muons.at(i).MiniAODPt(), muons.at(i).Pt(), RunFake, -sys);
+      dataEffLeg2 = MuonTrigger_Eff_HNtypeI("Mu8", ID, "DATA", muons.at(i).Eta(), muons.at(i).MiniAODPt(), muons.at(i).Pt(), RunFake, sys);
+      mcEffLeg2   = MuonTrigger_Eff_HNtypeI("Mu8", ID, "MC", muons.at(i).Eta(), muons.at(i).MiniAODPt(), muons.at(i).Pt(), RunFake, -sys);
+    }
+
+    dataEffNoLeg1 *= (1.-dataEffLeg1);
+    mcEffNoLeg1   *= (1.-mcEffLeg1);
+
+    for(int j=0; j<nlep; j++){
+
+      if(i == j){
+        dataEffPassLeg1NoLeg2[i] *= dataEffLeg1;
+        mcEffPassLeg1NoLeg2[i]   *= mcEffLeg1;
+      }
+      else{
+        dataEffPassLeg1NoLeg2[i] *= (1.-dataEffLeg2);
+        mcEffPassLeg1NoLeg2[i]   *= (1.-mcEffLeg2);
+      }
+
+    }
+
+  }
+
+  dataEff = 1.-dataEffNoLeg1;
+  mcEff   = 1.-mcEffNoLeg1;
+
+  for(int i=0; i<nlep; i++){
+    dataEff -= dataEffPassLeg1NoLeg2[i];
+    mcEff  -= mcEffPassLeg1NoLeg2[i];
+  }
+
+  value = dataEff/mcEff;
+
+  if(mcEff == 0.) return 1.;
+  else return value;
+
+}
+
+//=========================================================
+//==== Electron
+//=========================================================
+
 double MCCorrection::ElectronID_SF(TString ID, double sceta, double pt, int sys){
 
   if(ID=="Default") return 1.;
@@ -746,6 +1008,196 @@ double MCCorrection::GetPrefireWeight(const std::vector<Photon>& photons, const 
 
 }
 
+//==== HNtypeI
+
+double MCCorrection::ElectronTrigger_Eff_HNtypeI(TString leg, TString ID, TString DataMC, double sceta, double pt, double ptcone, bool RunFake, int sys){
+
+  double value = 1.;
+  double error = 0.;
+
+  if(pt >= 500.) pt = 499.;
+  if(sceta >= 2.5) sceta = 2.49;
+  if(sceta <= -2.5) sceta = -2.49;
+
+  if(RunFake){
+    if(leg=="Ele23"){
+      if(pt>23. && pt<=25. && ptcone>25.) pt = 26.;
+    }
+    if(leg=="Ele12"){
+      if(pt>12. && pt<=15. && ptcone>15.) pt = 16.;
+    }
+  }
+
+  TH2F *this_hist = map_hist_Electron["Trigger_Eff_"+DataMC+"_"+leg+"_"+ID];
+  if(!this_hist){
+    if(IgnoreNoHist) return 1.;
+    else{
+      cerr << "[MCCorrection::ElectronTrigger_Eff_HNtypeI] No "<<"Trigger_Eff_"+DataMC+"_"+leg+"_"+ID<<endl;
+      exit(EXIT_FAILURE);
+    }
+  }
+
+  int this_bin(-999);
+
+  this_bin = this_hist->FindBin(pt, sceta);
+
+  value = this_hist->GetBinContent(this_bin);
+  error = this_hist->GetBinError(this_bin);
+
+  return value+double(sys)*error;
+
+}
+
+double MCCorrection::ElectronTrigger_SF_HNtypeI(TString ID, const std::vector<Electron>& electrons, bool RunFake, int sys){
+
+  double value = 1.;
+
+  int nlep = electrons.size();
+
+  if(nlep < 2){
+    cout<<"[HNAnalyzerCore::ElectronTrigger_SF_HNtypeI] number of electrons < 2, return 1."<<endl;
+    return 1.;
+  }
+
+  double dataEff = 1., mcEff = 1.;
+  double dataEffLeg1 = 1., mcEffLeg1 = 1.;
+  double dataEffLeg2 = 1., mcEffLeg2 = 1.;
+
+  double dataEffNoLeg1 = 1., mcEffNoLeg1 = 1.;
+  vector<double> dataEffPassLeg1NoLeg2(nlep, 1.);
+  vector<double> mcEffPassLeg1NoLeg2(nlep, 1.);
+
+  for(int i=0; i<nlep; i++){
+
+    dataEffLeg1 = ElectronTrigger_Eff_HNtypeI("Ele23", ID, "DATA", electrons.at(i).scEta(), electrons.at(i).UncorrPt(), electrons.at(i).Pt(), RunFake, sys);
+    mcEffLeg1   = ElectronTrigger_Eff_HNtypeI("Ele23", ID, "MC", electrons.at(i).scEta(), electrons.at(i).UncorrPt(), electrons.at(i).Pt(), RunFake, -sys);
+    dataEffLeg2 = ElectronTrigger_Eff_HNtypeI("Ele12", ID, "DATA", electrons.at(i).scEta(), electrons.at(i).UncorrPt(), electrons.at(i).Pt(), RunFake, sys);
+    mcEffLeg2   = ElectronTrigger_Eff_HNtypeI("Ele12", ID, "MC", electrons.at(i).scEta(), electrons.at(i).UncorrPt(), electrons.at(i).Pt(), RunFake, -sys);
+
+    dataEffNoLeg1 *= (1.-dataEffLeg1);
+    mcEffNoLeg1   *= (1.-mcEffLeg1);
+
+    for(int j=0; j<nlep; j++){
+
+      if(i == j){
+        dataEffPassLeg1NoLeg2[i] *= dataEffLeg1;
+        mcEffPassLeg1NoLeg2[i]   *= mcEffLeg1;
+      }
+      else{
+        dataEffPassLeg1NoLeg2[i] *= (1.-dataEffLeg2);
+        mcEffPassLeg1NoLeg2[i]   *= (1.-mcEffLeg2);
+      }
+
+    }
+
+  }
+
+  dataEff = 1.-dataEffNoLeg1;
+  mcEff   = 1.-mcEffNoLeg1;
+
+  for(int i=0; i<nlep; i++){
+    dataEff -= dataEffPassLeg1NoLeg2[i];
+    mcEff  -= mcEffPassLeg1NoLeg2[i];
+  }
+
+  value = dataEff/mcEff;
+
+  if(mcEff == 0.) return 1.;
+  else return value;
+
+}
+
+double MCCorrection::EMuTrigger_SF_HNtypeI(TString MuonID, TString ElectronID, const std::vector<Muon>& muons, const std::vector<Electron>& electrons, bool RunFake, int sys){
+
+  double value = 1.;
+
+  if(!(muons.size()==1 && electrons.size()==1)){
+    cout<<"[HNAnalyzerCore::EMuTrigger_SF_HNtypeI] number of muons != 1, number of electrons != 1, return 1."<<endl;
+    return 1.;
+  }
+
+  double dataEff = 1., mcEff = 1.;
+  double dataEffMu23 = 1., mcEffMu23 = 1.; // FIXME : Mu17 instead of Mu23 leg for now
+  double dataEffMu8 =1., mcEffMu8 = 1.;
+  double dataEffEle23 = 1., mcEffEle23 = 1.;
+  double dataEffEle12 = 1., mcEffEle12 = 1.;
+
+  double lumi_periodB = 5750.490644035;
+  double lumi_periodC = 2572.903488748;
+  double lumi_periodD = 4242.291556970;
+  double lumi_periodE = 4025.228136967;
+  double lumi_periodF = 3104.509131800;
+  double lumi_periodG = 7575.824256098;
+  double lumi_periodH = 8650.628380028;
+
+  double total_lumi = (lumi_periodB+lumi_periodC+lumi_periodD+lumi_periodE+lumi_periodF+lumi_periodG+lumi_periodH);
+
+  double WeightBtoF = (lumi_periodB+lumi_periodC+lumi_periodD+lumi_periodE+lumi_periodF)/total_lumi;
+  double WeightGtoH = (lumi_periodG+lumi_periodH)/total_lumi;
+
+  if(DataYear==2016){
+    dataEffMu23 = WeightBtoF*MuonTrigger_Eff_Period("Mu17", MuonID, "BtoF", "DATA", muons.at(0).Eta(), muons.at(0).MiniAODPt(), muons.at(0).Pt(), RunFake, sys) + WeightGtoH*MuonTrigger_Eff_Period("Mu17", MuonID, "GtoH", "DATA", muons.at(0).Eta(), muons.at(0).MiniAODPt(), muons.at(0).Pt(), RunFake, sys);
+    mcEffMu23   = WeightBtoF*MuonTrigger_Eff_Period("Mu17", MuonID, "BtoF", "MC", muons.at(0).Eta(), muons.at(0).MiniAODPt(), muons.at(0).Pt(), RunFake, -sys) + WeightGtoH*MuonTrigger_Eff_Period("Mu17", MuonID, "GtoH", "MC", muons.at(0).Eta(), muons.at(0).MiniAODPt(), muons.at(0).Pt(), RunFake, -sys);
+    dataEffMu8  = WeightBtoF*MuonTrigger_Eff_Period("Mu8", MuonID, "BtoF", "DATA", muons.at(0).Eta(), muons.at(0).MiniAODPt(), muons.at(0).Pt(), RunFake, sys) + WeightGtoH*MuonTrigger_Eff_Period("Mu8", MuonID, "GtoH", "DATA", muons.at(0).Eta(), muons.at(0).MiniAODPt(), muons.at(0).Pt(), RunFake, sys);
+    mcEffMu8    = WeightBtoF*MuonTrigger_Eff_Period("Mu8", MuonID, "BtoF", "MC", muons.at(0).Eta(), muons.at(0).MiniAODPt(), muons.at(0).Pt(), RunFake, -sys) + WeightGtoH*MuonTrigger_Eff_Period("Mu8", MuonID, "GtoH", "MC", muons.at(0).Eta(), muons.at(0).MiniAODPt(), muons.at(0).Pt(), RunFake, -sys);
+  }
+  else{
+    dataEffMu23 = MuonTrigger_Eff_HNtypeI("Mu17", MuonID, "DATA", muons.at(0).Eta(), muons.at(0).MiniAODPt(), muons.at(0).Pt(), RunFake, sys);
+    mcEffMu23   = MuonTrigger_Eff_HNtypeI("Mu17", MuonID, "MC", muons.at(0).Eta(), muons.at(0).MiniAODPt(), muons.at(0).Pt(), RunFake, -sys);
+    dataEffMu8  = MuonTrigger_Eff_HNtypeI("Mu8", MuonID, "DATA", muons.at(0).Eta(), muons.at(0).MiniAODPt(), muons.at(0).Pt(), RunFake, sys);
+    mcEffMu8    = MuonTrigger_Eff_HNtypeI("Mu8", MuonID, "MC", muons.at(0).Eta(), muons.at(0).MiniAODPt(), muons.at(0).Pt(), RunFake, -sys);
+  }
+  dataEffEle23 = ElectronTrigger_Eff_HNtypeI("Ele23", ElectronID, "DATA", electrons.at(0).scEta(), electrons.at(0).UncorrPt(), electrons.at(0).Pt(), RunFake, sys);
+  mcEffEle23   = ElectronTrigger_Eff_HNtypeI("Ele23", ElectronID, "MC", electrons.at(0).scEta(), electrons.at(0).UncorrPt(), electrons.at(0).Pt(),RunFake, -sys);
+  dataEffEle12 = ElectronTrigger_Eff_HNtypeI("Ele12", ElectronID, "DATA", electrons.at(0).scEta(), electrons.at(0).UncorrPt(), electrons.at(0).Pt(),RunFake, sys);
+  mcEffEle12   = ElectronTrigger_Eff_HNtypeI("Ele12", ElectronID, "MC", electrons.at(0).scEta(), electrons.at(0).UncorrPt(), electrons.at(0).Pt(),RunFake, -sys);
+
+  if(muons.at(0).Pt()>25. && electrons.at(0).Pt()>25.){
+    dataEff = 1.-(1.-dataEffMu23*dataEffEle12)*(1.-dataEffMu8*dataEffEle23);
+    mcEff   = 1.-(1.-mcEffMu23*mcEffEle12)*(1.-mcEffMu8*mcEffEle23);
+  }
+  if(muons.at(0).Pt()>25. && electrons.at(0).Pt()<=25.){
+    dataEff = dataEffMu23*dataEffEle12;
+    mcEff   = mcEffMu23*mcEffEle12;
+  }
+  if(muons.at(0).Pt()<=25. && electrons.at(0).Pt()>25.){
+    dataEff = dataEffMu8*dataEffEle23;
+    mcEff   = mcEffMu8*mcEffEle23;
+  }
+
+  value = dataEff/mcEff;
+
+  if(mcEff == 0.) return 1.;
+  return value;
+
+}
+
+//=========================================================
+//==== FatJet
+//=========================================================
+
+//==== HNtypeI
+
+//==== See https://twiki.cern.ch/twiki/bin/view/CMS/JetWtagging  // TODO : Update the values for UL
+double MCCorrection::FatJetWTagSF(TString ID, int sys){
+
+  double sf = 1.;
+
+  if(ID.Contains("HNTight")){
+    if(DataYear==2016) sf = 1.03 + double(sys)*0.14;
+    if(DataYear==2017) sf = 0.97 + double(sys)*0.06;
+    if(DataYear==2018) sf = 0.98 + double(sys)*0.027;
+  }
+  else sf = 1.;
+
+  return sf;
+
+}
+
+
+//=========================================================
+//==== Event weight
+//=========================================================
 
 double MCCorrection::GetPileUpWeightBySampleName(int N_pileup, int syst){
   
@@ -863,6 +1315,10 @@ double MCCorrection::GetOfficialDYReweight(const vector<Gen>& gens, int sys){
   return value+double(sys)*error;
 
 }
+
+//=========================================================
+//==== B Tagging
+//=========================================================
 
 void MCCorrection::SetJetTaggingParameters(std::vector<JetTagging::Parameters> v){
   jetTaggingPars = v;

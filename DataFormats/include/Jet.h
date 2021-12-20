@@ -16,8 +16,11 @@ public:
   inline int hadronFlavour() const { return j_hadronFlavour; }
   void SetTaggerResults(std::vector<double> ds);
   void SetEnergyFractions(double cH, double nH, double nEM, double cEM, double muE);
+  inline double ChargedEmEnergyFraction() const { return j_chargedEmEnergyFraction; }
+  inline double NeutralEmEnergyFraction() const { return j_neutralEmEnergyFraction; }
   void SetMultiplicities(double cM, double nM);
   void SetPileupJetId(double v);
+  inline double PileupJetId() const { return j_PileupJetId; }
 
   void SetEnShift(double en_up, double en_down);
   inline double EnShift(int s) const {
@@ -39,6 +42,9 @@ public:
 
   bool PassID(TString ID) const;
 
+  bool Pass_HNTight() const;
+  bool PassPileupMVA(TString WP) const;
+
   double GetTaggerResult(JetTagging::Tagger tg) const;
 
 private:
@@ -46,22 +52,22 @@ private:
   double  j_area;
   int j_partonFlavour;
   int j_hadronFlavour;
-  double  j_CSVv2;
-  double  j_DeepCSV;
-  double  j_DeepFlavour_b;
-  double  j_DeepFlavour_bb;
-  double  j_DeepFlavour_lepb;
-  double  j_DeepFlavour_c;
-  double  j_DeepFlavour_uds;
-  double  j_DeepFlavour_g;
-  double  j_CvsL;
-  double  j_CvsB;
-  double  j_DeepCvsL;
-  double  j_DeepCvsB;
-  double  j_chargedHadronEnergyFraction;
-  double  j_neutralHadronEnergyFraction;
-  double  j_neutralEmEnergyFraction;
-  double  j_chargedEmEnergyFraction;
+  double j_CSVv2;
+  double j_DeepCSV;
+  double j_DeepFlavour_b;
+  double j_DeepFlavour_bb;
+  double j_DeepFlavour_lepb;
+  double j_DeepFlavour_c;
+  double j_DeepFlavour_uds;
+  double j_DeepFlavour_g;
+  double j_CvsL;
+  double j_CvsB;
+  double j_DeepCvsL;
+  double j_DeepCvsB;
+  double j_chargedHadronEnergyFraction;
+  double j_neutralHadronEnergyFraction;
+  double j_neutralEmEnergyFraction;
+  double j_chargedEmEnergyFraction;
   double j_muonEnergyFraction;
   int j_chargedMultiplicity;
   int j_neutralMultiplicity;
