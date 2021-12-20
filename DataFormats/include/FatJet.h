@@ -38,6 +38,7 @@ public:
   inline bool Pass_tightLepVetoJetID() const { return j_tightLepVetoJetID; }
 
   bool PassID(TString ID) const;
+  bool Pass_HNTight(double tau21Cut) const;
 
   double GetTaggerResult(JetTagging::Tagger tg) const;
 
@@ -55,22 +56,22 @@ private:
   double  j_area;
   int j_partonFlavour;
   int j_hadronFlavour;
-  double  j_CSVv2;
-  double  j_DeepCSV;
-  double  j_DeepFlavour_b;
-  double  j_DeepFlavour_bb;
-  double  j_DeepFlavour_lepb;
-  double  j_DeepFlavour_c;
-  double  j_DeepFlavour_uds;
-  double  j_DeepFlavour_g;
-  double  j_CvsL;
-  double  j_CvsB;
-  double  j_DeepCvsL;
-  double  j_DeepCvsB;
-  double  j_chargedHadronEnergyFraction;
-  double  j_neutralHadronEnergyFraction;
-  double  j_neutralEmEnergyFraction;
-  double  j_chargedEmEnergyFraction;
+  double j_CSVv2;
+  double j_DeepCSV;
+  double j_DeepFlavour_b;
+  double j_DeepFlavour_bb;
+  double j_DeepFlavour_lepb;
+  double j_DeepFlavour_c;
+  double j_DeepFlavour_uds;
+  double j_DeepFlavour_g;
+  double j_CvsL;
+  double j_CvsB;
+  double j_DeepCvsL;
+  double j_DeepCvsB;
+  double j_chargedHadronEnergyFraction;
+  double j_neutralHadronEnergyFraction;
+  double j_neutralEmEnergyFraction;
+  double j_chargedEmEnergyFraction;
   double j_muonEnergyFraction;
   int j_chargedMultiplicity;
   int j_neutralMultiplicity;
