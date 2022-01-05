@@ -95,6 +95,7 @@ bool Jet::PassID(TString ID) const {
 
   if(ID=="tight") return Pass_tightJetID();
   if(ID=="tightLepVeto") return Pass_tightLepVetoJetID();
+  if(ID=="HNTight") return Pass_HNTight();
 
   //cout << "[Jet::PassID] No id : " << ID << endl;
   cerr << "[Jet::PassID] No id : " << ID << endl;
@@ -105,10 +106,12 @@ bool Jet::PassID(TString ID) const {
 }
 
 bool Jet::Pass_HNTight() const {
+
   if(!Pass_tightJetID()) return false;
   //if(!PassPileupMVA("loose")) return false;
 
   return true;
+
 }
 
 //==== See https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID   // TODO : Update the values for UL

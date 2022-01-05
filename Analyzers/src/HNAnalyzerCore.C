@@ -178,13 +178,26 @@ std::vector<Electron> HNAnalyzerCore::GetAllElectrons(){
 
     Electron el;
 
-    el.SetEnShift(  electron_Energy_Scale_Up->at(i)/electron_Energy->at(i), electron_Energy_Scale_Down->at(i)/electron_Energy->at(i) );
-    el.SetResShift( electron_Energy_Smear_Up->at(i)/electron_Energy->at(i), electron_Energy_Smear_Down->at(i)/electron_Energy->at(i) );
+    //==== For 2016preVFP, some electrons have zero energy value after the energy correction is applied (HS said it's 2-3 % of total electrons, due to a bug of PostRecoTools?)
+    //==== In that case, we use uncorrected energy instead of corrected energy
+    //==== In SKFlat, SingleMuon, SingleElectron and DoubleEG with 'FixEleEnergy' in their ntuple paths (only for 2016preVFP) have fixed electron energy now but MuonEG doesn't
+    //==== Therefore, I fixed the electron energy before running jobs (also for making HNMultiLep, HNFake skims)
+    //==== TODO : electron energy should be fixed in the next version (Run2UltraLegacy_v3)
+    double electron_energy = electron_Energy->at(i);
+    if(!(electron_energy > 0.)) electron_energy = electron_EnergyUnCorr->at(i);
 
-    el.SetPtEtaPhiE(1., electron_eta->at(i), electron_phi->at(i), electron_Energy->at(i));
+    //el.SetEnShift(  electron_Energy_Scale_Up->at(i)/electron_Energy->at(i), electron_Energy_Scale_Down->at(i)/electron_Energy->at(i) );
+    //el.SetResShift( electron_Energy_Smear_Up->at(i)/electron_Energy->at(i), electron_Energy_Smear_Down->at(i)/electron_Energy->at(i) );
+    el.SetEnShift(  electron_Energy_Scale_Up->at(i)/electron_energy, electron_Energy_Scale_Down->at(i)/electron_energy );
+    el.SetResShift( electron_Energy_Smear_Up->at(i)/electron_energy, electron_Energy_Smear_Down->at(i)/electron_energy );
+
+    //el.SetPtEtaPhiE(1., electron_eta->at(i), electron_phi->at(i), electron_Energy->at(i));
+    el.SetPtEtaPhiE(1., electron_eta->at(i), electron_phi->at(i), electron_energy);
     double el_theta = el.Theta();
-    double el_pt = electron_Energy->at(i) * TMath::Sin( el_theta );
-    el.SetPtEtaPhiE( el_pt, electron_eta->at(i), electron_phi->at(i), electron_Energy->at(i));
+    //double el_pt = electron_Energy->at(i) * TMath::Sin( el_theta );
+    //el.SetPtEtaPhiE( el_pt, electron_eta->at(i), electron_phi->at(i), electron_Energy->at(i));
+    double el_pt = electron_energy * TMath::Sin( el_theta );
+    el.SetPtEtaPhiE( el_pt, electron_eta->at(i), electron_phi->at(i), electron_energy);
 
     el.SetUncorrE(electron_EnergyUnCorr->at(i));
     el.SetSC(electron_scEta->at(i), electron_scPhi->at(i), electron_scEnergy->at(i));

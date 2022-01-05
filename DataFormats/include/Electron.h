@@ -137,6 +137,8 @@ public:
   bool Pass_HNLoose2016(double relisoCut, double dxyCut, double dzCut, double sipCut) const;
   bool Pass_HNTight2016() const;
 
+  bool Pass_HNLoosest() const;
+
   bool Pass_HNVeto(double relisoCut, double dxyCut, double dzCut, bool isPOGIP) const;
   bool Pass_HNLoose(double relisoCut, double dxyCut, double dzCut, double sipCut, bool isPOGIP) const;
   bool Pass_HNTight(double dxyCut, double dzCut, double sipCut, double ptCut, bool isPOGIP) const;

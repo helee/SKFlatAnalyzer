@@ -171,6 +171,8 @@ bool Electron::PassID(TString ID) const{
   //if(ID=="HNLoose2016IsoDown") return Pass_HNLoose2016(0.5, 0.2, 0.1, 10.);
   if(ID=="HNTight2016") return Pass_HNTight2016();
 
+  if(ID=="HNLoosest") return Pass_HNLoosest(); // OR of VETO IDs, used for HNMultiLep, HNFake skims
+
   if(ID=="HNVeto") return Pass_HNVeto(0.6, 0.2, 0.5, false);
   if(ID=="HNLooseV1") return Pass_HNLoose(0.6, 0.05, 0.1, 4., true);
   if(ID=="HNTightV1") return Pass_HNTight(0.05, 0.1, 4., 250., true);
@@ -360,6 +362,15 @@ bool Electron::Pass_HNTight2016() const{
   if(! (IsGsfCtfScPixChargeConsistent()) ) return false;
 
   if(! (Pass_TriggerEmulation()) ) return false;
+
+  return true;
+
+}
+
+bool Electron::Pass_HNLoosest() const{
+
+  if(! (RelIso()< 0.6) ) return false;
+  if(!( Pass_CutBasedVetoNoIso() || (MVANoIso()>-0.95)  )) return false;
 
   return true;
 
