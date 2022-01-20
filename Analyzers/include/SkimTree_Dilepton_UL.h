@@ -1,9 +1,9 @@
-#ifndef SkimTree_Dilepton_v1_h
-#define SkimTree_Dilepton_v1_h
+#ifndef SkimTree_Dilepton_UL_h
+#define SkimTree_Dilepton_UL_h
 
 #include "AnalyzerCore.h"
 
-class SkimTree_Dilepton_v1 : public AnalyzerCore {
+class SkimTree_Dilepton_UL : public AnalyzerCore {
 
 public:
 
@@ -11,8 +11,8 @@ public:
   void executeEventFromParameter(AnalyzerParameter param);
   void executeEvent();
 
-  SkimTree_Dilepton_v1();
-  ~SkimTree_Dilepton_v1();
+  SkimTree_Dilepton_UL();
+  ~SkimTree_Dilepton_UL();
 
   TTree *newtree;
 

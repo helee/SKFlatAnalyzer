@@ -13,12 +13,11 @@
 #pragma link C++ class SkimTree_SS2lOR3l+;
 #pragma link C++ class SkimTree_LRSMHighPt+;
 #pragma link C++ class SkimTree_Dilepton+;
-#pragma link C++ class SkimTree_Dilepton_v1+;
+#pragma link C++ class SkimTree_Dilepton_UL+;
 #pragma link C++ class SkimTree_HNMultiLep+;
 #pragma link C++ class SkimTree_HNFake+;
-#pragma link C++ class SkimTree_HNFake_v1+;
+#pragma link C++ class SkimTree_HNFake_UL+;
 #pragma link C++ class MeasureJetTaggingEfficiency+;
-#pragma link C++ class SkimTree_Dilepton+;
 #pragma link C++ class HNAnalyzerCore+;
 #pragma link C++ class HNtypeI_SR+;
 #pragma link C++ class HNtypeI_VV_CR+;

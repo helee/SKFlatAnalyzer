@@ -1,9 +1,9 @@
 #ifndef SkimTree_HNFake_h
 #define SkimTree_HNFake_h
 
-#include "HNAnalyzerCore.h"
+#include "AnalyzerCore.h"
 
-class SkimTree_HNFake : public HNAnalyzerCore {
+class SkimTree_HNFake : public AnalyzerCore {
 
 public:
 
@@ -16,12 +16,7 @@ public:
 
   TTree *newtree;
 
-  double TriggerSafePt_Electron;
-  double TriggerSafePt_Muon;
-
   vector<TString> triggers;
-  vector<TString> validation_muon_triggers;
-  vector<TString> validation_electron_triggers;
   void WriteHist();
 
 };
