@@ -23,5 +23,6 @@
 #pragma link C++ class HNtypeI_VV_CR+;
 #pragma link C++ class HNtypeI_DY_CR+;
 #pragma link C++ class HNtypeI_FakeRate+;
+#pragma link C++ class HNtypeI_Cutflow+;
 
 #endif
