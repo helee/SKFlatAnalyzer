@@ -91,6 +91,24 @@ TString AnalyzerParameter::GetSystType(){
   else if(syst_==Syst::JetEnDown){
     return "JetEnDown";
   }
+  else if(syst_==Syst::UnclusteredEnUp){
+    return "UnclusteredEnUp";
+  }
+  else if(syst_==Syst::UnclusteredEnDown){
+    return "UnclusteredEnDown";
+  }
+  else if(syst_==Syst::L1PrefireUp){
+    return "L1PrefireUp";
+  }
+  else if(syst_==Syst::L1PrefireDown){
+    return "L1PrefireDown";
+  }
+  else if(syst_==Syst::PileupUp){
+    return "PileupUp";
+  }
+  else if(syst_==Syst::PileupDown){
+    return "PileupDown";
+  }
   else if(syst_==Syst::MuonEnUp){
     return "MuonEnUp";
   }
@@ -109,8 +127,27 @@ TString AnalyzerParameter::GetSystType(){
   else if(syst_==Syst::ElectronEnDown){
     return "ElectronEnDown";
   }
+  else if(syst_==Syst::MuonIDSFUp){
+    return "MuonIDSFUp";
+  }
+  else if(syst_==Syst::MuonIDSFDown){
+    return "MuonIDSFDown";
+  }
+  else if(syst_==Syst::ElectronRecoSFUp){
+    return "ElectronRecoSFUp";
+  }
+  else if(syst_==Syst::ElectronRecoSFDown){
+    return "ElectronRecoSFDown";
+  }
+  else if(syst_==Syst::ElectronIDSFUp){
+    return "ElectronIDSFUp";
+  }
+  else if(syst_==Syst::ElectronIDSFDown){
+    return "ElectronIDSFDown";
+  }
   else{
-    cout << "[AnalyzerParameter::GetSystType] Wrong Syst" << endl;
+    //cout << "[AnalyzerParameter::GetSystType] Wrong Syst" << endl;
+    cerr << "[AnalyzerParameter::GetSystType] Wrong Syst" << endl;
     exit(ENODATA);
     return "ERROR";
   }

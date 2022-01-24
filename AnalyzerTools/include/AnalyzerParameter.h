@@ -36,9 +36,15 @@ public:
     Central,
     JetResUp, JetResDown,
     JetEnUp, JetEnDown,
+    UnclusteredEnUp, UnclusteredEnDown,
+    L1PrefireUp, L1PrefireDown,
+    PileupUp, PileupDown,
     MuonEnUp, MuonEnDown,
     ElectronResUp, ElectronResDown,
     ElectronEnUp, ElectronEnDown,
+    MuonIDSFUp, MuonIDSFDown,
+    ElectronRecoSFUp, ElectronRecoSFDown,
+    ElectronIDSFUp, ElectronIDSFDown,
     NSyst
   };
   Syst syst_;

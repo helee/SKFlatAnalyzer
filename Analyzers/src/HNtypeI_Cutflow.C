@@ -138,15 +138,15 @@ void HNtypeI_Cutflow::executeEvent(){
     param.Name = "Central";
 
     //==== Muon ID
-    param.Muon_Tight_ID       = MuonTightID;
-    param.Muon_Loose_ID       = MuonLooseID;
-    param.Muon_Veto_ID        = MuonVetoID;
-    param.Muon_FR_ID          = MuonFRName;     // ID name in histmap_Muon.txt
-    param.Muon_FR_Key         = "AwayJetPt40";  // histname
-    param.Muon_ID_SF_Key      = "";
-    param.Muon_ISO_SF_Key     = "";
-    param.Muon_Trigger_SF_Key = "";
-    param.Muon_UsePtCone      = true;
+    param.Muon_Tight_ID           = MuonTightID;
+    param.Muon_Loose_ID           = MuonLooseID;
+    param.Muon_Veto_ID            = MuonVetoID;
+    param.Muon_FR_ID              = MuonFRName;     // ID name in histmap_Muon.txt
+    param.Muon_FR_Key             = "AwayJetPt40";  // histname
+    param.Muon_ID_SF_Key          = "";
+    param.Muon_ISO_SF_Key         = "";
+    param.Muon_Trigger_SF_Key     = "";
+    param.Muon_UsePtCone          = true;
 
     //==== Electron ID
     param.Electron_Tight_ID       = ElectronTightID;
@@ -580,6 +580,7 @@ void HNtypeI_Cutflow::executeEventFromParameter(AnalyzerParameter param){
 
     weight = 1., trigger_lumi = 1.;
     muonRecoSF = 1., muonIDSF = 1., muonIsoSF = 1., electronRecoSF = 1., electronIDSF = 1., triggerSF = 1.;
+    
 
     //==== Passing triggers
     if(it_ch == 0){
@@ -609,8 +610,17 @@ void HNtypeI_Cutflow::executeEventFromParameter(AnalyzerParameter param){
     FillHist(systName+"/"+channels.at(it_ch)+"_Number_Events_"+IDName, 2.5, weight, cutflow_bin, 0., cutflow_max);
     FillHist(systName+"/"+channels.at(it_ch)+"_Number_Events_unweighted_"+IDName, 2.5, 1., cutflow_bin, 0., cutflow_max);
 
-    //==== Two leptons passing trigger-safe pT cuts
+    //==== Two prompt leptons passing trigger-safe pT cuts
     if(!(leptons.size() == 2)) continue;
+
+    muons_prompt.clear();
+    electrons_prompt.clear();
+    muons_prompt = MuonPromptOnlyHNtypeI(muons, gens);
+    electrons_prompt = ElectronPromptOnlyHNtypeI(electrons, gens);
+
+    if(muons.size() != muons_prompt.size()) continue;
+    if(electrons.size() != electrons_prompt.size()) continue;
+
     passPtCut = false;
 
     if(it_ch == 0){
