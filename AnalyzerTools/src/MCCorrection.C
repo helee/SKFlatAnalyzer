@@ -532,7 +532,7 @@ double MCCorrection::MuonID_SF_HNtypeI(TString ID, double eta, double pt, int sy
 
   eta = fabs(eta);
 
-  if(DataYear==2016){
+  /*if(DataYear==2016){
 
     double lumi_periodB = 5750.490644035;
     double lumi_periodC = 2572.903488748;
@@ -553,30 +553,27 @@ double MCCorrection::MuonID_SF_HNtypeI(TString ID, double eta, double pt, int sy
     value = dataEff/mcEff;
     error = 0.;
 
-  }
-  else{
+  }*/
 
-    if(pt <= 10.) pt = 11.;
-    if(pt >= 500.) pt = 499.;
-    if(eta >= 2.4) eta = 2.39;
+  if(pt <= 10.) pt = 11.;
+  if(pt >= 500.) pt = 499.;
+  if(eta >= 2.4) eta = 2.39;
 
-    TH2F *this_hist = map_hist_Muon["ID_SF_"+ID];
-    if(!this_hist){
-      if(IgnoreNoHist) return 1.;
-      else{
-        cerr << "[MCCorrection::MuonID_SF_HNtypeI] No "<<"ID_SF_"+ID<<endl;
-        exit(EXIT_FAILURE);
-      }
+  TH2F *this_hist = map_hist_Muon["ID_SF_"+ID];
+  if(!this_hist){
+    if(IgnoreNoHist) return 1.;
+    else{
+      cerr << "[MCCorrection::MuonID_SF_HNtypeI] No "<<"ID_SF_"+ID<<endl;
+      exit(EXIT_FAILURE);
     }
-
-    int this_bin(-999);
-
-    this_bin = this_hist->FindBin(eta,pt);
-
-    value = this_hist->GetBinContent(this_bin);
-    error = this_hist->GetBinError(this_bin);
-
   }
+
+  int this_bin(-999);
+
+  this_bin = this_hist->FindBin(eta,pt);
+
+  value = this_hist->GetBinContent(this_bin);
+  error = this_hist->GetBinError(this_bin);
 
   return value+double(sys)*error;
 
