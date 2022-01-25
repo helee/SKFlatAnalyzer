@@ -929,7 +929,7 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
       if(it_rg == 3){
 
         //==== Cutflow : m(ll) < 4 GeV
-        if(!(GammaCand.M() < 4.)) continue;
+        if(!(GammaCand.M()>0. && GammaCand.M()<4.)) continue;
 
         //==== Cutflow 6
         FillHist(systName+"/"+regions.at(it_rg)+"_Number_Events_"+IDName, 5.5, weight, cutflow_bin, 0., cutflow_max);
@@ -970,7 +970,7 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
         FillHist(systName+"/"+regions.at(it_rg)+"_MET2ST_Mass4_"+IDName, MET2ST, weight, 1000, 0., 1000.);*/
 
         //==== Cutflow : m(ll) < 3 GeV
-        if(!(GammaCand.M() < 4.)) continue;
+        if(!(GammaCand.M()>0. && GammaCand.M()<3.)) continue;
 
       }
 
