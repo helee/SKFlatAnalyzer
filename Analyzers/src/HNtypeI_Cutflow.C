@@ -263,17 +263,17 @@ void HNtypeI_Cutflow::executeEventFromParameter(AnalyzerParameter param){
   }
 
   int Nvtx = nPV;
-  FillHist(systName+"/Number_Vertices_NoCut", Nvtx, weight, 100, 0., 100.);
+  FillHist(systName+"_Number_Vertices_NoCut", Nvtx, weight, 100, 0., 100.);
 
   //==== Cutflow 1
   if(!IsDATA || isDoubleMuon){
-    FillHist(systName+"/dimu_Number_Events_"+IDName, 0.5, weight, cutflow_bin, 0., cutflow_max);
-    FillHist(systName+"/dimu_Number_Events_unweighted_"+IDName, 0.5, 1., cutflow_bin, 0., cutflow_max);
+    FillHist(systName+"_dimu_Number_Events_"+IDName, 0.5, weight, cutflow_bin, 0., cutflow_max);
+    FillHist(systName+"_dimu_Number_Events_unweighted_"+IDName, 0.5, 1., cutflow_bin, 0., cutflow_max);
   }
 
   if(!IsDATA || isDoubleEG){
-    FillHist(systName+"/diel_Number_Events_"+IDName, 0.5, weight, cutflow_bin, 0., cutflow_max);
-    FillHist(systName+"/diel_Number_Events_unweighted_"+IDName, 0.5, 1., cutflow_bin, 0., cutflow_max);
+    FillHist(systName+"_diel_Number_Events_"+IDName, 0.5, weight, cutflow_bin, 0., cutflow_max);
+    FillHist(systName+"_diel_Number_Events_unweighted_"+IDName, 0.5, 1., cutflow_bin, 0., cutflow_max);
   }
 
   //========================================================
@@ -284,13 +284,13 @@ void HNtypeI_Cutflow::executeEventFromParameter(AnalyzerParameter param){
 
   //==== Cutflow 2
   if(!IsDATA || isDoubleMuon){
-    FillHist(systName+"/dimu_Number_Events_"+IDName, 1.5, weight, cutflow_bin, 0., cutflow_max);
-    FillHist(systName+"/dimu_Number_Events_unweighted_"+IDName, 1.5, 1., cutflow_bin, 0., cutflow_max);
+    FillHist(systName+"_dimu_Number_Events_"+IDName, 1.5, weight, cutflow_bin, 0., cutflow_max);
+    FillHist(systName+"_dimu_Number_Events_unweighted_"+IDName, 1.5, 1., cutflow_bin, 0., cutflow_max);
   }
   
   if(!IsDATA || isDoubleEG){
-    FillHist(systName+"/diel_Number_Events_"+IDName, 1.5, weight, cutflow_bin, 0., cutflow_max);
-    FillHist(systName+"/diel_Number_Events_unweighted_"+IDName, 1.5, 1., cutflow_bin, 0., cutflow_max);
+    FillHist(systName+"_diel_Number_Events_"+IDName, 1.5, weight, cutflow_bin, 0., cutflow_max);
+    FillHist(systName+"_diel_Number_Events_unweighted_"+IDName, 1.5, 1., cutflow_bin, 0., cutflow_max);
   }
 
   //========================================================
@@ -607,8 +607,8 @@ void HNtypeI_Cutflow::executeEventFromParameter(AnalyzerParameter param){
     }
 
     //==== Cutflow 3
-    FillHist(systName+"/"+channels.at(it_ch)+"_Number_Events_"+IDName, 2.5, weight, cutflow_bin, 0., cutflow_max);
-    FillHist(systName+"/"+channels.at(it_ch)+"_Number_Events_unweighted_"+IDName, 2.5, 1., cutflow_bin, 0., cutflow_max);
+    FillHist(systName+"_"+channels.at(it_ch)+"_Number_Events_"+IDName, 2.5, weight, cutflow_bin, 0., cutflow_max);
+    FillHist(systName+"_"+channels.at(it_ch)+"_Number_Events_unweighted_"+IDName, 2.5, 1., cutflow_bin, 0., cutflow_max);
 
     //==== Two prompt leptons passing trigger-safe pT cuts
     if(!(leptons.size() == 2)) continue;
@@ -676,44 +676,44 @@ void HNtypeI_Cutflow::executeEventFromParameter(AnalyzerParameter param){
     }
 
     //==== Cutflow 4
-    FillHist(systName+"/"+channels.at(it_ch)+"_Number_Events_"+IDName, 3.5, weight, cutflow_bin, 0., cutflow_max);
-    FillHist(systName+"/"+channels.at(it_ch)+"_Number_Events_unweighted_"+IDName, 3.5, 1., cutflow_bin, 0., cutflow_max);
+    FillHist(systName+"_"+channels.at(it_ch)+"_Number_Events_"+IDName, 3.5, weight, cutflow_bin, 0., cutflow_max);
+    FillHist(systName+"_"+channels.at(it_ch)+"_Number_Events_unweighted_"+IDName, 3.5, 1., cutflow_bin, 0., cutflow_max);
 
     //==== Same-sign two leptons
     if(!(leptons.at(0)->Charge()*leptons.at(1)->Charge() > 0)) continue;
 
     //==== Cutflow 5
-    FillHist(systName+"/"+channels.at(it_ch)+"_Number_Events_"+IDName, 4.5, weight, cutflow_bin, 0., cutflow_max);
-    FillHist(systName+"/"+channels.at(it_ch)+"_Number_Events_unweighted_"+IDName, 4.5, 1., cutflow_bin, 0., cutflow_max);
+    FillHist(systName+"_"+channels.at(it_ch)+"_Number_Events_"+IDName, 4.5, weight, cutflow_bin, 0., cutflow_max);
+    FillHist(systName+"_"+channels.at(it_ch)+"_Number_Events_unweighted_"+IDName, 4.5, 1., cutflow_bin, 0., cutflow_max);
 
     //==== No 3rd leptons
     if(!(lepton_veto_size == 0)) continue;
 
     //==== Cutflow 6
-    FillHist(systName+"/"+channels.at(it_ch)+"_Number_Events_"+IDName, 5.5, weight, cutflow_bin, 0., cutflow_max);
-    FillHist(systName+"/"+channels.at(it_ch)+"_Number_Events_unweighted_"+IDName, 5.5, 1., cutflow_bin, 0., cutflow_max);
+    FillHist(systName+"_"+channels.at(it_ch)+"_Number_Events_"+IDName, 5.5, weight, cutflow_bin, 0., cutflow_max);
+    FillHist(systName+"_"+channels.at(it_ch)+"_Number_Events_unweighted_"+IDName, 5.5, 1., cutflow_bin, 0., cutflow_max);
 
     //==== m(ll) > 10 GeV
     ZCand = *leptons.at(0) + *leptons.at(1);
     if(!(ZCand.M() > mllCut)) continue;
 
     //==== Cutflow 7
-    FillHist(systName+"/"+channels.at(it_ch)+"_Number_Events_"+IDName, 6.5, weight, cutflow_bin, 0., cutflow_max);
-    FillHist(systName+"/"+channels.at(it_ch)+"_Number_Events_unweighted_"+IDName, 6.5, 1., cutflow_bin, 0., cutflow_max);
+    FillHist(systName+"_"+channels.at(it_ch)+"_Number_Events_"+IDName, 6.5, weight, cutflow_bin, 0., cutflow_max);
+    FillHist(systName+"_"+channels.at(it_ch)+"_Number_Events_unweighted_"+IDName, 6.5, 1., cutflow_bin, 0., cutflow_max);
 
     //==== Jets
     if(!(jets.size()>=2 || fatjets.size()>=1)) continue;
 
     //==== Cutflow 8
-    FillHist(systName+"/"+channels.at(it_ch)+"_Number_Events_"+IDName, 7.5, weight, cutflow_bin, 0., cutflow_max);
-    FillHist(systName+"/"+channels.at(it_ch)+"_Number_Events_unweighted_"+IDName, 7.5, 1., cutflow_bin, 0., cutflow_max);
+    FillHist(systName+"_"+channels.at(it_ch)+"_Number_Events_"+IDName, 7.5, weight, cutflow_bin, 0., cutflow_max);
+    FillHist(systName+"_"+channels.at(it_ch)+"_Number_Events_unweighted_"+IDName, 7.5, 1., cutflow_bin, 0., cutflow_max);
 
     //==== No b-tagged jets
     if(!(Nbjet_medium == 0)) continue;
 
     //==== Cutflow 9
-    FillHist(systName+"/"+channels.at(it_ch)+"_Number_Events_"+IDName, 8.5, weight, cutflow_bin, 0., cutflow_max);
-    FillHist(systName+"/"+channels.at(it_ch)+"_Number_Events_unweighted_"+IDName, 8.5, 1., cutflow_bin, 0., cutflow_max);
+    FillHist(systName+"_"+channels.at(it_ch)+"_Number_Events_"+IDName, 8.5, weight, cutflow_bin, 0., cutflow_max);
+    FillHist(systName+"_"+channels.at(it_ch)+"_Number_Events_unweighted_"+IDName, 8.5, 1., cutflow_bin, 0., cutflow_max);
 
   }
 
