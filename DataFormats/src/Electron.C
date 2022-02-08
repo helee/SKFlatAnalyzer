@@ -369,7 +369,7 @@ bool Electron::Pass_HNTight2016() const{
 
 bool Electron::Pass_HNLoosest() const{
 
-  if(! (RelIso()< 0.6) ) return false;
+  if(! (RelIso() < 0.7) ) return false; // To comply with the relIso cut of loose leptons used for fake systematic studies
   if(!( Pass_CutBasedVetoNoIso() || (MVANoIso()>-0.95)  )) return false;
 
   return true;

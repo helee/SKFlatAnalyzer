@@ -225,27 +225,27 @@ void SkimTree_HNFake_UL::executeEvent(){
   Event ev;
   ev.SetTrigger(*HLT_TriggerName);
 
-
   if(ev.PassTrigger(validation_electron_triggers)){
     
-    vector<Electron> allel = GetElectrons("HNLoosest", 8., 2.4);
+    vector<Electron> allel = GetElectrons("HNLoosest", 8., 2.5);
     std::sort(allel.begin(),allel.end(),PtComparing);
 
     if(allel.size() > 0) {
-      if (allel[0].Pt() > TriggerSafePt_Electron) {
+      if(allel[0].Pt() > TriggerSafePt_Electron){
 	newtree->Fill();
 	return;
       }
     }
+
   }
 
   if(ev.PassTrigger(validation_muon_triggers)){
 
-    vector<Muon> allmuons = GetMuons("HNLoosest", 5., 2.4);
+    vector<Muon> allmuons = GetMuons("HNLoosest", 4., 2.4);
     std::sort(allmuons.begin(),allmuons.end(),PtComparing);
 
     if(allmuons.size() > 0) {
-      if (allmuons[0].Pt() > TriggerSafePt_Muon) {
+      if(allmuons[0].Pt() > TriggerSafePt_Muon){
         newtree->Fill();
         return;
       }
@@ -254,40 +254,41 @@ void SkimTree_HNFake_UL::executeEvent(){
   }
 
   //==== Skim 1 ) trigger
-  if(! (ev.PassTrigger(triggers)) ) return;
+  if(!(ev.PassTrigger(triggers))) return;
 
+  //==== Skim 2) only one loose leptons (e or mu) 
 
-  //==== Skim 2) at least one loose leptons (e or mu) 
-
-  vector<Muon> allmuons = GetMuons("HNLoosest", 5., 2.4);
-  vector<Electron> allel = GetElectrons("HNLoosest", 8., 2.4);
+  vector<Muon> allmuons = GetMuons("HNLoosest", 4., 2.4);
+  vector<Electron> allel = GetElectrons("HNLoosest", 8., 2.5);
 
   int NLep = allmuons.size() + allel.size();
   
-  if( NLep == 0 ) return;
+  if(!(NLep == 1)) return;
 
-  vector<Jet> alljet = GetJets("HNTight", 30., 2.7);
+  vector<Jet> alljet = GetJets("HNTight", 20., 2.7);
   
   bool dphi_lj(false);
-  for(unsigned int imu=0; imu < allmuons.size(); imu++){
-    for(unsigned int ij=0; ij <alljet.size(); ij++){
-      float dphi =fabs(TVector2::Phi_mpi_pi(allmuons[imu].Phi()- alljet.at(ij).Phi()));
-      if(dphi > 2.5) dphi_lj=true;
+  double dphi_cut = 1.7; // 2.5 (nominal), 2.1, 1.7
+
+  for(unsigned int imu=0; imu<allmuons.size(); imu++){
+    for(unsigned int ij=0; ij<alljet.size(); ij++){
+      float dphi = fabs(TVector2::Phi_mpi_pi(allmuons[imu].Phi() - alljet.at(ij).Phi()));
+      if(dphi > dphi_cut) dphi_lj = true;
     }
   }
   
-  for(unsigned int iel=0; iel <allel.size(); iel++){
-    for(unsigned int ij=0; ij <alljet.size(); ij++){
-      float dphi =fabs(TVector2::Phi_mpi_pi(allel[iel].Phi()- alljet.at(ij).Phi()));
-      if(dphi >2.5) dphi_lj=true;
+  for(unsigned int iel=0; iel<allel.size(); iel++){
+    for(unsigned int ij=0; ij<alljet.size(); ij++){
+      float dphi = fabs(TVector2::Phi_mpi_pi(allel[iel].Phi() - alljet.at(ij).Phi()));
+      if(dphi > dphi_cut) dphi_lj = true;
     }
   }
 
   if(IsDATA){
-    if( !dphi_lj ) return;
+    if(!dphi_lj) return;
   }
   else if(!MCSample.Contains("QCD")){
-    if( !dphi_lj ) return;
+    if(!dphi_lj) return;
   }
   
   newtree->Fill();
