@@ -214,8 +214,10 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
   if(DataEra == "2016postVFP"){
 
     if(IsDATA){
+
       if(run < 281000) passMuMu = ev.PassTrigger(MuonTriggers) || ev.PassTrigger(MuonTriggersTight);
       else passMuMu = ev.PassTrigger(MuonTriggersTight);
+
     }
     else passMuMu = ev.PassTrigger(MuonTriggers) ||  ev.PassTrigger(MuonTriggersTight);
 
@@ -223,8 +225,10 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
   else if(DataEra == "2017"){
 
     if(IsDATA){
+
       if(run < 299350) passMuMu = ev.PassTrigger(MuonTriggers);
       else passMuMu = ev.PassTrigger(MuonTriggersTight);
+
     }  
     else passMuMu = ev.PassTrigger(MuonTriggers) || ev.PassTrigger(MuonTriggersTight);
 
@@ -884,14 +888,14 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
       //==== WZ, ZG, Fake control region
       if(it_rg < 3){
 
-        //==== Cutflow : m(ll) > 10 GeV
+        //==== m(ll) > 10 GeV
         if(!(OSSFLowMass == 0)) continue;
 
         //==== Cutflow 6
         FillHist(systName+"_"+regions.at(it_rg)+"_Number_Events_"+IDName, 5.5, weight, cutflow_bin, 0., cutflow_max);
         FillHist(systName+"_"+regions.at(it_rg)+"_Number_Events_unweighted_"+IDName, 5.5, 1., cutflow_bin, 0., cutflow_max);
 
-        //==== Cutflow : No b-tagged jets
+        //==== No b-tagged jets
         if(it_rg < 2){
           if(!(Nbjet_medium == 0)) continue;
         }
@@ -900,7 +904,7 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
         FillHist(systName+"_"+regions.at(it_rg)+"_Number_Events_"+IDName, 6.5, weight, cutflow_bin, 0., cutflow_max);
         FillHist(systName+"_"+regions.at(it_rg)+"_Number_Events_unweighted_"+IDName, 6.5, 1., cutflow_bin, 0., cutflow_max);
 
-        //==== Cuts on Z mass window, MET and Mt
+        //==== Z mass window, MET and Mt cuts
         if(it_rg == 0){
           if(!IsOnZ(ZCand.M(), 15.)) continue;
           if(!(MET > 50.)) continue;
@@ -928,21 +932,21 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
       //==== WG control region
       if(it_rg == 3){
 
-        //==== Cutflow : m(ll) < 4 GeV
+        //==== m(ll) < 4 GeV
         if(!(GammaCand.M()>0. && GammaCand.M()<4.)) continue;
 
         //==== Cutflow 6
         FillHist(systName+"_"+regions.at(it_rg)+"_Number_Events_"+IDName, 5.5, weight, cutflow_bin, 0., cutflow_max);
         FillHist(systName+"_"+regions.at(it_rg)+"_Number_Events_unweighted_"+IDName, 5.5, 1., cutflow_bin, 0., cutflow_max);
 
-        //==== Cutflow : No b-tagged jets
+        //==== No b-tagged jets
         if(!(Nbjet_medium == 0)) continue;
 
         //==== Cutflow 7
         FillHist(systName+"_"+regions.at(it_rg)+"_Number_Events_"+IDName, 6.5, weight, cutflow_bin, 0., cutflow_max);
         FillHist(systName+"_"+regions.at(it_rg)+"_Number_Events_unweighted_"+IDName, 6.5, 1., cutflow_bin, 0., cutflow_max);
 
-        //==== Cuts on MET and Mt
+        //==== MET and Mt cuts
         if(!(MET > 30.)) continue;
         if(!(Mt3l > 30.)) continue;
 
@@ -969,7 +973,7 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
         FillHist(systName+"_"+regions.at(it_rg)+"_MET_Mass4_"+IDName, MET, weight, 1000, 0., 1000.);
         FillHist(systName+"_"+regions.at(it_rg)+"_MET2ST_Mass4_"+IDName, MET2ST, weight, 1000, 0., 1000.);*/
 
-        //==== Cutflow : m(ll) < 3 GeV
+        //==== m(ll) < 3 GeV
         if(!(GammaCand.M()>0. && GammaCand.M()<3.)) continue;
 
       }
@@ -1102,6 +1106,7 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
         weight *= GetPrefireWeight(systL1);
         weight *= GetPileUpWeight(nPileUp, systPU);
 
+        //==== Muons
         for(unsigned int i=0; i<muons.size(); i++){
 
           /*if(param.Muon_Tight_ID.Contains("HighPt")){
@@ -1128,6 +1133,7 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
 
         }
 
+        //==== Electrons
         for(unsigned int i=0; i<electrons.size(); i++){
 
           electronRecoSF = mcCorr->ElectronReco_SF(electrons.at(i).scEta(), electrons.at(i).UncorrPt(), systElectronReco);
@@ -1147,6 +1153,7 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
 
         }
 
+        //==== Triggers
         /*if(muons.size() >= 2) triggerSF = mcCorr->MuonTrigger_SF_HNtypeI(param.Muon_Tight_ID, muons, RunFake, systMuonTrigger);
         else triggerSF = mcCorr->ElectronTrigger_SF_HNtypeI(param.Electron_Tight_ID, electrons, RunFake, systElectronTrigger);
 
@@ -1216,7 +1223,7 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
 
       }
 
-      //==== Cutflow : m(ll) > 10 GeV
+      //==== m(ll) > 10 GeV
       if(!(OSSFLowMass == 0)) continue;
 
       //==== Cutflow 6
@@ -1297,67 +1304,4 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
 
   }
 
-  /*
-  
-  //=========================
-  //==== Event selections..
-  //=========================
-
-  //==== dimuon
-  if(muons.size() != 2) return;
-
-  //==== leading muon has trigger-safe pt
-  if( muons.at(0).Pt() <= TriggerSafePtCut ) return;
-
-  //==== On-Z
-  Particle ZCand = muons.at(0) + muons.at(1);
-  if(!IsOnZ(ZCand.M(), 15.)) return;
-
-  //===================
-  //==== Event weight
-  //===================
-
-  double weight = 1.;
-  //==== If MC
-  if(!IsDATA){
-
-    //==== weight_norm_1invpb is set to be event weight normalized to 1 pb-1
-    //==== So, you have to multiply trigger luminosity
-    //==== you can pass trigger names to ev.GetTriggerLumi(), but if you are using unprescaled trigger, simply pass "Full"
-
-    weight *= weight_norm_1invpb*ev.GetTriggerLumi("Full");
-
-    //==== MCweight is +1 or -1. Should be multiplied if you are using e.g., aMC@NLO NLO samples
-    weight *= ev.MCweight();
-
-    //==== L1Prefire reweight
-    weight *= weight_Prefire;
-
-    //==== Example of applying Muon scale factors
-    for(unsigned int i=0; i<muons.size(); i++){
-
-      double this_idsf = 1.;
-      //double this_idsf  = mcCorr->MuonID_SF (param.Muon_ID_SF_Key,  muons.at(i).Eta(), muons.at(i).MiniAODPt());
-
-      //==== If you have iso SF, do below. Here we don't.
-      //double this_isosf = mcCorr->MuonISO_SF(param.Muon_ISO_SF_Key, muons.at(i).Eta(), muons.at(i).MiniAODPt());
-      double this_isosf = 1.;
-
-      weight *= this_idsf*this_isosf;
-
-    }
-
-  }
-
-  //==========================
-  //==== Now fill histograms
-  //==========================
-
-  FillHist(param.Name+"/ZCand_Mass_"+param.Name, ZCand.M(), weight, 40, 70., 110.);
-
-  */
-
 }
-
-
-

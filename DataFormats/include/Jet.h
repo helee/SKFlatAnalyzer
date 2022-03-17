@@ -43,7 +43,7 @@ public:
   bool PassID(TString ID) const;
 
   bool Pass_HNTight() const;
-  bool PassPileupMVA(TString WP) const;
+  bool PassPileupMVA(TString WP, TString Era) const;
 
   double GetTaggerResult(JetTagging::Tagger tg) const;
 

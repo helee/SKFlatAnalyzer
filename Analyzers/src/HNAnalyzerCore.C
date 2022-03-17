@@ -1451,13 +1451,13 @@ std::vector<Jet> HNAnalyzerCore::JetsAwayFromLepton(const std::vector<Jet>& jets
 
 }
 
-std::vector<Jet> HNAnalyzerCore::JetsPassPileupMVA(const std::vector<Jet>& jets){
+std::vector<Jet> HNAnalyzerCore::JetsPassPileupMVA(const std::vector<Jet>& jets, TString wp){
 
   std::vector<Jet> out;
 
   for(unsigned int i=0; i<jets.size(); i++){
 
-    if(jets.at(i).PassPileupMVA("loose")) out.push_back( jets.at(i) );
+    if(jets.at(i).PassPileupMVA(wp, GetEra())) out.push_back( jets.at(i) );
 
   }
 

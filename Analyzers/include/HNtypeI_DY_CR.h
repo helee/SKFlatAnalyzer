@@ -19,14 +19,12 @@ public:
 
   //==== Trigger
   vector<TString> MuonTriggers;
-  vector<TString> MuonTriggersNoDZ;
+  vector<TString> MuonTriggersTight;
   vector<TString> ElectronTriggers;
   vector<TString> EMuTriggers;
-  vector<TString> EMuTriggersNoDZ;
-  TString Mu8Ele23Trigger;
-  TString Mu23Ele12Trigger;
-  TString Mu8Ele23TriggerNoDZ;
-  TString Mu23Ele12TriggerNoDZ;
+  vector<TString> EMuTriggersTight;
+  vector<TString> EMuTriggersMu8;
+  vector<TString> EMuTriggersMu23;
 
   //==== Lepton ID
   vector<TString> MuonVetoIDs;

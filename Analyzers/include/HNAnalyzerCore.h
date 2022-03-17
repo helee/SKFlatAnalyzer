@@ -193,7 +193,7 @@ public:
   std::vector<Jet> JetsInsideFatJet(const std::vector<Jet>& jets, const std::vector<FatJet>& fatjets, double mindr=0.8);
   std::vector<Jet> JetsAwayFromLepton(const std::vector<Jet>& jets, const Muon& muon, double mindphi=2.5);
   std::vector<Jet> JetsAwayFromLepton(const std::vector<Jet>& jets, const Electron& electron, double mindphi=2.5);
-  std::vector<Jet> JetsPassPileupMVA(const std::vector<Jet>& jets);
+  std::vector<Jet> JetsPassPileupMVA(const std::vector<Jet>& jets, TString wp);
   std::vector<Jet> JetsWCandLowMass(const Lepton& lepton1, const Lepton& lepton2, const std::vector<Jet>& jets, double MW);
   std::vector<Jet> JetsWCandHighMass(const std::vector<Jet>& jets, double MW);
   FatJet FatJetWCand(const std::vector<FatJet>& fatjets, double MW);
