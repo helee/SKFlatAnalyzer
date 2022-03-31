@@ -167,11 +167,13 @@ void HNtypeI_VV_CR::executeEvent(){
 
     //==== Systematics (JES, JER, L1Prefire, PU, Lepton ID/trigger SF, etc.)
     if(RunSyst){
+
       for(int it_syst=1; it_syst<23; it_syst++){
         param.syst_ = AnalyzerParameter::Syst(it_syst);
         param.Name  = "Syst_"+param.GetSystType();
         executeEventFromParameter(param);
       }
+
     }
 
   }
@@ -535,7 +537,7 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
   Particle WtagLep, TriLep, ZtagLep1, ZtagLep2, Ztemp, Ztemp1, Ztemp2, Ztemp3, Ztemp4, ZCand1, ZCand2, GammaCand, GammaLep1, GammaLep2;
   int OSSFLowMass = 0;
 
-  //==== Set up pTcone if RunFake=true
+  //==== Set up pTcone when RunFake is true
   double tightIsoCut_muon = 0.07, tightIsoCut_electron = 0.;
   double this_ptcone_muon = 0., this_ptcone_electron = 0.;
 
@@ -560,7 +562,7 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
 
       }
 
-      //==== Correct MET if RunFake=true, because pT was replaced by pTcone
+      //==== Correct MET when RunFake is true, because pT was replaced by pTcone
       METv = UpdateMETFake(METv, electrons, muons);
 
       muons = MuonUsePtCone(muons);

@@ -45,6 +45,7 @@ void AnalyzerParameter::Clear(){
   FatJet_ID = "";
 
   syst_ = Central;
+  fakesyst_ = FakeCentral;
 
 }
 
@@ -71,6 +72,7 @@ AnalyzerParameter::AnalyzerParameter(){
   FatJet_ID = "HN";
 
   syst_ = Central;
+  fakesyst_ = FakeCentral;
 
 }
 
@@ -149,6 +151,52 @@ TString AnalyzerParameter::GetSystType(){
     //cout << "[AnalyzerParameter::GetSystType] Wrong Syst" << endl;
     cerr << "[AnalyzerParameter::GetSystType] Wrong Syst" << endl;
     exit(ENODATA);
+    return "ERROR";
+  }
+
+}
+
+TString AnalyzerParameter::GetFakeSystType(){
+
+  if(fakesyst_==FakeSyst::FakeCentral){
+    return "FakeCentral";
+  }
+  /*else if(fakesyst_==FakeSyst::NoBJet){
+    return "NoBJet";
+  }
+  else if(fakesyst_==FakeSyst::WithBJet){
+    return "WithBJet";
+  }*/
+  else if(fakesyst_==FakeSyst::AwayJetPt20){
+    return "AwayJetPt20";
+  }
+  else if(fakesyst_==FakeSyst::AwayJetPt30){
+    return "AwayJetPt30";
+  }
+  else if(fakesyst_==FakeSyst::AwayJetPt60){
+    return "AwayJetPt60";
+  }
+  else if(fakesyst_==FakeSyst::AwayJetPt100){
+    return "AwayJetPt100";
+  }
+  else if(fakesyst_==FakeSyst::dPhi1){
+    return "dPhi1";
+  }
+  else if(fakesyst_==FakeSyst::dPhi2){
+    return "dPhi2";
+  }
+  else if(fakesyst_==FakeSyst::dPhi3){
+    return "dPhi3";
+  }
+  else if(fakesyst_==FakeSyst::PtRatioUp){
+    return "PtRatioUp";
+  }
+  else if(fakesyst_==FakeSyst::PtRatioDown){
+    return "PtRatioDown";
+  }
+  else{
+    cerr << "[AnalyzerParameter::GetFakeSystType] Wrong Syst" << endl;
+    exit(EXIT_FAILURE);
     return "ERROR";
   }
 

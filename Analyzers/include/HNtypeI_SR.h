@@ -15,7 +15,7 @@ public:
   bool RunSyst;
   //bool RunNewPDF;
   //bool RunXSecSyst;
-  bool RunFake, RunCF, RunOS;
+  bool RunFake, RunCF, RunOS, RunAK8;
 
   //==== Trigger
   vector<TString> MuonTriggers;

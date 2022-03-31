@@ -45,10 +45,28 @@ public:
     MuonIDSFUp, MuonIDSFDown,
     ElectronRecoSFUp, ElectronRecoSFDown,
     ElectronIDSFUp, ElectronIDSFDown,
+    //MuonTriggerSFUp, MuonTriggerSFDown,
+    //ElectronTriggerSFUp, ElectronTriggerSFDown,
+    //EMuTriggerSFUp, EMuTriggerSFDown,
+    //SDMassScaleUp, SDMassScaleDown,
+    //SDMassResUp, SDMassResDown,
+    //Tau21SFUp, Tau21SFDown,
     NSyst
   };
   Syst syst_;
   TString GetSystType();
+
+  enum FakeSyst{
+    FakeCentral,
+    //NoBJet, WithBJet,
+    AwayJetPt20, AwayJetPt30, AwayJetPt60, AwayJetPt100,
+    dPhi1, dPhi2, dPhi3, PtRatioUp, PtRatioDown,
+    //MuonIsoUp, ElectronIsoUp,
+    //dxy1, dxy2, dxy3, dzUp, dzDown, SIP1, SIP2, SIP3,
+    NFakeSyst
+  };
+  FakeSyst fakesyst_;
+  TString GetFakeSystType();
 
   void Clear();
 

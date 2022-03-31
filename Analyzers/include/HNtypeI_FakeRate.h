@@ -15,15 +15,40 @@ public:
   bool RunSyst;
   bool RunNewPDF;
   bool RunXSecSyst;
+  bool RunNorm, RunSF;
 
-  TString IsoMuTriggerName;
-  double TriggerSafePtCut;
+  //==== Trigger
+  vector<TString> MuonTriggers;
+  vector<TString> ElectronTriggers;
 
-  vector<TString> MuonIDs, MuonIDSFKeys;
+  TString MuonTrig1, MuonTrig2, MuonTrig3;
+  TString ElectronTrig1, ElectronTrig2, ElectronTrig3, ElectronTrig4;
+
+  //==== Lepton ID
+  vector<TString> MuonVetoIDs;
+  vector<TString> MuonLooseIDs;
+  vector<TString> MuonTightIDs;
+  vector<TString> ElectronVetoIDs;
+  vector<TString> ElectronLooseIDs;
+  vector<TString> ElectronTightIDs;
+
+  //==== Lepton pT, pTcone cut
+  double MuonPtCut1, MuonPtCut2, MuonPtCut3;
+  double MuonPtconeCut1, MuonPtconeCut2, MuonPtconeCut3;
+  double ElectronPtCut1, ElectronPtCut2, ElectronPtCut3, ElectronPtCut4;
+  double ElectronPtconeCut1, ElectronPtconeCut2, ElectronPtconeCut3, ElectronPtconeCut4;
+
+  //==== Trigger luminosity
+  double MuonLumi1, MuonLumi2, MuonLumi3;
+  double ElectronLumi1, ElectronLumi2, ElectronLumi3, ElectronLumi4, ElectronLumi17L;
+  double SFMuonLumi1, SFMuonLumi2, SFMuonLumi3;
+  double SFElectronLumi1, SFElectronLumi2, SFElectronLumi3, SFElectronLumi4;
+
   vector<Muon> AllMuons;
+  vector<Electron> AllElectrons;
   vector<Jet> AllJets;
 
-  double weight_Prefire;
+  //double weight_Prefire;
 
   HNtypeI_FakeRate();
   ~HNtypeI_FakeRate();

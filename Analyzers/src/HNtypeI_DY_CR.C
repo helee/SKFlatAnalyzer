@@ -205,11 +205,13 @@ void HNtypeI_DY_CR::executeEvent(){
 
     //==== Systematics (JES, JER, L1Prefire, PU, Lepton ID/trigger SF, etc.)
     if(RunSyst){
-      for(int it_syst=1; it_syst<23; it_syst++){
+
+      for(int it_syst=1; it_syst<2; it_syst++){
         param.syst_ = AnalyzerParameter::Syst(it_syst);
         param.Name  = "Syst_"+param.GetSystType();
         executeEventFromParameter(param);
       }
+
     }
 
   }
@@ -621,13 +623,13 @@ void HNtypeI_DY_CR::executeEventFromParameter(AnalyzerParameter param){
   bool passPtCut = false;
   Particle ZCand;
 
-  //==== Set up pTcone if RunFake=true
+  //==== Set up pTcone when RunFake is true
   double tightIsoCut_muon = 0.07, tightIsoCut_electron = 0.;
   double this_ptcone_muon = 0., this_ptcone_electron = 0.;
 
   if(RunFake){
 
-    if((muons.size()+electrons.size() > 2) && (muons.size()+electrons.size() < 5)){
+    if(muons.size()+electrons.size() == 2){
 
       for(unsigned int i=0; i<muons.size(); i++){
         this_ptcone_muon = muons.at(i).CalcPtCone(muons.at(i).RelIso(), tightIsoCut_muon);
@@ -646,7 +648,7 @@ void HNtypeI_DY_CR::executeEventFromParameter(AnalyzerParameter param){
 
       }
 
-      //==== Correct MET if RunFake=true, because pT was replaced by pTcone
+      //==== Correct MET when RunFake is true, because pT was replaced by pTcone
       METv = UpdateMETFake(METv, electrons, muons);
 
       muons = MuonUsePtCone(muons);
