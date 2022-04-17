@@ -30,6 +30,8 @@ Jet::Jet() : Particle() {
   j_En_down=1.;;
   j_Res_up = 1.;
   j_Res_down = 1.;
+  j_PxUnSmeared=-999.;
+  j_PyUnSmeared=-999.;
   j_tightJetID=false;
   j_tightLepVetoJetID=false;
 }
@@ -82,6 +84,14 @@ void Jet::SetEnShift(double en_up, double en_down){
 void Jet::SetResShift(double res_up, double res_down){
   j_Res_up = res_up;
   j_Res_down = res_down;
+}
+
+void Jet::SetPxUnSmeared(double px){
+  j_PxUnSmeared=px;
+}
+
+void Jet::SetPyUnSmeared(double py){
+  j_PyUnSmeared=py;
 }
 
 void Jet::SetTightJetID(double b){

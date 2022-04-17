@@ -208,7 +208,7 @@ public:
   Particle UpdateMETFake(const Particle& METv, const std::vector<Electron>& electrons);
   Particle UpdateMETFake(const Particle& METv, const std::vector<Electron>& electrons, const std::vector<Muon>& muons);
   Particle UpdateMETElectronCF(const Particle& METv, const std::vector<Electron>& electrons1, const std::vector<Electron>& electrons2);
-  Particle UpdateMETJet(const Particle METv, const std::vector<Jet>& jets, int sys);
+  Particle UpdateMETSmearedJet(const Particle METv, const std::vector<Jet>& jets);
 
   //==== 3) Electron charge flip
 

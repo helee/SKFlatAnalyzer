@@ -35,6 +35,11 @@ public:
     else return j_Res_down;
   }
 
+  void SetPxUnSmeared(double px);
+  void SetPyUnSmeared(double py);
+  inline double PxUnSmeared() const { return j_PxUnSmeared; }
+  inline double PyUnSmeared() const { return j_PyUnSmeared; }
+
   void SetTightJetID(double b);
   void SetTightLepVetoJetID(double b);
   inline bool Pass_tightJetID() const { return j_tightJetID; }
@@ -76,6 +81,8 @@ private:
   double j_En_down;
   double j_Res_up;
   double j_Res_down;
+  double j_PxUnSmeared;
+  double j_PyUnSmeared;
   bool j_tightJetID, j_tightLepVetoJetID;
 
   ClassDef(Jet,1)

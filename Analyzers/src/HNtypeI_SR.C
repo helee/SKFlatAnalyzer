@@ -64,8 +64,8 @@ void HNtypeI_SR::initializeAnalyzer(){
   }
   else if(DataEra == "2016postVFP"){
 
-    MuonTriggers.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v");                       // 8072.032418212  (FG)
-    MuonTriggers.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v");                     // 8072.032418212  (FG)
+    MuonTriggers.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v");                          // 8072.032418212  (FG)
+    MuonTriggers.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v");                        // 8072.032418212  (FG)
     MuonTriggersTight.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v");                  // 16812.151722311
     MuonTriggersTight.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v");                // 16812.151722311
     ElectronTriggers.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");             // 16812.151722311
@@ -198,7 +198,7 @@ void HNtypeI_SR::executeEvent(){
 
     //==== Jet ID
     param.Jet_ID = "HNTight";
-    if(DataYear==2016) param.FatJet_ID = "HNTight0p55";
+    if(DataEra.Contains("2016")) param.FatJet_ID = "HNTight0p55";
     else param.FatJet_ID = "HNTight0p45";
 
     executeEventFromParameter(param);
@@ -206,11 +206,11 @@ void HNtypeI_SR::executeEvent(){
     //==== Systematics (JES, JER, L1Prefire, PU, Lepton ID/trigger SF, etc.)
     if(RunSyst){
 
-      for(int it_syst=1; it_syst<2; it_syst++){
+      /*for(int it_syst=1; it_syst<23; it_syst++){
         param.syst_ = AnalyzerParameter::Syst(it_syst);
         param.Name  = "Syst_"+param.GetSystType();
         executeEventFromParameter(param);
-      }
+      }*/
 
     }   
 
@@ -534,7 +534,7 @@ void HNtypeI_SR::executeEventFromParameter(AnalyzerParameter param){
   //==== Jets
   vector<Jet> jets_nolepveto = SelectJets(this_AllJets, param.Jet_ID, 20., 4.7);
   vector<Jet> jets_bcand = SelectJets(this_AllJets, param.Jet_ID, 20., 2.4);  // AK4jets used for b tag
-  vector<FatJet> fatjets_nolepveto = SelectFatJets(this_AllFatJets, param.FatJet_ID, 200., 2.7);
+  vector<FatJet> fatjets_nolepveto = SelectFatJets(this_AllFatJets, param.FatJet_ID, 200., 4.7);
 
   //==== Jet, FatJet selection to avoid double counting due to jets matched geometrically with a lepton
   //==== Fatjet selection in CATanalyzer (see the links)
@@ -613,10 +613,13 @@ void HNtypeI_SR::executeEventFromParameter(AnalyzerParameter param){
   if(muons.size()+electrons.size() == 2){
     METv = UpdateMETMuon(METv, muons);
     METv = UpdateMETElectron(METv, electrons);
+    METv = UpdateMETSmearedJet(METv, jets);
   }
 
   double MET = METv.Pt();
   double METPhi = METv.Phi();
+
+  
 
   //========================================================
   //==== Define particles, variables

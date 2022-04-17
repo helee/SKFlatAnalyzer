@@ -125,7 +125,7 @@ bool FatJet::Pass_HNTight(double tau21Cut) const{
   //if(!Pass_tightLepVetoJetID()) return false;
   if(!Pass_tightJetID()) return false;
   if(!(PuppiTau2()/PuppiTau1() < tau21Cut)) return false;  // 0.6 in EXO-17-028
-  if(!(SDMass()>65. && SDMass()<105.)) return false;       // 40. < M < 130. in EXO-17-028
+  if(!(SDMass()>40. && SDMass()<130.)) return false;       // jet mass range used for POG SF measurement : 65-105 GeV
 
   return true;
 

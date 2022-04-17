@@ -395,6 +395,9 @@ std::vector<Jet> HNAnalyzerCore::GetAllJets(){
     Jet jet;
     jet.SetPtEtaPhiM(jet_pt->at(i), jet_eta->at(i), jet_phi->at(i), jet_m->at(i));
 
+    jet.SetPxUnSmeared(jet.Px());
+    jet.SetPyUnSmeared(jet.Py());
+
     //==== Jet energy up and down are 1.xx or 0.99, not energy
     jet.SetEnShift( jet_shiftedEnUp->at(i), jet_shiftedEnDown->at(i) );
     if(!IsDATA){
@@ -1713,7 +1716,7 @@ Particle HNAnalyzerCore::UpdateMETElectronCF(const Particle& METv, const std::ve
 
 }
 
-Particle HNAnalyzerCore::UpdateMETJet(const Particle METv, const std::vector<Jet>& jets, int sys){
+Particle HNAnalyzerCore::UpdateMETSmearedJet(const Particle METv, const std::vector<Jet>& jets){
 
   double met_x = METv.Px();
   double met_y = METv.Py();
@@ -1721,12 +1724,11 @@ Particle HNAnalyzerCore::UpdateMETJet(const Particle METv, const std::vector<Jet
   double px_orig(0.), py_orig(0.), px_corrected(0.), py_corrected(0.);
   for(unsigned int i=0; i<jets.size(); i++){
 
-    px_orig += jets.at(i).Px();
-    py_orig += jets.at(i).Py();
+    px_orig += jets.at(i).PxUnSmeared();
+    py_orig += jets.at(i).PyUnSmeared();
 
-    //==== Unsmeared jet pT
-    px_corrected += jets.at(i).Px()/jets.at(i).ResShift(sys);
-    py_corrected += jets.at(i).Py()/jets.at(i).ResShift(sys);
+    px_corrected += jets.at(i).Px();
+    py_corrected += jets.at(i).Py();
 
   }
 

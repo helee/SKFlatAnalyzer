@@ -108,7 +108,7 @@ void HNtypeI_VV_CR::executeEvent(){
   AllMuons = GetAllMuons();
   AllElectrons = GetAllElectrons();
   AllJets = GetAllJets();
-  AllFatJets = puppiCorr->Correct(GetAllFatJets());
+  //AllFatJets = puppiCorr->Correct(GetAllFatJets());
 
   //==== Get L1Prefire reweight
   //==== If data, 1.;
@@ -160,7 +160,7 @@ void HNtypeI_VV_CR::executeEvent(){
 
     //==== Jet ID
     param.Jet_ID = "HNTight";
-    if(DataYear==2016) param.FatJet_ID = "HNTight0p55";
+    if(DataEra.Contains("2016")) param.FatJet_ID = "HNTight0p55";
     else param.FatJet_ID = "HNTight0p45";
 
     executeEventFromParameter(param);
@@ -306,7 +306,7 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
   else this_AllMuons = AllMuons;
   vector<Electron> this_AllElectrons = AllElectrons;
   vector<Jet> this_AllJets = AllJets;
-  vector<FatJet> this_AllFatJets = AllFatJets;
+  //vector<FatJet> this_AllFatJets = AllFatJets;
   vector<Gen> gens = GetGens();
 
   //==== Then, for each systematic sources
@@ -439,19 +439,12 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
   electrons_prompt.clear();
 
   //==== Jets
-  vector<Jet> jets_nolepveto = SelectJets(this_AllJets, param.Jet_ID, 20., 2.7);  // AK4jets used for b tag
-  vector<FatJet> fatjets_nolepveto = SelectFatJets(this_AllFatJets, param.FatJet_ID, 200., 2.7);
+  vector<Jet> jets_nolepveto = SelectJets(this_AllJets, param.Jet_ID, 20., 4.7);
+  vector<Jet> jets_bcand = SelectJets(this_AllJets, param.Jet_ID, 20., 2.4);  // AK4jets used for b tag
+  //vector<FatJet> fatjets_nolepveto = SelectFatJets(this_AllFatJets, param.FatJet_ID, 200., 4.7);
 
-  //==== Jet, FatJet selection to avoid double counting due to jets matched geometrically with a lepton
-  //==== Fatjet selection in CATanalyzer (see the links)
-  //==== https://github.com/jedori0228/LQanalyzer/blob/CatAnalyzer_13TeV_v8-0-7.36_HNAnalyzer/CATConfig/SelectionConfig/user_fatjets.sel
-  //==== https://github.com/jedori0228/LQanalyzer/blob/CatAnalyzer_13TeV_v8-0-7.36_HNAnalyzer/LQCore/Selection/src/FatJetSelection.cc#L113-L124
-
-  vector<FatJet> fatjets = FatJetsVetoLeptonInside(fatjets_nolepveto, electrons_veto, muons_veto);  // AK8jets used in SR, CR
   vector<Jet> jets_lepveto = JetsVetoLeptonInside(jets_nolepveto, electrons_veto, muons_veto);
-  vector<Jet> jets_insideFatjets = JetsInsideFatJet(jets_lepveto, fatjets);  // For jets inside a fatjet, remove their smearing from MET. Because FatJet smearing is already propagted to MET.
-  //vector<Jet> jets = JetsPassPileupMVA(jets_lepveto);
-  vector<Jet> jets = JetsAwayFromFatJet(jets_lepveto, fatjets);  // AK4jets used in SR, CR
+  vector<Jet> jets = JetsPassPileupMVA(jets_lepveto, "loose");
 
   vector<Jet> jets_Pt30;
   jets_Pt30.clear();
@@ -471,15 +464,13 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
   std::sort(electrons.begin(), electrons.end(), PtComparing);
   std::sort(electrons_veto.begin(), electrons_veto.end(), PtComparing);
   std::sort(jets.begin(), jets.end(), PtComparing);
-  std::sort(jets_nolepveto.begin(), jets_nolepveto.end(), PtComparing);
-  std::sort(fatjets.begin(), fatjets.end(), PtComparing);
-  std::sort(jets_Pt30.begin(), jets_Pt30.end(), PtComparing);
+  std::sort(jets_bcand.begin(), jets_bcand.end(), PtComparing);
 
   //========================================================
   //==== B tagging
   //========================================================
 
-  int Nbjet_loose = 0, Nbjet_medium = 0, Nbjet_Pt30_loose = 0., Nbjet_Pt30_medium = 0, Nbjet_medium_lepveto = 0;
+  int Nbjet_loose = 0, Nbjet_medium = 0, Nbjet_Pt30_loose = 0., Nbjet_Pt30_medium = 0;
   JetTagging::Parameters jtp_DeepJet_Loose = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Loose, JetTagging::incl, JetTagging::comb);
   JetTagging::Parameters jtp_DeepJet_Medium = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::comb);
 
@@ -488,22 +479,18 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
   //double btagWeight = mcCorr->GetBTaggingReweight_1a(jets, jtp_DeepCSV_Medium);
 
   //==== method 2a)
-  for(unsigned int ij=0; ij<jets_nolepveto.size(); ij++){
+  for(unsigned int ij=0; ij<jets_bcand.size(); ij++){
 
-    if(jets_nolepveto.at(ij).Pt() > 20.){
-      if(mcCorr->IsBTagged_2a(jtp_DeepJet_Loose, jets_nolepveto.at(ij), systBtag)) Nbjet_loose++;
-      if(mcCorr->IsBTagged_2a(jtp_DeepJet_Medium, jets_nolepveto.at(ij), systBtag)) Nbjet_medium++;
+    if(jets_bcand.at(ij).Pt() > 20.){
+      if(mcCorr->IsBTagged_2a(jtp_DeepJet_Loose, jets_bcand.at(ij), systBtag)) Nbjet_loose++;
+      if(mcCorr->IsBTagged_2a(jtp_DeepJet_Medium, jets_bcand.at(ij), systBtag)) Nbjet_medium++;
     }
 
-    if(jets_nolepveto.at(ij).Pt() > 30.){
-      if(mcCorr->IsBTagged_2a(jtp_DeepJet_Loose, jets_nolepveto.at(ij), systBtag)) Nbjet_Pt30_loose++;
-      if(mcCorr->IsBTagged_2a(jtp_DeepJet_Medium, jets_nolepveto.at(ij), systBtag)) Nbjet_Pt30_medium++;
+    if(jets_bcand.at(ij).Pt() > 30.){
+      if(mcCorr->IsBTagged_2a(jtp_DeepJet_Loose, jets_bcand.at(ij), systBtag)) Nbjet_Pt30_loose++;
+      if(mcCorr->IsBTagged_2a(jtp_DeepJet_Medium, jets_bcand.at(ij), systBtag)) Nbjet_Pt30_medium++;
     }
 
-  }
-
-  for(unsigned int ij=0; ij<jets.size(); ij++){
-    if(mcCorr->IsBTagged_2a(jtp_DeepJet_Medium, jets.at(ij), systBtag)) Nbjet_medium_lepveto++;
   }
 
   //========================================================
@@ -515,6 +502,7 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
   if((muons.size()+electrons.size() > 2) && (muons.size()+electrons.size() < 5)){
     METv = UpdateMETMuon(METv, muons);
     METv = UpdateMETElectron(METv, electrons);
+    METv = UpdateMETSmearedJet(METv, jets);
   }
 
   double MET = METv.Pt();
@@ -524,7 +512,6 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
   //==== Define particles, variables
   //========================================================
 
-  double ST = 0., MET2ST = 0.;
   double Mt = 0., Mt3l = 0.;
   double MZ = 91.1876;
   double mllCut = 10.;  // 10 GeV cut in EXO-17-028
@@ -600,12 +587,12 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
   MET = METv.Pt();
   METPhi = METv.Phi();
 
-  for(unsigned int i=0; i<jets.size(); i++) ST += jets.at(i).Pt();
+  /*for(unsigned int i=0; i<jets.size(); i++) ST += jets.at(i).Pt();
   for(unsigned int i=0; i<fatjets.size(); i++) ST += fatjets.at(i).Pt();
   for(unsigned int i=0; i<leptons.size(); i++) ST += leptons.at(i)->Pt();
 
   ST += MET;
-  MET2ST = MET*MET/ST;
+  MET2ST = MET*MET/ST;*/
 
   //==== Number of tight leptons
   if(RunFake){
@@ -875,7 +862,7 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
             if(fabs(ilep3-l3)>0 && fabs(ilep3-l4)>0) wlepWG = ilep3;
           }
 
-          if(it_rg < 2) WtagLep = *leptons.at(wlepWZ);
+          if(it_rg < 3) WtagLep = *leptons.at(wlepWZ);
           else WtagLep = *leptons.at(wlepWG);
 
         }
@@ -961,7 +948,6 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
         FillHist(systName+"_"+regions.at(it_rg)+"_Number_Events_unweighted_Mass4_"+IDName, 0.5, 1., 2, 0., 2.);
         //FillHist(systName+"_"+regions.at(it_rg)+"_Number_Jets_Mass4_"+IDName, jets.size(), weight, 10, 0., 10.);
         //FillHist(systName+"_"+regions.at(it_rg)+"_Number_BJets_Medium_Mass4_"+IDName, Nbjet_medium, weight, 10, 0., 10.);
-        //FillHist(systName+"_"+regions.at(it_rg)+"_Number_FatJets_Mass4_"+IDName, fatjets.size(), weight, 10, 0., 10.);
         //FillHist(systName+"_"+regions.at(it_rg)+"_ZCand_Mass_Mass4_"+IDName, ZCand.M(), weight, 80, 50., 130.);
         FillHist(systName+"_"+regions.at(it_rg)+"_TriLep_Mass_Mass4_"+IDName, TriLep.M(), weight, 80, 50., 130.);
         FillHist(systName+"_"+regions.at(it_rg)+"_GammaCand_Mass_Mass4_"+IDName, GammaCand.M(), weight, 50, 0., 5.);
@@ -972,8 +958,7 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
         FillHist(systName+"_"+regions.at(it_rg)+"_Lep2_Pt_Mass4_"+IDName, leptons.at(1)->Pt(), weight, 1000, 0., 1000.);
         FillHist(systName+"_"+regions.at(it_rg)+"_Lep3_Pt_Mass4_"+IDName, leptons.at(2)->Pt(), weight, 1000, 0., 1000.);
         FillHist(systName+"_"+regions.at(it_rg)+"_Mt_Mass4_"+IDName, Mt, weight, 1000, 0., 1000.);
-        FillHist(systName+"_"+regions.at(it_rg)+"_MET_Mass4_"+IDName, MET, weight, 1000, 0., 1000.);
-        FillHist(systName+"_"+regions.at(it_rg)+"_MET2ST_Mass4_"+IDName, MET2ST, weight, 1000, 0., 1000.);*/
+        FillHist(systName+"_"+regions.at(it_rg)+"_MET_Mass4_"+IDName, MET, weight, 1000, 0., 1000.);*/
 
         //==== m(ll) < 3 GeV
         if(!(GammaCand.M()>0. && GammaCand.M()<3.)) continue;
@@ -990,7 +975,6 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
       FillHist(systName+"_"+regions.at(it_rg)+"_Number_Jets_"+IDName, jets.size(), weight, 10, 0., 10.);
       FillHist(systName+"_"+regions.at(it_rg)+"_Number_BJets_Loose_"+IDName, Nbjet_loose, weight, 10, 0., 10.);
       FillHist(systName+"_"+regions.at(it_rg)+"_Number_BJets_Medium_"+IDName, Nbjet_medium, weight, 10, 0., 10.);
-      FillHist(systName+"_"+regions.at(it_rg)+"_Number_FatJets_"+IDName, fatjets.size(), weight, 10, 0., 10.);
       FillHist(systName+"_"+regions.at(it_rg)+"_ZCand_Mass_"+IDName, ZCand.M(), weight, 80, 50., 130.);
       FillHist(systName+"_"+regions.at(it_rg)+"_TriLep_Mass_"+IDName, TriLep.M(), weight, 80, 50., 130.);
       FillHist(systName+"_"+regions.at(it_rg)+"_GammaCand_Mass_"+IDName, GammaCand.M(), weight, 50, 0., 5.);
@@ -1011,7 +995,6 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
       FillHist(systName+"_"+regions.at(it_rg)+"_Mt_"+IDName, Mt, weight, 1000, 0., 1000.);
       FillHist(systName+"_"+regions.at(it_rg)+"_MET_"+IDName, MET, weight, 1000, 0., 1000.);
       //FillHist(systName+"_"+regions.at(it_rg)+"_METPhi_"+IDName, METPhi, weight, 32, 0., 3.2);
-      FillHist(systName+"_"+regions.at(it_rg)+"_MET2ST_"+IDName, MET2ST, weight, 1000, 0., 1000.);
 
       //==== Histograms (individual)
       for(unsigned int it_ch=0; it_ch<channels3L.size(); it_ch++){
@@ -1023,7 +1006,6 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
           FillHist(systName+"_"+regions.at(it_rg)+"_"+channels3L.at(it_ch)+"_Number_Jets_"+IDName, jets.size(), weight, 10, 0., 10.);
           //FillHist(systName+"_"+regions.at(it_rg)+"_"+channels3L.at(it_ch)+"_Number_BJets_Loose_"+IDName, Nbjet_loose, weight, 10, 0., 10.);
           FillHist(systName+"_"+regions.at(it_rg)+"_"+channels3L.at(it_ch)+"_Number_BJets_Medium_"+IDName, Nbjet_medium, weight, 10, 0., 10.);
-          FillHist(systName+"_"+regions.at(it_rg)+"_"+channels3L.at(it_ch)+"_Number_FatJets_"+IDName, fatjets.size(), weight, 10, 0., 10.);
           FillHist(systName+"_"+regions.at(it_rg)+"_"+channels3L.at(it_ch)+"_ZCand_Mass_"+IDName, ZCand.M(), weight, 80, 50., 130.);
           FillHist(systName+"_"+regions.at(it_rg)+"_"+channels3L.at(it_ch)+"_TriLep_Mass_"+IDName, TriLep.M(), weight, 80, 50., 130.);
           FillHist(systName+"_"+regions.at(it_rg)+"_"+channels3L.at(it_ch)+"_GammaCand_Mass_"+IDName, GammaCand.M(), weight, 50, 0., 5.);
@@ -1044,7 +1026,6 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
           FillHist(systName+"_"+regions.at(it_rg)+"_"+channels3L.at(it_ch)+"_Mt_"+IDName, Mt, weight, 1000, 0., 1000.);
           FillHist(systName+"_"+regions.at(it_rg)+"_"+channels3L.at(it_ch)+"_MET_"+IDName, MET, weight, 1000, 0., 1000.);
           //FillHist(systName+"_"+regions.at(it_rg)+"_"+channels3L.at(it_ch)+"_METPhi_"+IDName, METPhi, weight, 32, 0., 3.2);
-          FillHist(systName+"_"+regions.at(it_rg)+"_"+channels3L.at(it_ch)+"_MET2ST_"+IDName, MET2ST, weight, 1000, 0., 1000.);
 
         }
 
@@ -1253,7 +1234,6 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
       FillHist(systName+"_"+regions.at(it_rg)+"_Number_Jets_"+IDName, jets.size(), weight, 10, 0., 10.);
       //FillHist(systName+"_"+regions.at(it_rg)+"_Number_BJets_Loose_"+IDName, Nbjet_loose, weight, 10, 0., 10.);
       FillHist(systName+"_"+regions.at(it_rg)+"_Number_BJets_Medium_"+IDName, Nbjet_medium, weight, 10, 0., 10.);
-      FillHist(systName+"_"+regions.at(it_rg)+"_Number_FatJets_"+IDName, fatjets.size(), weight, 10, 0., 10.);
       FillHist(systName+"_"+regions.at(it_rg)+"_ZCand1_Mass_"+IDName, ZCand1.M(), weight, 80, 50., 130.);
       FillHist(systName+"_"+regions.at(it_rg)+"_ZCand2_Mass_"+IDName, ZCand2.M(), weight, 80, 50., 130.);
       FillHist(systName+"_"+regions.at(it_rg)+"_ZCand1_Pt_"+IDName, ZCand1.Pt(), weight, 1000, 0., 1000.);
@@ -1268,7 +1248,6 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
       FillHist(systName+"_"+regions.at(it_rg)+"_Lep4_Eta_"+IDName, lepton4_eta, weight, 60, -3., 3.);
       FillHist(systName+"_"+regions.at(it_rg)+"_MET_"+IDName, MET, weight, 1000, 0., 1000.);
       //FillHist(systName+"_"+regions.at(it_rg)+"_METPhi_"+IDName, METPhi, weight, 32, 0., 3.2);
-      FillHist(systName+"_"+regions.at(it_rg)+"_MET2ST_"+IDName, MET2ST, weight, 1000, 0., 1000.);
 
       //==== Histograms (individual)
       for(unsigned int it_ch=0; it_ch<channels4L.size(); it_ch++){
@@ -1281,7 +1260,6 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
           FillHist(systName+"_"+regions.at(it_rg)+"_"+channels4L.at(it_ch)+"_Number_Jets_"+IDName, jets.size(), weight, 10, 0., 10.);
           //FillHist(systName+"_"+regions.at(it_rg)+"_"+channels4L.at(it_ch)+"_Number_BJets_Loose_"+IDName, Nbjet_loose, weight, 10, 0., 10.);
           FillHist(systName+"_"+regions.at(it_rg)+"_"+channels4L.at(it_ch)+"_Number_BJets_Medium_"+IDName, Nbjet_medium, weight, 10, 0., 10.);
-          FillHist(systName+"_"+regions.at(it_rg)+"_"+channels4L.at(it_ch)+"_Number_FatJets_"+IDName, fatjets.size(), weight, 10, 0., 10.);
           FillHist(systName+"_"+regions.at(it_rg)+"_"+channels4L.at(it_ch)+"_ZCand1_Mass_"+IDName, ZCand1.M(), weight, 80, 50., 130.);
           FillHist(systName+"_"+regions.at(it_rg)+"_"+channels4L.at(it_ch)+"_ZCand2_Mass_"+IDName, ZCand2.M(), weight, 80, 50., 130.);
           //FillHist(systName+"_"+regions.at(it_rg)+"_"+channels4L.at(it_ch)+"_ZCand1_Pt_"+IDName, ZCand1.Pt(), weight, 1000, 0., 1000.);
@@ -1296,7 +1274,6 @@ void HNtypeI_VV_CR::executeEventFromParameter(AnalyzerParameter param){
           FillHist(systName+"_"+regions.at(it_rg)+"_"+channels4L.at(it_ch)+"_Lep4_Eta_"+IDName, lepton4_eta, weight, 60, -3., 3.);
           FillHist(systName+"_"+regions.at(it_rg)+"_"+channels4L.at(it_ch)+"_MET_"+IDName, MET, weight, 1000, 0., 1000.);
           //FillHist(systName+"_"+regions.at(it_rg)+"_"+channels4L.at(it_ch)+"_METPhi_"+IDName, METPhi, weight, 32, 0., 3.2);
-          FillHist(systName+"_"+regions.at(it_rg)+"_"+channels4L.at(it_ch)+"_MET2ST_"+IDName, MET2ST, weight, 1000, 0., 1000.);
 
         }
 
