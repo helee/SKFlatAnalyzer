@@ -628,7 +628,8 @@ void HNtypeI_SR::executeEventFromParameter(AnalyzerParameter param){
   double ST = 0., HT = 0., MET2ST = 0., HTPt1 = 0.;
   //double Mt = 0., Mt3l = 0.;
   double dRll = 0., dPhill = 0., PtDiff = 0.;
-  double dRl1jj = 0., dRl2jj = 0., dRjj = 0., dRl1J = 0., dRl2J = 0., avgEta = 0., dEtajj = 0., zep = 0.;
+  double dRl1jj = 0., dRl2jj = 0., dRlCjj = 0., dRlAjj = 0., dRjj = 0., dRl1J = 0., dRl2J = 0., dRlCJ = 0., dRlAJ = 0.;
+  double avgEta = 0., dEtajj = 0., zep = 0.;
   double MZ = 91.1876, MW = 80.379;
   double mllCut1 = 10.;   // 10 GeV cut in EXO-17-028
   double mllCut2 = 55.;   // For OS events with AK8 jets
@@ -1108,10 +1109,14 @@ void HNtypeI_SR::executeEventFromParameter(AnalyzerParameter param){
         if(dRl1J < dRl2J){
           lCloseSR1 = *leptons.at(0);
           lAwaySR1  = *leptons.at(1);
+          dRlCJ = dRl1J;
+          dRlAJ = dRl2J;
         }
         else{
           lCloseSR1 = *leptons.at(1);
           lAwaySR1  = *leptons.at(0);
+          dRlCJ = dRl2J;
+          dRlAJ = dRl1J;
         }
 
         lCJ = lCloseSR1 + fatjets_WCand;
@@ -1158,6 +1163,8 @@ void HNtypeI_SR::executeEventFromParameter(AnalyzerParameter param){
             FillHist(systName+"_"+channel+"_"+regions.at(it_rg)+"_l2J_DeltaR_nobjet_"+IDName, dRl2J, weight, 60, 0., 6.);
             FillHist(systName+"_"+channel+"_"+regions.at(it_rg)+"_lCJ_Mass_nobjet_"+IDName, lCJ.M(), weight, 4000, 0., 4000.);
             FillHist(systName+"_"+channel+"_"+regions.at(it_rg)+"_lAJ_Mass_nobjet_"+IDName, lAJ.M(), weight, 4000, 0., 4000.);
+            FillHist(systName+"_"+channel+"_"+regions.at(it_rg)+"_lCJ_DeltaR_nobjet_"+IDName, dRlCJ, weight, 60, 0., 6.);
+            FillHist(systName+"_"+channel+"_"+regions.at(it_rg)+"_lAJ_DeltaR_nobjet_"+IDName, dRlAJ, weight, 60, 0., 6.);
 
             if(RunAK8 && MET2ST<15.){
 
@@ -1223,6 +1230,8 @@ void HNtypeI_SR::executeEventFromParameter(AnalyzerParameter param){
         FillHist(systName+"_"+channel+"_"+regions.at(it_rg)+"_l2J_DeltaR_"+IDName, dRl2J, weight, 60, 0., 6.);
         FillHist(systName+"_"+channel+"_"+regions.at(it_rg)+"_lCJ_Mass_"+IDName, lCJ.M(), weight, 4000, 0., 4000.);
         FillHist(systName+"_"+channel+"_"+regions.at(it_rg)+"_lAJ_Mass_"+IDName, lAJ.M(), weight, 4000, 0., 4000.);
+        FillHist(systName+"_"+channel+"_"+regions.at(it_rg)+"_lCJ_DeltaR_"+IDName, dRlCJ, weight, 60, 0., 6.);
+        FillHist(systName+"_"+channel+"_"+regions.at(it_rg)+"_lAJ_DeltaR_"+IDName, dRlAJ, weight, 60, 0., 6.);
 
         if(RunOS){
 
@@ -1260,6 +1269,8 @@ void HNtypeI_SR::executeEventFromParameter(AnalyzerParameter param){
           FillHist(systName+"_"+channel+"_"+regions.at(it_rg)+"_l2J_DeltaR_NoMZ_"+IDName, dRl2J, weight, 60, 0., 6.);
           FillHist(systName+"_"+channel+"_"+regions.at(it_rg)+"_lCJ_Mass_NoMZ_"+IDName, lCJ.M(), weight, 4000, 0., 4000.);
           FillHist(systName+"_"+channel+"_"+regions.at(it_rg)+"_lAJ_Mass_NoMZ_"+IDName, lAJ.M(), weight, 4000, 0., 4000.);
+          FillHist(systName+"_"+channel+"_"+regions.at(it_rg)+"_lCJ_DeltaR_NoMZ_"+IDName, dRlCJ, weight, 60, 0., 6.);
+          FillHist(systName+"_"+channel+"_"+regions.at(it_rg)+"_lAJ_DeltaR_NoMZ_"+IDName, dRlAJ, weight, 60, 0., 6.);
 
         }
 
@@ -1487,10 +1498,14 @@ void HNtypeI_SR::executeEventFromParameter(AnalyzerParameter param){
           if(dRl1jj < dRl2jj){
             lCloseSR3 = *leptons.at(0);
             lAwaySR3  = *leptons.at(1);
+            dRlCjj = dRl1jj;
+            dRlAjj = dRl2jj;
           }
           else{
             lCloseSR3 = *leptons.at(1);
             lAwaySR3  = *leptons.at(0);
+            dRlCjj = dRl2jj;
+            dRlAjj = dRl1jj;
           }
 
           lCjj = lCloseSR3 + jets_WCand.at(0) + jets_WCand.at(1);
@@ -1544,6 +1559,8 @@ void HNtypeI_SR::executeEventFromParameter(AnalyzerParameter param){
               FillHist(systName+"_"+channel+"_"+regions.at(it_rg)+"_l2jj_DeltaR_nobjet_"+IDName, dRl2jj, weight, 60, 0., 6.);
               FillHist(systName+"_"+channel+"_"+regions.at(it_rg)+"_lCjj_Mass_nobjet_"+IDName, lCjj.M(), weight, 4000, 0., 4000.);
               FillHist(systName+"_"+channel+"_"+regions.at(it_rg)+"_lAjj_Mass_nobjet_"+IDName, lAjj.M(), weight, 4000, 0., 4000.);      
+              FillHist(systName+"_"+channel+"_"+regions.at(it_rg)+"_lCjj_DeltaR_nobjet_"+IDName, dRlCjj, weight, 60, 0., 6.);
+              FillHist(systName+"_"+channel+"_"+regions.at(it_rg)+"_lAjj_DeltaR_nobjet_"+IDName, dRlAjj, weight, 60, 0., 6.);
 
             }
 
@@ -1600,6 +1617,8 @@ void HNtypeI_SR::executeEventFromParameter(AnalyzerParameter param){
           FillHist(systName+"_"+channel+"_"+regions.at(it_rg)+"_l2jj_DeltaR_"+IDName, dRl2jj, weight, 60, 0., 6.);
           FillHist(systName+"_"+channel+"_"+regions.at(it_rg)+"_lCjj_Mass_"+IDName, lCjj.M(), weight, 4000, 0., 4000.);
           FillHist(systName+"_"+channel+"_"+regions.at(it_rg)+"_lAjj_Mass_"+IDName, lAjj.M(), weight, 4000, 0., 4000.);
+          FillHist(systName+"_"+channel+"_"+regions.at(it_rg)+"_lCjj_DeltaR_"+IDName, dRlCjj, weight, 60, 0., 6.);
+          FillHist(systName+"_"+channel+"_"+regions.at(it_rg)+"_lAjj_DeltaR_"+IDName, dRlAjj, weight, 60, 0., 6.);
 
           if(RunOS){
 
@@ -1641,6 +1660,8 @@ void HNtypeI_SR::executeEventFromParameter(AnalyzerParameter param){
             FillHist(systName+"_"+channel+"_"+regions.at(it_rg)+"_l2jj_DeltaR_NoMZ_"+IDName, dRl2jj, weight, 60, 0., 6.);
             FillHist(systName+"_"+channel+"_"+regions.at(it_rg)+"_lCjj_Mass_NoMZ_"+IDName, lCjj.M(), weight, 4000, 0., 4000.);
             FillHist(systName+"_"+channel+"_"+regions.at(it_rg)+"_lAjj_Mass_NoMZ_"+IDName, lAjj.M(), weight, 4000, 0., 4000.);
+            FillHist(systName+"_"+channel+"_"+regions.at(it_rg)+"_lCjj_DeltaR_NoMZ_"+IDName, dRlCjj, weight, 60, 0., 6.);
+            FillHist(systName+"_"+channel+"_"+regions.at(it_rg)+"_lAjj_DeltaR_NoMZ_"+IDName, dRlAjj, weight, 60, 0., 6.);
 
           }
  
