@@ -60,8 +60,8 @@ void Muon::CalcPFRelIso(){
   //cout << "[Muon::CalcPFRelIso] j_PFPH04 = " << j_PFPH04 << endl;
   //cout << "[Muon::CalcPFRelIso] j_PU04 = " << j_PU04 << endl;
   //cout << "[Muon::CalcPFRelIso] --> absiso = " << absiso << endl;
-  this->SetRelIso(absiso/this->Pt());
-  //this->SetRelIso(absiso/this->MiniAODPt()); //TODO This is same as IDBit
+  //this->SetRelIso(absiso/this->Pt());
+  this->SetRelIso(absiso/this->MiniAODPt()); //TODO This is same as IDBit
 }
 
 double Muon::EA(){
@@ -111,11 +111,27 @@ bool Muon::PassID(TString ID) const {
   if(ID=="POGHighPtWithLooseTrkIso") return Pass_POGHighPtWithLooseTrkIso();
   //==== Customized
   if(ID=="TEST") return Pass_TESTID();
+  if(ID=="HNLoosest") return Pass_HNLoosest();
+
+  //== For HNtypeI
+  if(ID=="HNVeto") return Pass_HNVeto(0.6, 0.2, 0.5);
+  if(ID=="HNLooseIso0p4") return Pass_ISRLoose(0.4);
+  if(ID=="HNLooseIso0p5") return Pass_ISRLoose(0.5);
+  if(ID=="HNLooseV1") return Pass_HNLoose(0.4, 0.2, 0.5, 10.);
+  if(ID=="HNLooseV2") return Pass_HNLoose(0.4, 0.2, 0.1, 10.);
+  if(ID=="HNTightV1") return Pass_HNTight(0.05, 0.05, 0.1, 3.);
+  if(ID=="HNTightV2") return Pass_HNTight(0.07, 0.05, 0.1, 3.);
+
+  //== For ISR
+  if(ID=="ISRVeto") return Pass_ISRVeto(0.6);
+  if(ID=="ISRLoose") return Pass_ISRLoose(0.4);
+  if(ID=="ISRTight") return Pass_ISRTight(0.15);
 
   //==== No cut
   if(ID=="NOCUT") return true;
 
-  cout << "[Electron::PassID] No id : " << ID << endl;
+  //cout << "[Muon::PassID] No id : " << ID << endl;
+  cerr << "[Muon::PassID] No id : " << ID << endl;
   exit(ENODATA);
 
   return false;
@@ -137,6 +153,80 @@ bool Muon::Pass_POGHighPtWithLooseTrkIso() const {
 bool Muon::Pass_TESTID() const {
   return true;
 }
+
+bool Muon::Pass_HNLoosest() const {
+
+  if(!( isPOGLoose() )) return false;
+  if(!( fabs(dXY())<0.2 && fabs(dZ())<0.5) ) return false;
+  if(!( RelIso()<0.6 ))  return false;
+  if(!( Chi2()<50. )) return false;
+
+  return true;
+
+}
+
+//== For HNtypeI
+bool Muon::Pass_HNVeto(double relisoCut, double dxyCut, double dzCut) const {
+
+  if(!( isPOGLoose() )) return false;
+  if(!( RelIso()<relisoCut )) return false;
+  if(!( fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
+  if(!( Chi2()<50. )) return false;
+
+  return true;
+
+}
+
+bool Muon::Pass_HNLoose(double relisoCut, double dxyCut, double dzCut, double sipCut) const {
+
+  if(!( isPOGTight() )) return false; // ID criteria : https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideMuonIdRun2
+  if(!( RelIso()<relisoCut )) return false;
+  if(!( fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
+  if(!( fabs(IP3D()/IP3Derr())<sipCut )) return false;
+
+  return true;  
+
+}
+
+bool Muon::Pass_HNTight(double relisoCut, double dxyCut, double dzCut, double sipCut) const {
+
+  if(!( isPOGTight() )) return false;
+  if(!( RelIso()<relisoCut )) return false;
+  if(!( fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
+  if(!( fabs(IP3D()/IP3Derr())<sipCut )) return false;
+
+  return true;
+
+}
+
+//== For ISR
+bool Muon::Pass_ISRVeto(double relisoCut) const {
+
+  if(!( isPOGLoose() )) return false;
+  if(!( RelIso()<relisoCut )) return false;
+
+  return true;
+
+}
+
+bool Muon::Pass_ISRLoose(double relisoCut) const {
+
+  if(!( isPOGTight() )) return false;
+  if(!( RelIso()<relisoCut )) return false;
+
+  return true;
+
+}
+
+bool Muon::Pass_ISRTight(double relisoCut) const {
+
+  if(!( isPOGTight() )) return false;
+  if(!( RelIso()<relisoCut )) return false;
+
+  return true;
+
+}
+
 
 void Muon::SetTrackerLayers(int n){
   j_trackerLayers = n;

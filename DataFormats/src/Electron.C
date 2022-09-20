@@ -163,8 +163,23 @@ bool Electron::PassID(TString ID) const{
   if(ID=="SUSYLoose") return Pass_SUSYLoose();
   if(ID=="NOCUT") return true;
   if(ID=="TEST") return Pass_TESTID();
+  if(ID=="HNLoosest") return Pass_HNLoosest();
 
-  cout << "[Electron::PassID] No id : " << ID << endl;
+  //== For HNtypeI
+  if(ID=="HNVeto") return Pass_HNVeto(0.6, 0.2, 0.5, false);
+  if(ID=="HNLooseIso0p6") return Pass_ISRLoose(0.6);
+  if(ID=="HNLooseIso0p7") return Pass_ISRLoose(0.7);
+  if(ID=="HNLooseV1") return Pass_HNLoose(0.6, 0.05, 0.1, 4., true);
+  if(ID=="HNTightV1") return Pass_HNTight(0.05, 0.1, 4., 250., true);
+  if(ID=="HNTightV2") return Pass_HNTight(0.05, 0.1, 4., true);
+
+  //== For ISR
+  if(ID=="ISRVeto") return Pass_ISRVeto(0.6);
+  if(ID=="ISRLoose") return Pass_ISRLoose(0.6);
+  if(ID=="ISRTight") return Pass_ISRTight();
+
+  //cout << "[Electron::PassID] No id : " << ID << endl;
+  cerr << "[Electron::PassID] No id : " << ID << endl;
   exit(ENODATA);
 
   return false;
@@ -251,6 +266,163 @@ bool Electron::Pass_SUSYLoose() const{
 
 bool Electron::Pass_TESTID() const{
   return true;
+}
+
+bool Electron::Pass_HNLoosest() const{
+
+  if(! (RelIso() < 0.7) ) return false;
+  if(!( Pass_CutBasedVetoNoIso() || (MVANoIso()>-0.95)  )) return false;
+
+  return true;
+
+}
+
+
+//== For HNtypeI
+bool Electron::Pass_TriggerEmulation() const{
+
+  //==== Trigger emulation cuts (See https://twiki.cern.ch/twiki/bin/viewauth/CMS/SUSLeptonSF#ID_IP_ISO_AN1)
+  //==== Cut values (IdL, IdM) in single electron triggers
+  //==== No Iso cuts in the trigger with IdM
+  //==== TODO : Not used for the ID optimization with UL datasets
+
+  if(! (ecalPFClusterIso()/UncorrPt() < 0.45) ) return false;    // < 0.5
+  if(! (hcalPFClusterIso()/UncorrPt() < 0.25) ) return false;    // < 0.3
+  if(! (dr03TkSumPt()/UncorrPt() < 0.2) ) return false;          // < 0.2
+
+  if( fabs(scEta()) <= 1.479 ){
+    if(! (Full5x5_sigmaIetaIeta() < 0.011) ) return false;       // < 0.013, 0.011
+    if(! (fabs(dEtaSeed()) < 0.005) ) return false;              // < 0.01 , 0.006
+    if(! (fabs(dPhiIn()) < 0.04) ) return false;                 // < 0.07 , 0.15
+    if(! (HoverE() < 0.08) ) return false;                       // < 0.13 , 0.12 
+    if(! (fabs(InvEminusInvP()) < 0.01) ) return false;          // < 9999., 0.05 (TODO : This will not be used for UL)
+  }
+  else{
+    if(! (Full5x5_sigmaIetaIeta() < 0.031) ) return false;       // < 0.035, 0.031
+    if(! (fabs(dEtaSeed()) < 0.007) ) return false;              // < 0.015, 0.0085
+    if(! (fabs(dPhiIn()) < 0.04) ) return false;                 // < 0.1  , 0.05
+    if(! (HoverE() < 0.08) ) return false;                       // < 0.13 , 0.1
+    if(! (fabs(InvEminusInvP()) < 0.01) ) return false;          // < 9999., 0.05 (TODO : This will not be used for UL)
+  }
+
+  return true;
+
+}
+
+bool Electron::Pass_HNVeto(double relisoCut, double dxyCut, double dzCut, bool isPOGIP) const{
+
+  if(! (Pass_CutBasedVetoNoIso()) ) return false;
+  if(! (RelIso()<relisoCut) ) return false;
+  if( fabs(scEta()) <= 1.479 ){
+    if(! (fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
+  }
+  else{
+    if(isPOGIP){
+      if(! (fabs(dXY())<0.1 && fabs(dZ())<0.2) ) return false;
+    }
+    else{
+      if(! (fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
+    }
+  }
+  return true;
+
+}
+
+bool Electron::Pass_HNLoose(double relisoCut, double dxyCut, double dzCut, double sipCut, bool isPOGIP) const{
+
+  if(! (Pass_CutBasedLooseNoIso()) ) return false;
+  if(! (RelIso()<relisoCut) ) return false;
+  if( fabs(scEta()) <= 1.479 ){
+    if(! (fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
+  }
+  else{
+    if(isPOGIP){
+      if(! (fabs(dXY())<0.1 && fabs(dZ())<0.2) ) return false;
+    }
+    else{
+      if(! (fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
+    }
+  }
+  if(! (fabs(IP3D()/IP3Derr())<sipCut) ) return false;
+  if(! (IsGsfCtfScPixChargeConsistent()) ) return false;
+  if(! (Pass_TriggerEmulation()) ) return false;
+
+  return true;
+
+}
+
+bool Electron::Pass_HNTight(double dxyCut, double dzCut, double sipCut, double ptCut, bool isPOGIP) const{
+  if(! (passTightID()) ) return false;
+  if( fabs(scEta()) <= 1.479 ){
+    if(! (fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
+  }
+  else{
+    if(isPOGIP){
+      if(! (fabs(dXY())<0.1 && fabs(dZ())<0.2) ) return false;
+    }
+    else{
+      if(! (fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
+    }
+  }
+  if(! (fabs(IP3D()/IP3Derr())<sipCut) ) return false;
+  if(UncorrPt() < ptCut){
+    if(! (IsGsfCtfScPixChargeConsistent()) ) return false;
+  }
+  if(! (Pass_TriggerEmulation()) ) return false;
+
+  return true;
+
+}
+
+bool Electron::Pass_HNTight(double dxyCut, double dzCut, double sipCut, bool isPOGIP) const{
+
+  if(! (passTightID()) ) return false;
+  if( fabs(scEta()) <= 1.479 ){
+    if(! (fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
+  }
+  else{
+    if(isPOGIP){
+      if(! (fabs(dXY())<0.1 && fabs(dZ())<0.2) ) return false;
+    }
+    else{
+      if(! (fabs(dXY())<dxyCut && fabs(dZ())<dzCut) ) return false;
+    }
+  }
+  if(! (fabs(IP3D()/IP3Derr())<sipCut) ) return false;
+  if(! (IsGsfCtfScPixChargeConsistent()) ) return false;
+  if(! (Pass_TriggerEmulation()) ) return false;
+
+  return true;
+
+}
+
+
+//== For ISR
+
+bool Electron::Pass_ISRVeto(double relisoCut) const{
+
+  if(! (Pass_CutBasedVetoNoIso()) ) return false;
+  if(! (RelIso()<relisoCut) ) return false;
+
+  return true;
+
+}
+
+bool Electron::Pass_ISRLoose(double relisoCut) const{
+
+  if(! (Pass_CutBasedLooseNoIso()) ) return false;
+  if(! (RelIso()<relisoCut) ) return false;
+
+  return true;
+
+}
+
+bool Electron::Pass_ISRTight() const{
+
+  if(! (passMediumID()) ) return false;
+
+  return true;
+
 }
 
 

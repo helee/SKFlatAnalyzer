@@ -107,6 +107,17 @@ public:
   bool Pass_POGTightWithTightIso() const;
   bool Pass_POGHighPtWithLooseTrkIso() const;
   bool Pass_TESTID() const;
+  bool Pass_HNLoosest() const;
+
+  //== For HNtypeI
+  bool Pass_HNVeto(double relisoCut, double dxyCut, double dzCut) const;
+  bool Pass_HNLoose(double relisoCut, double dxyCut, double dzCut, double sipCut) const;
+  bool Pass_HNTight(double relisoCut, double dxyCut, double dzCut, double sipCut) const;
+
+  //== For ISR
+  bool Pass_ISRVeto(double relisoCut) const;
+  bool Pass_ISRLoose(double relisoCut) const;
+  bool Pass_ISRTight(double relisoCut) const;
   
   void SetTrackerLayers(int n);
   inline int TrackerLayers() const { return j_trackerLayers; }

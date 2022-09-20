@@ -122,6 +122,7 @@ public:
   bool Pass_SUSYMVAWP(TString wp) const;
   bool Pass_SUSYTight() const;
   bool Pass_SUSYLoose() const;
+  bool Pass_HNLoosest() const;
 
   void SetRelPFIso_Rho(double r);
   double EA();
@@ -129,6 +130,19 @@ public:
   //==== ID
   bool PassID(TString ID) const;
   bool Pass_TESTID() const;
+
+  //== For HNtypeI
+  bool Pass_TriggerEmulation() const;
+
+  bool Pass_HNVeto(double relisoCut, double dxyCut, double dzCut, bool isPOGIP) const;
+  bool Pass_HNLoose(double relisoCut, double dxyCut, double dzCut, double sipCut, bool isPOGIP) const;
+  bool Pass_HNTight(double dxyCut, double dzCut, double sipCut, double ptCut, bool isPOGIP) const;
+  bool Pass_HNTight(double dxyCut, double dzCut, double sipCut, bool isPOGIP) const;
+
+  //== For ISR
+  bool Pass_ISRVeto(double relisoCut) const;
+  bool Pass_ISRLoose(double relisoCut) const;
+  bool Pass_ISRTight() const;
 
   bool Pass_CutBasedLooseNoIso() const;
   bool Pass_CutBasedVetoNoIso() const;

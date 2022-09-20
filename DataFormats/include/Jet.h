@@ -20,8 +20,11 @@ public:
   inline bool IsGenMatched() const { return j_GenHFHadronMatcher_flavour!=-999; }
   void SetTaggerResults(std::vector<double> ds);
   void SetEnergyFractions(double cH, double nH, double nEM, double cEM, double muE);
+  inline double ChargedEmEnergyFraction() const { return j_chargedEmEnergyFraction; }  // For HNtypeI
+  inline double NeutralEmEnergyFraction() const { return j_neutralEmEnergyFraction; }  // For HNtypeI
   void SetMultiplicities(double cM, double nM);
   void SetPileupJetId(double v);
+  inline double PileupJetId() const { return j_PileupJetId; }  // For HNtypeI
 
   void SetEnShift(double en_up, double en_down);
   inline double EnShift(int s) const {
@@ -42,12 +45,20 @@ public:
   inline double CJetNNCorrection() const { return j_cJetNN_corr; }
   inline double CJetNNResolution() const { return j_cJetNN_res; }
 
+  void SetPxUnSmeared(double px);  // For HNtypeI
+  void SetPyUnSmeared(double py);  // For HNtypeI
+  inline double PxUnSmeared() const { return j_PxUnSmeared; }  // For HNtypeI
+  inline double PyUnSmeared() const { return j_PyUnSmeared; }  // For HNtypeI
+
   void SetTightJetID(double b);
   void SetTightLepVetoJetID(double b);
   inline bool Pass_tightJetID() const { return j_tightJetID; }
   inline bool Pass_tightLepVetoJetID() const { return j_tightLepVetoJetID; }
 
   bool PassID(TString ID) const;
+
+  bool Pass_HNTight() const;  // For HNtypeI
+  bool PassPileupMVA(TString WP, TString Era) const;  // For HNtypeI
 
   double GetTaggerResult(JetTagging::Tagger tg) const;
 
@@ -81,6 +92,8 @@ private:
   double j_cJetNN_corr;
   double j_cJetNN_res;
   bool j_tightJetID, j_tightLepVetoJetID;
+  double j_PxUnSmeared;  // For HNtypeI
+  double j_PyUnSmeared;  // For HNtypeI
 
   ClassDef(Jet,1)
 };

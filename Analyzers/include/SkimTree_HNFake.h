@@ -16,7 +16,12 @@ public:
 
   TTree *newtree;
 
+  double TriggerSafePt_Electron;
+  double TriggerSafePt_Muon;
+
   vector<TString> triggers;
+  vector<TString> validation_muon_triggers;
+  vector<TString> validation_electron_triggers;
   void WriteHist();
 
 };

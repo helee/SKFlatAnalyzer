@@ -113,11 +113,25 @@ bool FatJet::PassID(TString ID) const {
 
   if(ID=="tight") return Pass_tightJetID();
   if(ID=="tightLepVeto") return Pass_tightLepVetoJetID();
+  if(ID=="HNTight0p45") return Pass_HNTight(0.45); // For HNtypeI
+  if(ID=="HNTight0p55") return Pass_HNTight(0.55); // For HNtypeI
 
-  cout << "[FatJet::PassID] No id : " << ID << endl;
+  //cout << "[FatJet::PassID] No id : " << ID << endl;
+  cerr << "[FatJet::PassID] No id : " << ID << endl;
   exit(ENODATA);
 
   return false;
+
+}
+
+bool FatJet::Pass_HNTight(double tau21Cut) const{
+
+  //if(!Pass_tightLepVetoJetID()) return false;
+  if(!Pass_tightJetID()) return false;
+  if(!(PuppiTau2()/PuppiTau1() < tau21Cut)) return false;  // 0.6 in EXO-17-028
+  if(!(SDMass()>40. && SDMass()<130.)) return false;       // jet mass range used for POG SF measurement : 65-105 GeV
+
+  return true;
 
 }
 
