@@ -95,7 +95,8 @@ void SkimTree_HNFake::initializeAnalyzer(){
     if(IsDATA){
       
       if (this->DataStream == "SingleMuon"){
-	triggers = { "HLT_Mu3_PFJet40_v","HLT_Mu50_v"};
+	//triggers = { "HLT_Mu3_PFJet40_v","HLT_Mu50_v"};
+        triggers = {"HLT_Mu3_PFJet40_v"};
 	validation_muon_triggers = {
 	  "HLT_IsoMu27_v",
 	};
@@ -159,8 +160,9 @@ void SkimTree_HNFake::initializeAnalyzer(){
 	  "HLT_IsoMu24_v",
 	};
       
-	triggers = {"HLT_Mu3_PFJet40_v","HLT_Mu50_v"};
-	
+	//triggers = {"HLT_Mu3_PFJet40_v","HLT_Mu50_v"};
+	triggers = {"HLT_Mu3_PFJet40_v"};
+
       }
       if (this->DataStream == "EGamma"){
 
@@ -225,7 +227,7 @@ void SkimTree_HNFake::executeEvent(){
   Event ev;
   ev.SetTrigger(*HLT_TriggerName);
 
-  if(ev.PassTrigger(validation_electron_triggers)){
+  /*if(ev.PassTrigger(validation_electron_triggers)){
     
     vector<Electron> allel = GetElectrons("HNLoosest", 8., 2.5);
     std::sort(allel.begin(),allel.end(),PtComparing);
@@ -251,12 +253,17 @@ void SkimTree_HNFake::executeEvent(){
       }
     }
 
-  }
+  }*/
 
   //==== Skim 1 ) trigger
   if(!(ev.PassTrigger(triggers))) return;
 
-  //==== Skim 2) only one loose leptons (e or mu) 
+  if(IsDATA){
+    newtree->Fill();
+    return;
+  }
+
+  //==== Skim 2) only one loose leptons (e or mu)  //==== TODO : To be updated (only for MC) 
 
   //vector<Muon> allmuons = GetMuons("HNLoosest", 4., 2.4);
   //vector<Electron> allel = GetElectrons("HNLoosest", 8., 2.5);
