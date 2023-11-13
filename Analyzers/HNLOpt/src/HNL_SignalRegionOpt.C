@@ -414,14 +414,23 @@ void HNL_SignalRegionOpt::RunULAnalysis(AnalyzerParameter param){
 
 HNL_SignalRegionOpt::HNL_SignalRegionOpt(){
 
+  cout << "HNL_SignalRegionOpt::HNL_SignalRegionOpt  TMVA::Tools::Instance() " << endl;
   TMVA::Tools::Instance();
+  cout << "Create Reader class " << endl;
 
-  MVAReader = new TMVA::Reader();
+  //MVAReader = new TMVA::Reader();
+  //MVAReaderMM = new TMVA::Reader();
+  MVAReaderEE = new TMVA::Reader();
+  MVAReaderEM = new TMVA::Reader();
 
 }
  
 HNL_SignalRegionOpt::~HNL_SignalRegionOpt(){
-  delete MVAReader;
+
+  //delete MVAReader;
+  //delete MVAReaderMM;
+  delete MVAReaderEE;
+  delete MVAReaderEM;
 
 }
 

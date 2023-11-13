@@ -1902,16 +1902,18 @@ void HNL_RegionDefinitionsOpt::RunAllControlRegions(std::vector<Electron> electr
     if(FillWZCRPlots( trilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("WZ_CR");
     if(FillZNPCRPlots(trilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("ZNP_CR");
 
-    if(run_Debug)cout << "Conv split "  <<  ConversionVeto(LepsT,gens) << " " << ConversionSplitting(LepsT,gens) << endl;
-    
+    //if(run_Debug)cout << "Conv split "  <<  ConversionVeto(LepsT,gens) << " " << ConversionSplitting(LepsT,gens) << endl;
+    if(run_Debug)cout << "Conv split "  <<  ConversionVeto(LepsT,gens) << " " << ConversionSplitting(LepsT) << endl;
+
     // Treat conversions using GENT MEthod
     if(ConversionVeto(LepsT,gens)){
       if(FillWGCRPlots( trilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("WG_CR");
       if(FillZGCRPlots( trilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("ZG_CR");
     }
     // Treat using pt cit method
-    if(ConversionSplitting(LepsT,gens)){
-      
+    //if(ConversionSplitting(LepsT,gens)){
+    if(ConversionSplitting(LepsT)){
+
       AnalyzerParameter paramTMP=param;
       paramTMP.Name=param.Name+"_ConvMethodPt";
       if(FillWGCRPlots( trilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTMP, weight_channel)) passed.push_back("WG_Method2_CR");

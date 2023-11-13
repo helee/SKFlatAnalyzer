@@ -19,7 +19,8 @@ void HNL_SignalRegionPlotter::executeEvent(){
   
   if(!IsData)  gens = GetGens();
 
-  AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter("MVAUL","_UL");
+  AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter("BDT","_UL");
+  //AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter("HNL","_UL");
   RunULAnalysis(param_signal);
 
   if(!IsData) RunSyst=true;
@@ -91,20 +92,22 @@ void HNL_SignalRegionPlotter::RunULAnalysis(AnalyzerParameter param){
   
   std::vector<FatJet> fatjets_tmp                 = GetFatJets(param, param.FatJet_ID, 200., 5.);
   
-  std::vector<FatJet> AK8_JetColl                  = SelectAK8Jets(fatjets_tmp, 200., 5., true,  1., false, -999, false, 0., 20000., ElectronCollV, MuonCollV);
-  
+  //std::vector<FatJet> AK8_JetColl                 = SelectAK8Jets(fatjets_tmp, 200., 5., true,  1., false, -999, false, 0., 20000., ElectronCollV, MuonCollV);
+  //std::vector<FatJet> AK8_JetColl                 = SelectAK8Jets(fatjets_tmp, 200., 2.7, true,  1., false, -999, false, 40., 130., ElectronCollV, MuonCollV);
+  std::vector<FatJet> AK8_JetColl                 = SelectAK8Jetsv2(fatjets_tmp, 200., 2.7, true,  1., false, 0., true, 40., 130., "Loose", ElectronCollV, MuonCollV);
 
   // AK4 JET                                                                                                                                                                              
-  std::vector<Jet> jets_tmp     = GetJets   ( param, param.Jet_ID, 20., 5.);
+  std::vector<Jet> jets_tmp     = GetJets   ( param, param.Jet_ID, 15., 5.);
   
-  std::vector<Jet> JetCollLoose                    = SelectAK4Jets(jets_tmp,     15., 4.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, AK8_JetColl);
-  std::vector<Jet> AK4_JetAllColl                  = GetJets("NoID", 10., 3.0);
+  std::vector<Jet> JetCollLoose                    = SelectAK4Jets(jets_tmp,     15., 4.7, true, 0.4, 0.8, "",      ElectronCollV,MuonCollV, AK8_JetColl);
+  //std::vector<Jet> All_JetColl                     = GetJets("NoID", 10., 3.0);
 
-  TString PUIDWP="";
-  std::vector<Jet> JetColl                           = SelectAK4Jets(jets_tmp,     20., 2.7, true,  0.4,0.8, PUIDWP,   ElectronCollV,MuonCollV, AK8_JetColl);
-  std::vector<Jet> VBF_JetColl                       = SelectAK4Jets(jets_tmp,     30., 4.7, true,  0.4,0.8, PUIDWP,  ElectronCollV,MuonCollV, AK8_JetColl);    // High ETa jets                 
-  std::vector<Jet> BJetColltmp                       = SelectAK4Jets(jets_tmp,     20., 2.4, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, AK8_JetColl);
-  
+  TString PUIDWP="Loose";
+  std::vector<Jet> JetColl                         = SelectAK4Jets(jets_tmp,     20., 2.7, true, 0.4, 0.8, PUIDWP,  ElectronCollV, MuonCollV, AK8_JetColl);
+  std::vector<Jet> VBF_JetColl                     = SelectAK4Jets(jets_tmp,     30., 4.7, true, 0.4, 0.8, PUIDWP,  ElectronCollV, MuonCollV, AK8_JetColl);    // High Eta jets                 
+  std::vector<Jet> BJetColltmp                     = SelectAK4Jets(jets_tmp,     20., 2.4, true, 0.4, 0.8, "",      ElectronCollV, MuonCollV, AK8_JetColl);
+  std::vector<Jet> All_JetColl                     = SelectAK4Jets(jets_tmp,     20., 2.7, true, 0.4, 0.8, PUIDWP,  ElectronCollV, MuonCollV, AK8_JetColl);
+
   //double PJet_PUID_weight = GetJetPileupIDSF(JetColl, PUIDWP, param);
   //    weight*= PJet_PUID_weight;
   //FillWeightHist("PJet_PUID_weight_" ,PJet_PUID_weight);
@@ -126,9 +129,9 @@ void HNL_SignalRegionPlotter::RunULAnalysis(AnalyzerParameter param){
   if(!IsData && AK8_JetColl.size()==0)weight = weight*sf_btag;
   if(!IsData && AK8_JetColl.size()>0)weight = weight*sf_btagSR1;
 
+  if(MCSample.Contains("DYJets")) weight *= 0.5;
 
-
-  RunAllSignalRegions(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV,  TauColl,JetCollLoose, AK4_JetAllColl, JetColl,VBF_JetColl,AK8_JetColl, BJetColl,BJetCollSR1, ev,METv, param, weight);
+  RunAllSignalRegions(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV,  TauColl,JetCollLoose, All_JetColl, JetColl,VBF_JetColl,AK8_JetColl, BJetColl,BJetCollSR1, ev,METv, param, weight);
 
 
 }
@@ -144,7 +147,9 @@ HNL_SignalRegionPlotter::HNL_SignalRegionPlotter(){
   TMVA::Tools::Instance();
   cout << "Create Reader class " << endl;
   //MVAReader = new TMVA::Reader();
-  MVAReaderMM = new TMVA::Reader();
+  MVAReaderMMFake = new TMVA::Reader();
+  MVAReaderMMNonFake = new TMVA::Reader();
+  MVAReaderMMIncl = new TMVA::Reader();
   MVAReaderEE = new TMVA::Reader();
   MVAReaderEM = new TMVA::Reader();
   
@@ -153,7 +158,9 @@ HNL_SignalRegionPlotter::HNL_SignalRegionPlotter(){
 HNL_SignalRegionPlotter::~HNL_SignalRegionPlotter(){
 
   //delete MVAReader;
-  delete MVAReaderMM;
+  delete MVAReaderMMFake;
+  delete MVAReaderMMNonFake;
+  delete MVAReaderMMIncl;
   delete MVAReaderEE;
   delete MVAReaderEM;
 

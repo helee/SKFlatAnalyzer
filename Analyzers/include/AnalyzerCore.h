@@ -62,7 +62,7 @@ public:
   };
 
 
-
+  void beginEvent();
 
 
   //==================
@@ -208,7 +208,8 @@ public:
   double  JetLeptonPtRatioLepAware( Electron lep, bool removeLep,bool ApplyCorr=false);
 
 
-  bool ConversionSplitting(std::vector<Lepton *> leps,const std::vector<Gen>& gens);
+  //bool ConversionSplitting(std::vector<Lepton *> leps,const std::vector<Gen>& gens);
+  bool ConversionSplitting(std::vector<Lepton *> leps, bool isSR=false);
   bool ConversionVeto(std::vector<Lepton *> leps,const std::vector<Gen>& gens);
   bool IsCF(Electron el, std::vector<Gen> gens);
 
@@ -245,7 +246,7 @@ public:
 
   double GetEventFatJetSF(vector<FatJet> fatjets, TString label, int dir);
   double GetFatJetSF(FatJet fatjet, TString tag,  int dir);
-
+  double GetEventFatJetSFPN(vector<FatJet> fatjets, TString wp, int syst);
 
   //===== Detailed jet selection                                                                                                                 
   vector<Jet>   SelectAK4Jets(vector<Jet> jets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean, double dr_ak8_clean,   TString pu_tag,std::vector<Lepton *> leps_veto,  vector<FatJet> fatjets);
@@ -256,8 +257,11 @@ public:
 
 
   vector<Jet>  SelectAK4Jets(vector<Jet> jets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean, double dr_ak8_clean, TString pu_tag, vector<Electron>  veto_electrons, vector<Muon>  veto_muons, vector<FatJet> fatjets);
-  
-  vector<FatJet> SelectAK8Jetsv2(vector<FatJet> fatjets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean , bool apply_tau21, double tau21_cut , bool apply_masscut, double sdmass_lower_cut,  double sdmass_upper_cut,double WQCDTagger,  vector<Electron>  veto_electrons, vector<Muon>  veto_muons);
+  vector<Jet>  SelectAK4Jets(vector<Jet> jets, double pt_cut ,  double eta_cut1, double eta_cut2, bool lepton_cleaning  , double dr_lep_clean, double dr_ak8_clean, TString pu_tag, vector<Electron>  veto_electrons, vector<Muon>  veto_muons, vector<FatJet> fatjets);
+ 
+  vector<FatJet> SelectAK8Jetsv2(vector<FatJet> fatjets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean , bool apply_tau21, double tau21_cut , bool apply_masscut, double sdmass_lower_cut,  double sdmass_upper_cut, double WQCDTagger,  vector<Electron>  veto_electrons, vector<Muon>  veto_muons);
+
+  vector<FatJet> SelectAK8Jetsv2(vector<FatJet> fatjets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean , bool apply_tau21, double tau21_cut , bool apply_masscut, double sdmass_lower_cut,  double sdmass_upper_cut, TString WQCDTaggerWP,  vector<Electron>  veto_electrons, vector<Muon>  veto_muons);
 
   vector<FatJet> SelectAK8Jets(vector<FatJet> fatjets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean , bool apply_tau21, double tau21_cut , bool apply_masscut, double sdmass_lower_cut,  double sdmass_upper_cut,   vector<Electron>  veto_electrons, vector<Muon>  veto_muons);
 
@@ -501,7 +505,10 @@ public:
   int  GetPhotonType_JH(int PhotonIdx, std::vector<Gen>& TruthColl);
   int  GetFakeLepSrcType(const Lepton& Lep, vector<Jet>& JetColl);
 
-
+  vector<Jet>      All_Jets;
+  vector<FatJet>   All_FatJets;
+  vector<Muon>     All_Muons;
+  vector<Electron> All_Electrons;
 
   string run_timestamp;
 

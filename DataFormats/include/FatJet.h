@@ -45,6 +45,9 @@ public:
 
   double GetTaggerResult(JetTagging::Tagger tg) const;
 
+  bool PassTagger(JetTagging::Tagger tg, TString wp, TString era) const;
+  double GetTaggerSF(JetTagging::Tagger tg, TString wp, TString era, int Sys) const;
+
   void SetPuppiTaus(double t1, double t2, double t3, double t4);
   double PuppiTau1() const { return j_puppi_tau1; }
   double PuppiTau2() const { return j_puppi_tau2; }

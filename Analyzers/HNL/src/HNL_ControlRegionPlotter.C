@@ -3,6 +3,8 @@
 void HNL_ControlRegionPlotter::initializeAnalyzer(){
 
   HNL_LeptonCore::initializeAnalyzer();
+  cout << "SetupMVAReader " << endl;
+  SetupMVAReader();
 
 }
 
@@ -17,7 +19,7 @@ void HNL_ControlRegionPlotter::executeEvent(){
 
   if(!IsData)  gens = GetGens();
 
-  AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter("MVAUL","_UL");
+  AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter("HNL","_UL");
 
   RunControlRegions(param_signal);
 
@@ -109,15 +111,17 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param){
   // First get inclusive sample of AK8 Jets
   std::vector<FatJet> fatjets_tmp  = GetFatJets(param, param.FatJet_ID, 200., 5.);
   // Make selection on AK8
-  std::vector<FatJet> AK8_JetColl                  = SelectAK8Jets(fatjets_tmp, 200., 5., true,  1., false, -999, false, 0., 20000., ElectronCollV, MuonCollV);
+  //std::vector<FatJet> AK8_JetColl                 = SelectAK8Jets(fatjets_tmp, 200., 5., true,  1., false, -999, false, 0., 20000., ElectronCollV, MuonCollV);
+  std::vector<FatJet> AK8_JetColl                 = SelectAK8Jetsv2(fatjets_tmp, 200., 2.7, true,  1., false, 0, true, 40., 130., "Loose", ElectronCollV, MuonCollV);
+  //std::vector<FatJet> AK8_JetColl                 = SelectAK8Jets(fatjets_tmp, 250., 5.0, true,  1., false, -999, true, 40., 130., ElectronCollV, MuonCollV);
 
   std::vector<Jet> All_JetColl = GetJets   ( param, param.Jet_ID, 10., 5.);
   std::vector<Jet> jets_tmp     = GetJets   ( param, param.Jet_ID, 20., 5.);
 
 
   TString PUIDWP="";
-  std::vector<Jet> bjets_tmp                      = SelectAK4Jets(jets_tmp,     20., 2.5, true,  0.4,0.8, PUIDWP,   ElectronCollV,MuonCollV, AK8_JetColl);
-  std::vector<Jet> AK4_JetColl                    = SelectAK4Jets(jets_tmp,     20., 2.5, true,  0.4,0.8, PUIDWP,   ElectronCollV,MuonCollV, AK8_JetColl);
+  std::vector<Jet> bjets_tmp                      = SelectAK4Jets(jets_tmp,     20., 2.4, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, AK8_JetColl);
+  std::vector<Jet> AK4_JetColl                    = SelectAK4Jets(jets_tmp,     20., 2.7, true,  0.4,0.8, PUIDWP,   ElectronCollV,MuonCollV, AK8_JetColl);
   std::vector<Jet> VBF_JetColl                    = SelectAK4Jets(jets_tmp,     30., 4.7, true,  0.4,0.8, PUIDWP,  ElectronCollV,MuonCollV, AK8_JetColl);   // High ETa jets                                                                                                                                              
   if(PUIDWP != ""){
     double PJet_PUID_weight = GetJetPileupIDSF(AK4_JetColl, PUIDWP, param);
@@ -127,6 +131,7 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param){
 
   // Get BJet collection
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
+  //JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Tight, JetTagging::incl, JetTagging::mujets);
 
   std::vector<Jet> BJetColl    = SelectBJets(param, bjets_tmp, param_jets);
   double sf_btag               = GetBJetSF(param, bjets_tmp, param_jets);
@@ -143,9 +148,23 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param){
 
 HNL_ControlRegionPlotter::HNL_ControlRegionPlotter(){
 
+  cout << "HNL_ControlRegionPlotter::HNL_ControlRegionPlotter  TMVA::Tools::Instance() " << endl;
+  TMVA::Tools::Instance();
+  cout << "Create Reader class " << endl;
+  MVAReaderMMFake = new TMVA::Reader();
+  MVAReaderMMNonFake = new TMVA::Reader();
+  MVAReaderMMIncl = new TMVA::Reader();
+  MVAReaderEE = new TMVA::Reader();
+  MVAReaderEM = new TMVA::Reader();
 
 }
  
 HNL_ControlRegionPlotter::~HNL_ControlRegionPlotter(){
+
+  delete MVAReaderMMFake;
+  delete MVAReaderMMNonFake;
+  delete MVAReaderMMIncl;
+  delete MVAReaderEE;
+  delete MVAReaderEM;
 
 }

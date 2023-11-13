@@ -146,6 +146,335 @@ double FatJet::GetTaggerResult(JetTagging::Tagger tg) const{
   }
 }
 
+double FatJet::GetTaggerSF(JetTagging::Tagger tg, TString wp, TString era, int Sys) const{
+
+  //==== SF from https://indico.cern.ch/event/1152827/contributions/4840404/attachments/2428856/4162159/ParticleNet_SFs_ULNanoV9_JMAR_25April2022_PK.pdf
+  //==== Only coded for 5% mis tag rate
+
+  if(tg==JetTagging::particleNet_WvsQCD){
+
+    if(wp == "Loose"){
+
+      if(era == "2016preVFP"){
+        if(this->Pt() < 300.){
+          double SF=1.07;
+	  if(Sys==0) return SF;
+          if(Sys==1) return (SF+0.03);
+          if(Sys==-1) return (SF-0.03);
+        }
+        else if(this->Pt() < 400.){
+          double SF=0.99;
+          if(Sys==0) return SF;
+          if(Sys==1) return (SF+0.09);
+          if(Sys==-1) return (SF-0.08);
+        } 
+        else{
+          double SF=1.17;
+          if(Sys==0) return SF;
+          if(Sys==1) return (SF+0.08);
+	  if(Sys==-1) return (SF-0.08);
+        }
+        return -999999;
+      }
+
+      if(era == "2016postVFP"){
+        if(this->Pt() < 300.) {
+          double SF=1.18;
+          if(Sys==0) return SF;
+          if(Sys==1) return (SF+0.20);
+          if(Sys==-1) return (SF-0.10);
+        }
+        else if(this->Pt() < 400.){
+          double SF=1.03;
+          if(Sys==0) return SF;
+          if(Sys==1) return (SF+0.19);
+          if(Sys==-1) return (SF-0.13);
+        } 
+        else{
+          double SF=1.04;
+          if(Sys==0) return SF;
+          if(Sys==1) return (SF+0.25);
+          if(Sys==-1) return (SF-0.21);
+        }
+        return -999999;
+      }
+
+
+      if(era == "2017"){
+        if(this->Pt() < 300.){
+          double SF=1.07;
+          if(Sys==0) return SF;
+          if(Sys==1) return (SF+0.12);
+          if(Sys==-1) return (SF-0.05);
+        }
+        else if(this->Pt() < 400.){
+          double SF=1.06;
+          if(Sys==0) return SF;
+          if(Sys==1) return (SF+0.10);
+          if(Sys==-1) return (SF-0.08);
+        } 
+        else{
+          double SF=0.92;
+          if(Sys==0) return SF;
+          if(Sys==1) return (SF+0.10);
+          if(Sys==-1) return (SF-0.10);
+        }
+        return -999999;
+      }
+
+      if(era == "2018"){
+        if(this->Pt() < 300.){
+          double SF=1.05;
+          if(Sys==0) return SF;
+          if(Sys==1) return (SF+0.11);
+          if(Sys==-1) return (SF-0.06);
+        }
+        else if(this->Pt() < 400.){
+	  double SF=1.00;
+          if(Sys==0) return SF;
+          if(Sys==1) return (SF+0.08);
+          if(Sys==-1) return (SF-0.08);
+        } 
+        else{
+          double SF=1.16;
+          if(Sys==0) return SF;
+          if(Sys==1) return (SF+0.12);
+          if(Sys==-1) return (SF-0.14);
+        }
+        return -999999;
+      }
+
+    }
+
+    if(wp == "Medium"){
+
+      if(era == "2016preVFP"){
+        if(this->Pt() < 300.){
+          double SF=1.01;
+          if(Sys==0) return SF;
+          if(Sys==1) return (SF+0.05);
+          if(Sys==-1) return (SF-0.05);
+        }
+        else if(this->Pt() < 400.){
+          double SF=0.99;
+          if(Sys==0) return SF;
+          if(Sys==1) return (SF+0.10);
+          if(Sys==-1) return (SF-0.10);
+        }
+        else{
+          double SF=1.15;
+          if(Sys==0) return SF;
+          if(Sys==1) return (SF+0.08);
+          if(Sys==-1) return (SF-0.13);
+        }
+        return -999999;
+      }
+
+      if(era == "2016postVFP"){
+        if(this->Pt() < 300.) {
+          double SF=1.13;
+          if(Sys==0) return SF;
+          if(Sys==1) return (SF+0.04);
+          if(Sys==-1) return (SF-0.05);
+        }
+        else if(this->Pt() < 400.){
+          double SF=1.09;
+          if(Sys==0) return SF;
+          if(Sys==1) return (SF+0.05);
+          if(Sys==-1) return (SF-0.05);
+        }
+        else{
+          double SF=1.00;
+          if(Sys==0) return SF;
+          if(Sys==1) return (SF+0.07);
+          if(Sys==-1) return (SF-0.10);
+        }
+        return -999999;
+      }
+
+
+      if(era == "2017"){
+        if(this->Pt() < 300.){
+          double SF=1.00;
+          if(Sys==0) return SF;
+          if(Sys==1) return (SF+0.04);
+          if(Sys==-1) return (SF-0.04);
+        }
+        else if(this->Pt() < 400.){
+          double SF=0.99;
+          if(Sys==0) return SF;
+          if(Sys==1) return (SF+0.04);
+          if(Sys==-1) return (SF-0.07);
+        }
+        else{
+          double SF=0.74;
+          if(Sys==0) return SF;
+          if(Sys==1) return (SF+0.09);
+          if(Sys==-1) return (SF-0.07);
+        }
+        return -999999;
+      }
+
+      if(era == "2018"){
+        if(this->Pt() < 300.){
+          double SF=1.02;
+          if(Sys==0) return SF;
+          if(Sys==1) return (SF+0.02);
+          if(Sys==-1) return (SF-0.03);
+        }
+        else if(this->Pt() < 400.){
+          double SF=0.98;
+          if(Sys==0) return SF;
+          if(Sys==1) return (SF+0.04);
+          if(Sys==-1) return (SF-0.06);
+        }
+        else{
+          double SF=1.02;
+          if(Sys==0) return SF;
+          if(Sys==1) return (SF+0.05);
+          if(Sys==-1) return (SF-0.13);
+        }
+        return -999999;
+      }
+
+    }
+
+    if(wp == "Tight"){
+
+      if(era == "2016preVFP"){
+        if(this->Pt() < 300.){
+          double SF=0.98;
+          if(Sys==0) return SF;
+          if(Sys==1) return (SF+0.05);
+          if(Sys==-1) return (SF-0.04);
+        }
+        else if(this->Pt() < 400.){
+          double SF=1.00;
+          if(Sys==0) return SF;
+          if(Sys==1) return (SF+0.05);
+          if(Sys==-1) return (SF-0.12);
+        }
+        else{
+          double SF=1.05;
+          if(Sys==0) return SF;
+          if(Sys==1) return (SF+0.07);
+          if(Sys==-1) return (SF-0.12);
+        }
+        return -999999;
+      }
+
+      if(era == "2016postVFP"){
+        if(this->Pt() < 300.) {
+          double SF=0.99;
+          if(Sys==0) return SF;
+          if(Sys==1) return (SF+0.04);
+          if(Sys==-1) return (SF-0.03);
+        }
+        else if(this->Pt() < 400.){
+          double SF=0.97;
+          if(Sys==0) return SF;
+          if(Sys==1) return (SF+0.04);
+          if(Sys==-1) return (SF-0.06);
+        }
+        else{
+          double SF=0.91;
+          if(Sys==0) return SF;
+          if(Sys==1) return (SF+0.09);
+          if(Sys==-1) return (SF-0.15);
+        }
+        return -999999;
+      }
+
+
+      if(era == "2017"){
+        if(this->Pt() < 300.){
+          double SF=0.92;
+          if(Sys==0) return SF;
+          if(Sys==1) return (SF+0.02);
+          if(Sys==-1) return (SF-0.03);
+        }
+        else if(this->Pt() < 400.){
+          double SF=0.90;
+          if(Sys==0) return SF;
+          if(Sys==1) return (SF+0.04);
+          if(Sys==-1) return (SF-0.06);
+        }
+        else{
+          double SF=0.89;
+          if(Sys==0) return SF;
+          if(Sys==1) return (SF+0.05);
+          if(Sys==-1) return (SF-0.09);
+        }
+        return -999999;
+      }
+
+      if(era == "2018"){
+        if(this->Pt() < 300.){
+          double SF=0.90;
+          if(Sys==0) return SF;
+          if(Sys==1) return (SF+0.02);
+          if(Sys==-1) return (SF-0.02);
+        }
+        else if(this->Pt() < 400.){
+          double SF=0.83;
+          if(Sys==0) return SF;
+          if(Sys==1) return (SF+0.05);
+          if(Sys==-1) return (SF-0.02);
+        }
+        else{
+          double SF=0.87;
+          if(Sys==0) return SF;
+          if(Sys==1) return (SF+0.04);
+          if(Sys==-1) return (SF-0.04);
+        }
+        return -999999;
+      }
+
+    }
+
+  }
+
+  return -999999;
+
+}
+
+bool FatJet::PassTagger(JetTagging::Tagger tg, TString wp, TString era) const{
+
+  if(tg==JetTagging::particleNet_WvsQCD){
+
+    double WP = -1.;
+
+    if(wp == "Loose"){ // Mistag rate 5%
+      if(era == "2016preVFP") WP = 0.68;
+      if(era == "2016postVFP") WP = 0.67;
+      if(era == "2017") WP = 0.71;
+      if(era == "2018") WP = 0.70;
+    }
+
+    if(wp == "Medium"){ // Mistag rate 1%
+      if(era == "2016preVFP") WP = 0.94;
+      if(era == "2016postVFP") WP = 0.93;
+      if(era == "2017") WP = 0.94;
+      if(era == "2018") WP = 0.94;
+    }
+
+    if(wp == "Tight"){ // Mistag rate 0.5%
+      if(era == "2016preVFP") WP = 0.97;
+      if(era == "2016postVFP") WP = 0.97;
+      if(era == "2017") WP = 0.98;
+      if(era == "2018") WP = 0.98;
+    }
+
+    //https://indico.cern.ch/event/1152827/contributions/4840404/attachments/2428856/4162159/ParticleNet_SFs_ULNanoV9_JMAR_25April2022_PK.pdf
+    //https://cms-talk.web.cern.ch/t/questions-regarding-the-deepak8-scale-factors/2743/9
+    //https://twiki.cern.ch/twiki/bin/view/CMS/ParticleNetTopWSFs
+    if(GetTaggerResult(JetTagging::particleNet_WvsQCD) < WP) return false;
+    return true;
+  }
+
+  return false;
+
+}
 
 bool FatJet::Pass_HNTight() const{
   //  if(!Pass_tightLepVetoJetID()) return false;

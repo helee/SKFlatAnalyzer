@@ -160,7 +160,8 @@ class HNL_LeptonCore : public AnalyzerCore {
   void OutCutFlow(TString lab, double w);
   TString QToString(HNL_LeptonCore::ChargeType q);
   bool CheckLeptonFlavourForChannel(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps);
-  double PassEventTypeFilter(vector<Lepton *> leps , vector<Gen> gens);
+  //double PassEventTypeFilter(vector<Lepton *> leps , vector<Gen> gens);
+  bool PassEventTypeFilter(vector<Lepton *> leps , vector<Gen> gens);
   bool HasLowMassMeson(std::vector<Lepton *> leps);
 
   double SetupWeight(Event ev, AnalyzerParameter param);
@@ -205,8 +206,8 @@ class HNL_LeptonCore : public AnalyzerCore {
 
   vector<Muon> GetSignalLeptons(const std::vector<Muon>& MuColl, vector<Gen>& TruthColl);
   vector<Electron> GetSignalLeptons(const std::vector<Electron>& ElColl, vector<Gen>& TruthColl);
-  vector<Muon> GetLepCollByRunType(const vector<Muon>& MuColl, vector<Gen>& TruthColl, AnalyzerParameter param, TString Option="NoSel");
-  vector<Electron> GetLepCollByRunType(const vector<Electron>& ElColl, vector<Gen>& TruthColl, AnalyzerParameter param, TString Option="NoSel");
+  vector<Muon> GetLepCollByRunType(const vector<Muon>& MuColl, vector<Gen>& TruthColl, AnalyzerParameter param, TString Option="");
+  vector<Electron> GetLepCollByRunType(const vector<Electron>& ElColl, vector<Gen>& TruthColl, AnalyzerParameter param, TString Option="");
 
 
   //================== KINEMATIC HELPER
@@ -253,7 +254,7 @@ class HNL_LeptonCore : public AnalyzerCore {
   bool SameCharge(std::vector<Lepton *> leps, int ch=0);
 
   /// global var for user flags
-  bool RunFake, RunCF,  RunConv, RunSyst,RunPromptTLRemoval,run_ORTrigger;
+  bool RunFake, RunCF,  RunConv, RunSyst,RunPromptTLRemoval,run_ORTrigger, RunPrompt, RunMCFake, RunAll;
   bool IsSkimmed;
   bool Signal;
   bool HEM1516 ,BeforeRun319077;
@@ -357,9 +358,10 @@ class HNL_LeptonCore : public AnalyzerCore {
 
   void Fill_RegionPlots(HNL_LeptonCore::Channel channel, int plotCR,TString label_1, TString label_2,  std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Lepton *> leps, Particle  met, double nvtx, double w, int verbose_level=0);
   void Fill_RegionPlots(HNL_LeptonCore::Channel channel, int plotCR,TString label_1, TString label_2,  std::vector<Tau> Taus, std::vector<Jet> jets, std::vector<FatJet> fatjets,  std::vector<Lepton *> leps, Particle  met, double nvtx, double w,int verbose_level=0);
-  void Fill_RegionPlots(HNL_LeptonCore::Channel channel,TString label_1, TString label_2,std::vector<Tau> Taus,  std::vector<Jet> jets,  std::vector<FatJet> fatjets,  std::vector<Lepton *> leps, Particle  met, double nvtx, double w,int verbose_level=0);
-
-
+  void Fill_RegionPlots(HNL_LeptonCore::Channel channel,TString label_1, TString label_2, std::vector<Tau> Taus,  std::vector<Jet> jets,  std::vector<FatJet> fatjets,  std::vector<Lepton *> leps, Particle  met, double nvtx, double w,int verbose_level=0);
+  void Fill_RegionPlots(HNL_LeptonCore::Channel channel,TString label_1, TString label_2, std::vector<Jet> jets,  std::vector<FatJet> fatjets,  std::vector<Lepton *> leps, Particle  met, Particle ZCand, double nvtx, double w, int verbose_level=0); // For 3l CR
+  void Fill_RegionPlots(HNL_LeptonCore::Channel channel,TString label_1, TString label_2, std::vector<Jet> jets,  std::vector<FatJet> fatjets,  std::vector<Lepton *> leps, Particle  met, Particle Z1Cand, Particle Z2Cand, double nvtx, double w, int verbose_level=0); // For 4l CR
+  void Fill_RegionPlots(HNL_LeptonCore::Channel channel,TString label_1, TString label_2, std::vector<Jet> alljets, std::vector<Jet> jets, std::vector<Jet> vbfjets, std::vector<Jet> bjets, std::vector<Lepton *> leps, std::vector<Jet> wjets, Particle met, double nvtx, double w,int verbose_level=0); // For BDT variables in CR3
 
   void FillAK8Plots(HNL_LeptonCore::Channel channel, TString label_1, TString label_2,  std::vector<Tau> Taus, std::vector<Jet> jets,  std::vector<FatJet> fatjets,  std::vector<Lepton *> leps, Particle  met, double nvtx, double w);
 
@@ -397,7 +399,7 @@ class HNL_LeptonCore : public AnalyzerCore {
   vector<TString> MNStrList, NCutList, NTreeList;
   map<TString, std::pair<TString,TString> > FinalBDTHyperParamMap;
   TMVA::Reader *MVAReader;
-  TMVA::Reader *MVAReaderMM, *MVAReaderEE, *MVAReaderEM;
+  TMVA::Reader *MVAReaderMMFake, *MVAReaderMMNonFake, *MVAReaderMMIncl, *MVAReaderEE, *MVAReaderEM;
 
   /// Event BDT var
   void InitializeTreeVars();
@@ -429,7 +431,7 @@ class HNL_LeptonCore : public AnalyzerCore {
   Float_t Mjj12, Mjj13, Mjj14, Mjj23, Mjj24, Mjj34;
 
   Float_t PtWj1, PtWj2;
-  Float_t dRWjj, dRlW12, dRlW22;
+  Float_t dRWjj, dRlW12, dRlW22, dRlN12, dRlN21;
   Float_t M_W2_jj, M_N1_l1jj, M_N2_l2jj, M_W1_lljj;
 
   Float_t w_tot;
